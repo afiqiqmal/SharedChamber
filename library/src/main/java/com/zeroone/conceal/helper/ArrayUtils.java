@@ -1,4 +1,4 @@
-package com.zeroone.conceal;
+package com.zeroone.conceal.helper;
 
 import java.util.Arrays;
 import java.util.List;

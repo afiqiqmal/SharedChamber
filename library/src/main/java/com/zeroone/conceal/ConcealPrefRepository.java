@@ -5,8 +5,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import com.facebook.crypto.CryptoConfig;
+import com.zeroone.conceal.helper.ArrayUtils;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -19,7 +19,6 @@ public class ConcealPrefRepository {
 
     private Context mContext;
     private CryptoConfig mKeyChain = CryptoConfig.KEY_256;
-    private CryptoConfig mConfig = CryptoConfig.KEY_256;
     private boolean mEnabledCrypto = false;
     private boolean mEnableCryptKey = false;
     private String mEntityPasswordRaw = null;
@@ -32,7 +31,6 @@ public class ConcealPrefRepository {
     ConcealPrefRepository(PreferencesBuilder builder){
         mContext = builder.mContext;
         mKeyChain = builder.mKeyChain;
-        mConfig = builder.mConfig;
         mEnabledCrypto = builder.mEnabledCrypto;
         mEnableCryptKey = builder.mEnableCryptKey;
         sharedPreferences = builder.sharedPreferences;
@@ -45,9 +43,8 @@ public class ConcealPrefRepository {
         concealCrypto = new ConcealCrypto.CryptoBuilder(mContext)
                 .createPassword(mEntityPasswordRaw)
                 .setKeyChain(mKeyChain)
-                .setCryptoBits(mConfig)
                 .setEnableCrypto(mEnabledCrypto)
-                .setEnableKeyCrypt(mEnableCryptKey)
+                .setEnableKeyCrypto(mEnableCryptKey)
                 .create();
     }
 
@@ -279,7 +276,7 @@ public class ConcealPrefRepository {
         return ArrayUtils.toLongArray(getString(key));
     }
 
-    
+
     public static final class Editor {
 
         private SharedPreferences.Editor mEditor;
@@ -373,7 +370,6 @@ public class ConcealPrefRepository {
 
         private Context mContext;
         private CryptoConfig mKeyChain = CryptoConfig.KEY_256;
-        private CryptoConfig mConfig = CryptoConfig.KEY_256;
         private String mPrefname;
         private boolean mEnabledCrypto = false;
         private boolean mEnableCryptKey = false;
@@ -399,13 +395,8 @@ public class ConcealPrefRepository {
             return this;
         }
 
-        public PreferencesBuilder SharedPrefsBackedKeyChain(CryptoConfig keyChain){
+        public PreferencesBuilder sharedPrefsBackedKeyChain(CryptoConfig keyChain){
             mKeyChain = keyChain;
-            return this;
-        }
-
-        public PreferencesBuilder createCryptoBits(CryptoConfig config){
-            mConfig = config;
             return this;
         }
 

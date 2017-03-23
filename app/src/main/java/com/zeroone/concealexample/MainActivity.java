@@ -22,6 +22,7 @@ import com.zeroone.conceal.ConcealPrefRepository;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     byte[] a;
@@ -33,16 +34,17 @@ public class MainActivity extends AppCompatActivity {
 
         ConcealPrefRepository concealPrefRepository = new ConcealPrefRepository.PreferencesBuilder(this)
                 .useDefaultPrefStorage()
-                .createCryptoBits(CryptoConfig.KEY_256)
-                .SharedPrefsBackedKeyChain(CryptoConfig.KEY_256)
+                .sharedPrefsBackedKeyChain(CryptoConfig.KEY_256)
                 .enableCrypto(true,true)
                 .createPassword("Android")
                 .create();
 
 
+
         new ConcealPrefRepository.Editor()
                 .putString("Bellow","Hello")
                 .putInt("Number",1000000)
+                .putBoolean("enable",true)
                 .apply();
 
 
@@ -68,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
         ConcealCrypto concealCrypto1 = new ConcealCrypto.CryptoBuilder(this)
                 .setEnableCrypto(true)
                 .setKeyChain(CryptoConfig.KEY_256)
-                .setCryptoBits(CryptoConfig.KEY_256)
                 .createPassword("Mac OSX")
                 .create();
 
