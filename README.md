@@ -4,7 +4,21 @@ Secure Android SharedPreferences Using Conceal Crypto by Facebook
 
 ## Installation
 
+Gradle
+```gradle
+dependencies {
+        compile 'com.github.afiqiqmal:ConcealSharedPreference-Android:1.0.0'
+}
+```
 
+Maven
+```maven
+<dependency>
+	<groupId>com.github.afiqiqmal</groupId>
+	<artifactId>ConcealSharedPreference-Android</artifactId>
+	<version>1.0.0</version>
+</dependency>
+```
 
 ## Usage
 
