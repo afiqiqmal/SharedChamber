@@ -4,15 +4,9 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.util.Base64;
-
-import com.facebook.android.crypto.keychain.AndroidConceal;
-import com.facebook.android.crypto.keychain.SharedPrefsBackedKeyChain;
-import com.facebook.crypto.Crypto;
 import com.facebook.crypto.CryptoConfig;
-import com.facebook.crypto.Entity;
-import com.facebook.crypto.keychain.KeyChain;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -26,13 +20,10 @@ public class ConcealPrefRepository {
     private Context mContext;
     private CryptoConfig mKeyChain = CryptoConfig.KEY_256;
     private CryptoConfig mConfig = CryptoConfig.KEY_256;
-    private String mPrefname;
     private boolean mEnabledCrypto = false;
     private boolean mEnableCryptKey = false;
     private String mEntityPasswordRaw = null;
-    private Entity mEntityPassword = null;
     private static SharedPreferences sharedPreferences;
-    private Crypto crypto;
     SharedPreferences.Editor editor;
 
     static ConcealCrypto concealCrypto;
@@ -42,45 +33,25 @@ public class ConcealPrefRepository {
         mContext = builder.mContext;
         mKeyChain = builder.mKeyChain;
         mConfig = builder.mConfig;
-        mPrefname = builder.mPrefname;
         mEnabledCrypto = builder.mEnabledCrypto;
         mEnableCryptKey = builder.mEnableCryptKey;
         sharedPreferences = builder.sharedPreferences;
-        crypto = builder.crypto;
         mEntityPasswordRaw = builder.mEntityPasswordRaw;
-        mEntityPassword = builder.mEntityPassword;
-
 
         //init editor
         editor = sharedPreferences.edit();
 
         //init crypto
-        concealCrypto = new ConcealCrypto(crypto,mEntityPassword);
-        concealCrypto.setEnableCrypto(mEnabledCrypto);
-        concealCrypto.setEnableKeyCrypt(mEnableCryptKey);
+        concealCrypto = new ConcealCrypto.CryptoBuilder(mContext)
+                .createPassword(mEntityPasswordRaw)
+                .setKeyChain(mKeyChain)
+                .setCryptoBits(mConfig)
+                .setEnableCrypto(mEnabledCrypto)
+                .setEnableKeyCrypt(mEnableCryptKey)
+                .create();
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /* Save Data */
-
     public void putString(String key, String value) {
         editor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(value)).apply();
     }
@@ -104,6 +75,31 @@ public class ConcealPrefRepository {
     public void putBoolean(String key, boolean value) {
         editor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(Boolean.toString(value))).apply();
     }
+
+    public void putListString(String key, List<String> value){
+        editor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(value.toString())).apply();
+    }
+
+    public void putListFloat(String key, List<Float> value){
+        editor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(value.toString())).apply();
+    }
+
+    public void putListInteger(String key, List<Integer> value){
+        editor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(value.toString())).apply();
+    }
+
+    public void putListDouble(String key, List<Double> value){
+        editor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(value.toString())).apply();
+    }
+
+    public void putListLong(String key, List<Long> value){
+        editor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(value.toString())).apply();
+    }
+
+    public void putListBoolean(String key, List<Boolean> value){
+        editor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(value.toString())).apply();
+    }
+
 
 
     /* Fetch Data */
@@ -259,7 +255,31 @@ public class ConcealPrefRepository {
         }
     }
 
+    public List<String> getListString(String key){
+        return ArrayUtils.toStringArray(getString(key));
+    }
 
+    public List<Float> getListFloat(String key){
+        return ArrayUtils.toFloatArray(getString(key));
+    }
+
+    public List<Double> getListDouble(String key){
+        return ArrayUtils.toDoubleArray(getString(key));
+    }
+
+    public List<Boolean> getListBoolean(String key){
+        return ArrayUtils.toBooleanArray(getString(key));
+    }
+
+    public List<Integer> getListInteger(String key){
+        return ArrayUtils.toIntArray(getString(key));
+    }
+
+    public List<Long> getListLong(String key){
+        return ArrayUtils.toLongArray(getString(key));
+    }
+
+    
     public static final class Editor {
 
         private SharedPreferences.Editor mEditor;
@@ -300,6 +320,32 @@ public class ConcealPrefRepository {
         }
 
         public Editor putListString(String key, List<String> value){
+            mEditor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(value.toString()));
+            return this;
+        }
+
+        public Editor putListFloat(String key, List<Float> value){
+            mEditor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(value.toString()));
+            return this;
+        }
+
+        public Editor putListInteger(String key, List<Integer> value){
+            mEditor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(value.toString()));
+            return this;
+        }
+
+        public Editor putListDouble(String key, List<Double> value){
+            mEditor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(value.toString()));
+            return this;
+        }
+
+        public Editor putListLong(String key, List<Long> value){
+            mEditor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(value.toString()));
+            return this;
+        }
+
+        public Editor putListBoolean(String key, List<Boolean> value){
+            mEditor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(value.toString()));
             return this;
         }
 
@@ -332,9 +378,7 @@ public class ConcealPrefRepository {
         private boolean mEnabledCrypto = false;
         private boolean mEnableCryptKey = false;
         private String mEntityPasswordRaw = null;
-        private Entity mEntityPassword = null;
         private SharedPreferences sharedPreferences;
-        private Crypto crypto;
 
         public PreferencesBuilder(Context context) {
             mContext = context;
@@ -377,34 +421,6 @@ public class ConcealPrefRepository {
             }
             else{
                 sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-            }
-
-            if (mEnabledCrypto) {
-
-                if (mEntityPassword == null){
-                    mEntityPasswordRaw = BuildConfig.APPLICATION_ID;
-                }
-
-                mEntityPasswordRaw = new String(Base64.encode(mEntityPasswordRaw.getBytes(),Base64.DEFAULT));
-                mEntityPassword = Entity.create(mEntityPasswordRaw);
-
-                if (mKeyChain == null) {
-                    mKeyChain = CryptoConfig.KEY_256;
-                }
-
-                KeyChain makeChain = new SharedPrefsBackedKeyChain(mContext, mKeyChain);
-
-                if (mConfig == null) {
-                    crypto = AndroidConceal.get().createDefaultCrypto(makeChain);
-                } else if (mConfig == CryptoConfig.KEY_128) {
-                    crypto = AndroidConceal.get().createCrypto128Bits(makeChain);
-                } else {
-                    crypto = AndroidConceal.get().createCrypto256Bits(makeChain);
-                }
-            }
-            else {
-                mEnabledCrypto = false;
-                mEnableCryptKey = false;
             }
 
             return new ConcealPrefRepository(this);

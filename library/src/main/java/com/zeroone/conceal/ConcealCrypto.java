@@ -1,9 +1,14 @@
 package com.zeroone.conceal;
 
+import android.content.Context;
 import android.util.Base64;
 
+import com.facebook.android.crypto.keychain.AndroidConceal;
+import com.facebook.android.crypto.keychain.SharedPrefsBackedKeyChain;
 import com.facebook.crypto.Crypto;
+import com.facebook.crypto.CryptoConfig;
 import com.facebook.crypto.Entity;
+import com.facebook.crypto.keychain.KeyChain;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -15,13 +20,28 @@ import java.security.NoSuchAlgorithmException;
 public class ConcealCrypto {
 
     private Crypto crypto;
-    private Entity mEntityPassword;
-    private boolean enableCrypto=false;
-    private boolean enableKeyCrypt = false;
+    private KeyChain keyChain;
+    private Entity mEntityPassword = Entity.create(BuildConfig.APPLICATION_ID);
+    private boolean enableCrypto=true;
+    private boolean enableKeyCrypt=true;
 
-    public ConcealCrypto(Crypto crypto,Entity password) {
-        this.crypto = crypto;
-        this.mEntityPassword = password;
+    public ConcealCrypto(CryptoBuilder builder){
+        crypto = builder.crypto;
+        mEntityPassword = builder.mEntityPassword;
+        enableCrypto = builder.mEnabledCrypto;
+        enableKeyCrypt = builder.mEnableCryptKey;
+    }
+
+    public ConcealCrypto(Context context,CryptoConfig config){
+        keyChain = new SharedPrefsBackedKeyChain(context,config);
+        crypto = AndroidConceal.get().createDefaultCrypto(keyChain);
+    }
+
+    public void setmEntityPassword(Entity mEntityPassword) {
+        if (mEntityPassword!=null)this.mEntityPassword = mEntityPassword;
+    }
+    public void setmEntityPassword(String password) {
+        if (password!=null)this.mEntityPassword = Entity.create(Base64.encodeToString(password.getBytes(),Base64.DEFAULT));
     }
 
     public void setEnableCrypto(boolean enableCrypto) {
@@ -31,6 +51,7 @@ public class ConcealCrypto {
     public void setEnableKeyCrypt(boolean enableKeyCrypt) {
         this.enableKeyCrypt = enableKeyCrypt;
     }
+
 
     public String obscure(String plain){
         if (enableCrypto) {
@@ -75,6 +96,62 @@ public class ConcealCrypto {
         }
 
         return key;
+    }
+
+    public static class CryptoBuilder{
+        Context context;
+        private KeyChain makeKeyChain;
+        private Crypto crypto;
+        private CryptoConfig mKeyChain = CryptoConfig.KEY_256;
+        private CryptoConfig mConfig = CryptoConfig.KEY_256;
+        private boolean mEnabledCrypto = false;
+        private boolean mEnableCryptKey = false;
+        private Entity mEntityPassword = null;
+        private String mEntityPasswordRaw = BuildConfig.APPLICATION_ID;
+
+        public CryptoBuilder(Context context) {
+            this.context = context;
+        }
+
+        public CryptoBuilder setKeyChain(CryptoConfig config){
+            if (config!=null) this.mKeyChain = config;
+            return this;
+        }
+
+        public CryptoBuilder setCryptoBits(CryptoConfig config){
+            if (config!=null) this.mConfig = config;
+            return this;
+        }
+
+        public CryptoBuilder setEnableCrypto(boolean enableCrypto) {
+            this.mEnabledCrypto = enableCrypto;
+            return this;
+        }
+
+        public CryptoBuilder setEnableKeyCrypt(boolean enableKeyCrypt) {
+            this.mEnableCryptKey = enableKeyCrypt;
+            return this;
+        }
+
+        public CryptoBuilder createPassword(String password){
+            if(password!=null)mEntityPasswordRaw = password;
+            return this;
+        }
+
+        public ConcealCrypto create(){
+            mEntityPassword = Entity.create(Base64.encodeToString(mEntityPasswordRaw.getBytes(),Base64.DEFAULT));
+            makeKeyChain = new SharedPrefsBackedKeyChain(context,mKeyChain);
+
+            if (mConfig == null) {
+                crypto = AndroidConceal.get().createDefaultCrypto(makeKeyChain);
+            } else if (mConfig == CryptoConfig.KEY_128) {
+                crypto = AndroidConceal.get().createCrypto128Bits(makeKeyChain);
+            } else {
+                crypto = AndroidConceal.get().createCrypto256Bits(makeKeyChain);
+            }
+
+            return new ConcealCrypto(this);
+        }
     }
 
 }
