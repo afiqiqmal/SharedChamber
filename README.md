@@ -20,7 +20,7 @@ ConcealPrefRepository concealPrefRepository = new ConcealPrefRepository.Preferen
 
 ```
 
-Save data
+<b>Save data</b>
 
 ```java
 concealPrefRepository.putString("Bellow","Hello");
@@ -42,7 +42,7 @@ new ConcealPrefRepository.Editor()
                 .apply(); //.commit();
 ```
 
-Fetching data
+<b>Fetching data</b>
 
 ```java
 concealPrefRepository.getString(KEY);
@@ -54,7 +54,7 @@ concealPrefRepository.getDouble(KEY,DEFAULT_VALUE);
 ........
 ```
 
-Extra Usage
+<b>Extra Usage for Conceal Encryption and Decryption</b>
 
 ```java
 ConcealCrypto concealCrypto = new ConcealCrypto(this,CryptoConfig.KEY_256); // CryptoConfig.KEY_256 or CryptoConfig.KEY_128
