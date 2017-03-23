@@ -25,6 +25,7 @@ Save data
 ```java
 concealPrefRepository.putString("Bellow","Hello");
 concealPrefRepository.putInt("Number",1000000);
+concealPrefRepository.putDouble("Num",100.00);
 ...........
 
 ```
@@ -38,7 +39,7 @@ new ConcealPrefRepository.Editor()
                 .putListString("array",STRING_LIST)
                 .putListFloat("array_f",FLOAT_LIST)
                 .........
-                .apply();
+                .apply(); //.commit();
 ```
 
 Fetching data
@@ -48,10 +49,39 @@ concealPrefRepository.getString(KEY);
 concealPrefRepository.getString(KEY,DEFAULT_VALUE);
 concealPrefRepository.getInt(KEY);
 concealPrefRepository.getInt(KEY,DEFAULT_VALUE);
+concealPrefRepository.getDouble(KEY);
+concealPrefRepository.getDouble(KEY,DEFAULT_VALUE);
 ........
 ```
 
+Extra Usage
+
+```java
+ConcealCrypto concealCrypto = new ConcealCrypto(this,CryptoConfig.KEY_256); // CryptoConfig.KEY_256 or CryptoConfig.KEY_128
+concealCrypto.setEnableCrypto(true); //default true
+concealCrypto.setmEntityPassword("Android");
+concealCrypto.setmEntityPassword(Entity.create("Android"));
+
+String test = "Hello World";
+String cipher =  concealCrypto.obscure(test); //encrypt
+String dec = concealCrypto.deObscure(cipher); //decrypt
+Log.d("Display", cipher+" ===== "+dec);          
+```
+
+OR
+```java
+ConcealCrypto concealCrypto1 = new ConcealCrypto.CryptoBuilder(this)
+                .setEnableCrypto(true) //default true
+                .setKeyChain(CryptoConfig.KEY_256) // CryptoConfig.KEY_256 or CryptoConfig.KEY_128
+                .createPassword("Mac OSX") 
+                .create();
+                
+String test = "Hello World";
+String cipher =  concealCrypto.obscure(test); //encrypt
+String dec = concealCrypto.deObscure(cipher); //decrypt
+Log.d("Display", cipher+" ===== "+dec);  
+```
 
 ## Licence
-
+open source project that is licensed under the [MIT license](http://opensource.org/licenses/MIT).
 
