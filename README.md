@@ -1,5 +1,6 @@
 # ConcealSharedPreference-Android
 Secure Android SharedPreferences Using Conceal Crypto by Facebook
+[![](https://jitpack.io/v/afiqiqmal/ConcealSharedPreference-Android.svg)](https://jitpack.io/#afiqiqmal/ConcealSharedPreference-Android)
 
 
 ## Installation
