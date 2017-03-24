@@ -69,6 +69,14 @@ concealPrefRepository.getDouble(KEY,DEFAULT_VALUE);
 ........
 ```
 
+<b>Clear key and SharedPreferences
+
+```java
+concealPrefRepository.destroyCrypto(); //clear key
+concealPrefRepository.destroySharedPreferences(); // clear all
+
+```
+
 <b>Extra Usage for Conceal Encryption and Decryption</b>
 
 ```java

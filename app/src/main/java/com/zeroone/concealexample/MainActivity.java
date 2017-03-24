@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
                 .putBoolean("enable",true)
                 .apply();
 
-
         Log.d("DisplayPref",concealPrefRepository.getString("Bellow"));
         Log.d("DisplayPref", String.valueOf(concealPrefRepository.getInt("Number")));
 
