@@ -50,6 +50,17 @@ public class ConcealPrefRepository {
                 .create();
     }
 
+    /* Destroy Files*/
+    public void destroyCrypto(){
+        concealCrypto.clearCrypto();
+    }
+
+    public void destroySharedPreferences(){
+        editor.clear().apply();
+        destroyCrypto();
+    }
+
+
     /* Save Data */
     public void putString(String key, String value) {
         editor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(value)).apply();

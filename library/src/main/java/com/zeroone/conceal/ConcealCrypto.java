@@ -52,6 +52,12 @@ public class ConcealCrypto {
         this.enableKeyCrypt = enableKeyCrypt;
     }
 
+    public void clearCrypto(){
+        if (crypto.isAvailable()){
+            keyChain.destroyKeys();
+        }
+    }
+
 
     //Encrypt
     public String obscure(String plain){
