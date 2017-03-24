@@ -442,7 +442,7 @@ public class ConcealPrefRepository {
 
         }
     }
-    
+
     private void throwRunTimeException(String message, Throwable throwable){
         new RuntimeException(message,throwable).printStackTrace();
     }
