@@ -133,7 +133,7 @@ public class ConcealPrefRepository {
             return Integer.parseInt(value);
         }
         catch (Exception e){
-            e.printStackTrace();
+            throwRunTimeException("Unable to convert to INteger data type",e);
             return -99;
         }
     }
@@ -148,7 +148,7 @@ public class ConcealPrefRepository {
             return Integer.parseInt(value);
         }
         catch (Exception e){
-            e.printStackTrace();
+            throwRunTimeException("Unable to convert to Integer data type",e);
             return -99;
         }
     }
@@ -162,7 +162,7 @@ public class ConcealPrefRepository {
             return Float.parseFloat(value);
         }
         catch (Exception e){
-            e.printStackTrace();
+            throwRunTimeException("Unable to convert to Float data type",e);
             return 0f;
         }
     }
@@ -177,7 +177,7 @@ public class ConcealPrefRepository {
             return Float.parseFloat(value);
         }
         catch (Exception e){
-            e.printStackTrace();
+            throwRunTimeException("Unable to convert to Float data type",e);
             return def;
         }
     }
@@ -191,7 +191,7 @@ public class ConcealPrefRepository {
             return Double.parseDouble(value);
         }
         catch (Exception e){
-            e.printStackTrace();
+            throwRunTimeException("Unable to convert to Double data type",e);
             return 0D;
         }
     }
@@ -206,7 +206,7 @@ public class ConcealPrefRepository {
             return Double.parseDouble(value);
         }
         catch (Exception e){
-            e.printStackTrace();
+            throwRunTimeException("Unable to convert to Double data type",e);
             return def;
         }
     }
@@ -221,7 +221,7 @@ public class ConcealPrefRepository {
             return Long.parseLong(value);
         }
         catch (Exception e){
-            e.printStackTrace();
+            throwRunTimeException("Unable to convert to Long data type",e);
             return 0L;
         }
     }
@@ -236,7 +236,7 @@ public class ConcealPrefRepository {
             return Long.parseLong(value);
         }
         catch (Exception e){
-            e.printStackTrace();
+            throwRunTimeException("Unable to convert to Long data type",e);
             return def;
         }
     }
@@ -248,7 +248,7 @@ public class ConcealPrefRepository {
             return value != null && Boolean.parseBoolean(value);
         }
         catch (Exception e){
-            e.printStackTrace();
+            throwRunTimeException("Unable to convert to Boolean data type",e);
             return false;
         }
     }
@@ -262,7 +262,7 @@ public class ConcealPrefRepository {
             return Boolean.parseBoolean(value);
         }
         catch (Exception e){
-            e.printStackTrace();
+            throwRunTimeException("Unable to convert to Boolean data type",e);
             return false;
         }
     }
@@ -441,6 +441,10 @@ public class ConcealPrefRepository {
             return new ConcealPrefRepository(this);
 
         }
+    }
+    
+    private void throwRunTimeException(String message, Throwable throwable){
+        new RuntimeException(message,throwable).printStackTrace();
     }
 
 }

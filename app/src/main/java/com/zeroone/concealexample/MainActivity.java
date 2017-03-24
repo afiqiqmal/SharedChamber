@@ -10,7 +10,6 @@ import com.zeroone.conceal.ConcealCrypto;
 import com.zeroone.conceal.ConcealPrefRepository;
 
 public class MainActivity extends AppCompatActivity {
-    byte[] a;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
