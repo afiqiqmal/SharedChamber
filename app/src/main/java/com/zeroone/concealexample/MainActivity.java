@@ -1,28 +1,13 @@
 package com.zeroone.concealexample;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 
-import com.facebook.android.crypto.keychain.AndroidConceal;
-import com.facebook.android.crypto.keychain.SharedPrefsBackedKeyChain;
-import com.facebook.crypto.Crypto;
 import com.facebook.crypto.CryptoConfig;
 import com.facebook.crypto.Entity;
-import com.facebook.crypto.exception.CryptoInitializationException;
-import com.facebook.crypto.exception.KeyChainException;
-import com.facebook.crypto.keychain.KeyChain;
 import com.zeroone.conceal.ConcealCrypto;
 import com.zeroone.conceal.ConcealPrefRepository;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     byte[] a;
@@ -57,8 +42,8 @@ public class MainActivity extends AppCompatActivity {
 
         ConcealCrypto concealCrypto = new ConcealCrypto(this,CryptoConfig.KEY_256);
         concealCrypto.setEnableCrypto(true);
-        concealCrypto.setmEntityPassword("Android");
-        concealCrypto.setmEntityPassword(Entity.create("Android"));
+        concealCrypto.setEntityPassword("Android");
+        concealCrypto.setEntityPassword(Entity.create("Android"));
 
         String cipher =  concealCrypto.obscure(test);
         String cipher2 =  concealCrypto.obscure(test2);

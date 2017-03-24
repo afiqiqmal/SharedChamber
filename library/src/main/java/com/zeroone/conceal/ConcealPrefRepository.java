@@ -5,9 +5,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import com.facebook.crypto.CryptoConfig;
-import com.zeroone.conceal.helper.ArrayUtils;
+import com.zeroone.conceal.helper.ConverterListUtils;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -97,10 +99,12 @@ public class ConcealPrefRepository {
         editor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(value.toString())).apply();
     }
 
+    public void putMap(String key,Map<String,String> values){
+        editor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(ConverterListUtils.convertMapToString(values))).apply();
+    }
 
 
     /* Fetch Data */
-
     public String getString(String key){
         return concealCrypto.deObscure(sharedPreferences.getString(concealCrypto.hashKey(key),null));
     }
@@ -253,27 +257,31 @@ public class ConcealPrefRepository {
     }
 
     public List<String> getListString(String key){
-        return ArrayUtils.toStringArray(getString(key));
+        return ConverterListUtils.toStringArray(getString(key));
     }
 
     public List<Float> getListFloat(String key){
-        return ArrayUtils.toFloatArray(getString(key));
+        return ConverterListUtils.toFloatArray(getString(key));
     }
 
     public List<Double> getListDouble(String key){
-        return ArrayUtils.toDoubleArray(getString(key));
+        return ConverterListUtils.toDoubleArray(getString(key));
     }
 
     public List<Boolean> getListBoolean(String key){
-        return ArrayUtils.toBooleanArray(getString(key));
+        return ConverterListUtils.toBooleanArray(getString(key));
     }
 
     public List<Integer> getListInteger(String key){
-        return ArrayUtils.toIntArray(getString(key));
+        return ConverterListUtils.toIntArray(getString(key));
     }
 
     public List<Long> getListLong(String key){
-        return ArrayUtils.toLongArray(getString(key));
+        return ConverterListUtils.toLongArray(getString(key));
+    }
+
+    public LinkedHashMap<String,String> getMaps(String key){
+        return ConverterListUtils.convertStringToMap(getString(key));
     }
 
 
@@ -348,6 +356,11 @@ public class ConcealPrefRepository {
 
         public Editor remove(String key) {
             mEditor.remove(concealCrypto.hashKey(key));
+            return this;
+        }
+
+        public Editor putMap(String key,Map<String,String> values){
+            mEditor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(ConverterListUtils.convertMapToString(values)));
             return this;
         }
 

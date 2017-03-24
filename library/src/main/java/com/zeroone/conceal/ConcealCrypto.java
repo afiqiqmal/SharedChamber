@@ -37,10 +37,10 @@ public class ConcealCrypto {
         crypto = AndroidConceal.get().createDefaultCrypto(keyChain);
     }
 
-    public void setmEntityPassword(Entity mEntityPassword) {
+    public void setEntityPassword(Entity mEntityPassword) {
         if (mEntityPassword!=null)this.mEntityPassword = mEntityPassword;
     }
-    public void setmEntityPassword(String password) {
+    public void setEntityPassword(String password) {
         if (password!=null)this.mEntityPassword = Entity.create(Base64.encodeToString(password.getBytes(),Base64.DEFAULT));
     }
 
@@ -53,6 +53,7 @@ public class ConcealCrypto {
     }
 
 
+    //Encrypt
     public String obscure(String plain){
         if (enableCrypto) {
             try {
@@ -67,6 +68,7 @@ public class ConcealCrypto {
         }
     }
 
+    //Decrypt
     public String deObscure(String cipher){
         if (enableCrypto) {
             try {
@@ -80,6 +82,7 @@ public class ConcealCrypto {
         }
     }
 
+    //SHA-256 hash key Message Digest
     public String hashKey(String key) {
         if (enableKeyCrypt) {
             try {
