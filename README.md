@@ -23,6 +23,12 @@ Maven
 
 ## Usage
 
+Permission need to use in your project. Please Allow it first, or it will affect .putImage and .putFile method
+```xml
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+```
+
 SharedPreferences initialize
 ```java
 ConcealPrefRepository concealPrefRepository = new ConcealPrefRepository.PreferencesBuilder(this)
