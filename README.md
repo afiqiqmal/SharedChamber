@@ -66,7 +66,7 @@ concealPrefRepository.putFile(KEY,getFile,boolean deleteOldFiles);
 
 //put images
 concealPrefRepository.putImage(KEY, BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
-
+concealPrefRepository.putImage(KEY, File file);
 ...........
 
 ```

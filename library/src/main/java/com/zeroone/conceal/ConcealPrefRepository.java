@@ -187,9 +187,21 @@ public class ConcealPrefRepository {
         return null;
     }
 
+    public String putImage(String key, File file){
+        if (FileUtils.isFileForImage(file)) {
+            File imageFile = new File(FileUtils.getImageDirectory(mFolderName), "images_" + System.currentTimeMillis() + ".png");
+            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+            if (FileUtils.saveBitmap(imageFile, bitmap)) {
+                editor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(imageFile.getAbsolutePath())).apply();
+                return imageFile.getAbsolutePath();
+            }
+        }
+        return null;
+    }
+
     public File putFile(String key,File file,boolean deleteOldFile){
         try {
-            if (file.exists()) {
+            if (file.exists() && !FileUtils.isFileForImage(file)) {
                 File enc = concealCrypto.obscureFile(file,deleteOldFile);
                 if (enc == null)
                     throw new Exception("File can't encrypt");
@@ -623,6 +635,17 @@ public class ConcealPrefRepository {
 
     private void throwRunTimeException(String message, Throwable throwable){
         new RuntimeException(message,throwable).printStackTrace();
+    }
+
+    private Bitmap encryptBitmap(Bitmap bitmap){
+        byte[] bytes = FileUtils.convertBitmapToArray(bitmap);
+        bytes = concealCrypto.obscure(bytes);
+        return FileUtils.convertBytesToBitmap(bytes);
+    }
+
+    private Bitmap decryptBitmap(byte[] bytes){
+        bytes = concealCrypto.deObscure(bytes);
+        return FileUtils.convertBytesToBitmap(bytes);
     }
 
 }

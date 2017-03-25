@@ -2,11 +2,13 @@ package com.zeroone.conceal.helper;
 
 import android.app.Application;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.util.Log;
 
 import com.zeroone.conceal.helper.Constant;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -149,6 +151,27 @@ public class FileUtils {
         }
 
         return (fileCreated && bitmapCompressed && streamClosed);
+    }
+
+    public static byte[] convertBitmapToArray(Bitmap bitmap){
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        return stream.toByteArray();
+    }
+
+    public static Bitmap convertBytesToBitmap(byte[] bytes){
+        return BitmapFactory.decodeByteArray(bytes , 0, bytes.length);
+    }
+
+    public static boolean isFileForImage(File file) {
+        final String[] okFileExtensions =  new String[] {"jpg", "png", "gif","jpeg"};
+
+        for (String extension : okFileExtensions) {
+            if (file.getName().toLowerCase().endsWith(extension)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

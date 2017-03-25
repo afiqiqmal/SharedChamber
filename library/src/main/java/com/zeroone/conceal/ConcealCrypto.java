@@ -110,6 +110,22 @@ public class ConcealCrypto {
         }
     }
 
+    public byte[] obscure(byte[] bytes){
+        if (enableCrypto) {
+            try {
+                byte[] a = crypto.encrypt(bytes, mEntityPassword);
+                return Base64.encode(a, Base64.DEFAULT);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        else {
+            return bytes;
+        }
+    }
+
+    //encrypt files
     public File obscureFile(File file,boolean deleteOldFile){
         if (enableCrypto) {
             try {
@@ -158,6 +174,23 @@ public class ConcealCrypto {
         }
     }
 
+    public byte[] deObscure(byte[] cipher){
+        if (enableCrypto) {
+            if (cipher == null) return null;
+            try {
+                return crypto.decrypt(Base64.decode(cipher, Base64.DEFAULT), mEntityPassword);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        else{
+            return cipher;
+        }
+    }
+
+
+    //decrypt file
     public File deObscureFile(File file,boolean deleteOldFile){
         if (enableCrypto) {
             try {
