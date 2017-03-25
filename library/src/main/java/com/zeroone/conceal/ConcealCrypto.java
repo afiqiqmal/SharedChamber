@@ -2,16 +2,34 @@ package com.zeroone.conceal;
 
 import android.content.Context;
 import android.util.Base64;
+import android.util.Log;
 
 import com.facebook.android.crypto.keychain.AndroidConceal;
 import com.facebook.android.crypto.keychain.SharedPrefsBackedKeyChain;
 import com.facebook.crypto.Crypto;
 import com.facebook.crypto.CryptoConfig;
 import com.facebook.crypto.Entity;
+import com.facebook.crypto.exception.CryptoInitializationException;
+import com.facebook.crypto.exception.KeyChainException;
 import com.facebook.crypto.keychain.KeyChain;
+import com.zeroone.conceal.helper.FileUtils;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import static com.zeroone.conceal.helper.Constant.DEFAULT_DIRECTORY;
+import static com.zeroone.conceal.helper.Constant.DEFAULT_FILES_FOLDER;
+import static com.zeroone.conceal.helper.Constant.DEFAULT_MAIN_FOLDER;
+import static com.zeroone.conceal.helper.Constant.DEFAULT_PREFIX_FILENAME;
 
 /**
  * @author : hafiq on 23/03/2017.
@@ -24,12 +42,16 @@ public class ConcealCrypto {
     private Entity mEntityPassword = Entity.create(BuildConfig.APPLICATION_ID);
     private boolean enableCrypto=true;
     private boolean enableKeyCrypt=true;
+    private String MAIN_DIRECTORY;
 
     public ConcealCrypto(CryptoBuilder builder){
         crypto = builder.crypto;
         mEntityPassword = builder.mEntityPassword;
         enableCrypto = builder.mEnabledCrypto;
         enableKeyCrypt = builder.mEnableCryptKey;
+        MAIN_DIRECTORY = builder.mFolderName;
+
+        if (MAIN_DIRECTORY == null) MAIN_DIRECTORY = DEFAULT_MAIN_FOLDER;
     }
 
     public ConcealCrypto(Context context,CryptoConfig config){
@@ -52,12 +74,25 @@ public class ConcealCrypto {
         this.enableKeyCrypt = enableKeyCrypt;
     }
 
+    public Crypto getCrypto(){
+        return crypto;
+    }
+
+    private String makeDirectory(){
+        if (MAIN_DIRECTORY == null) MAIN_DIRECTORY = DEFAULT_MAIN_FOLDER;
+
+        return DEFAULT_DIRECTORY+ MAIN_DIRECTORY +"/";
+    }
+
+    private String makeFileDirectory(){
+        return makeDirectory()+DEFAULT_FILES_FOLDER;
+    }
+
     public void clearCrypto(){
         if (crypto.isAvailable()){
             keyChain.destroyKeys();
         }
     }
-
 
     //Encrypt
     public String obscure(String plain){
@@ -66,6 +101,7 @@ public class ConcealCrypto {
                 byte[] a = crypto.encrypt(plain.getBytes(), mEntityPassword);
                 return Base64.encodeToString(a, Base64.DEFAULT);
             } catch (Exception e) {
+                e.printStackTrace();
                 return null;
             }
         }
@@ -74,18 +110,92 @@ public class ConcealCrypto {
         }
     }
 
+    public File obscureFile(File file,boolean deleteOldFile){
+        if (enableCrypto) {
+            try {
+                File mEncryptedFile = new File(makeDirectory()+DEFAULT_PREFIX_FILENAME+file.getName());
+                OutputStream fileStream = new BufferedOutputStream(new FileOutputStream(mEncryptedFile));
+                OutputStream outputStream = crypto.getCipherOutputStream(fileStream, mEntityPassword);
+
+                int read;
+                byte[] buffer = new byte[1024];
+                BufferedInputStream  bis = new BufferedInputStream(new FileInputStream(file));
+                while ((read = bis.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, read);
+                }
+                outputStream.close();
+                bis.close();
+
+                if (deleteOldFile)
+                    file.delete();
+
+                File pathDir = new File(makeFileDirectory());
+                return FileUtils.moveFile(mEncryptedFile,pathDir);
+
+            } catch (KeyChainException | CryptoInitializationException | IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        else {
+            return file;
+        }
+    }
+
     //Decrypt
     public String deObscure(String cipher){
         if (enableCrypto) {
+            if (cipher == null) return null;
             try {
                 return new String(crypto.decrypt(Base64.decode(cipher, Base64.DEFAULT), mEntityPassword));
             } catch (Exception e) {
+                e.printStackTrace();
                 return null;
             }
         }
         else{
             return cipher;
         }
+    }
+
+    public File deObscureFile(File file,boolean deleteOldFile){
+        if (enableCrypto) {
+            try {
+                if (file.getName().contains(DEFAULT_PREFIX_FILENAME)) {
+                    File mDecryptedFile = new File(makeDirectory() + file.getName().replace(DEFAULT_PREFIX_FILENAME,""));
+
+                    InputStream inputStream = crypto.getCipherInputStream(new FileInputStream(file), mEntityPassword);
+                    ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+                    OutputStream outputStream = new FileOutputStream(mDecryptedFile);
+                    BufferedInputStream bis = new BufferedInputStream(inputStream);
+                    int mRead;
+                    byte[] mBuffer = new byte[1024];
+                    while ((mRead = bis.read(mBuffer)) != -1) {
+                        outputStream.write(mBuffer, 0, mRead);
+                    }
+                    bis.close();
+                    out.writeTo(outputStream);
+                    inputStream.close();
+                    outputStream.close();
+                    out.close();
+
+                    if (deleteOldFile)
+                        file.delete();
+
+                    File pathDir = new File(makeFileDirectory());
+                    return FileUtils.moveFile(mDecryptedFile, pathDir);
+                }
+
+                return null;
+
+            } catch (KeyChainException | CryptoInitializationException | IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        return file;
     }
 
     //SHA-256 hash key Message Digest
@@ -116,6 +226,7 @@ public class ConcealCrypto {
         private boolean mEnableCryptKey = false;
         private Entity mEntityPassword = null;
         private String mEntityPasswordRaw = BuildConfig.APPLICATION_ID;
+        private String mFolderName;
 
         public CryptoBuilder(Context context) {
             this.context = context;
@@ -141,7 +252,17 @@ public class ConcealCrypto {
             return this;
         }
 
+        /***
+         * @param folderName - Main Folder to be stored
+         * @return - CryptoBuilder
+         */
+        public CryptoBuilder setStoredFolder(String folderName){
+            mFolderName = (folderName!=null)?folderName:null;
+            return this;
+        }
+
         public ConcealCrypto create(){
+
             mEntityPassword = Entity.create(Base64.encodeToString(mEntityPasswordRaw.getBytes(),Base64.DEFAULT));
             makeKeyChain = new SharedPrefsBackedKeyChain(context,(mKeyChain==null)?CryptoConfig.KEY_256:mKeyChain);
 

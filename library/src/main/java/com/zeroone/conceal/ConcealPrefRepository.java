@@ -3,15 +3,29 @@ package com.zeroone.conceal;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
-import com.facebook.crypto.CryptoConfig;
-import com.zeroone.conceal.helper.ConverterListUtils;
+import android.util.Log;
 
+import com.facebook.crypto.CryptoConfig;
+import com.facebook.crypto.streams.FixedSizeByteArrayOutputStream;
+import com.zeroone.conceal.helper.Constant;
+import com.zeroone.conceal.helper.ConverterListUtils;
+import com.zeroone.conceal.helper.FileUtils;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.zeroone.conceal.helper.Constant.DEFAULT_MAIN_FOLDER;
 
 /**
  * @author : hafiq on 23/03/2017.
@@ -24,9 +38,9 @@ public class ConcealPrefRepository {
     private boolean mEnabledCrypto = false;
     private boolean mEnableCryptKey = false;
     private String mEntityPasswordRaw = null;
+    private static String mFolderName;
     private static SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
-
     static ConcealCrypto concealCrypto;
 
     @SuppressLint("CommitPrefEdits")
@@ -37,6 +51,7 @@ public class ConcealPrefRepository {
         mEnableCryptKey = builder.mEnableCryptKey;
         sharedPreferences = builder.sharedPreferences;
         mEntityPasswordRaw = builder.mEntityPasswordRaw;
+        mFolderName = builder.mFolderName;
 
         //init editor
         editor = sharedPreferences.edit();
@@ -47,6 +62,7 @@ public class ConcealPrefRepository {
                 .setKeyChain(mKeyChain)
                 .setEnableCrypto(mEnabledCrypto)
                 .setEnableKeyCrypto(mEnableCryptKey)
+                .setStoredFolder(mFolderName)
                 .create();
     }
 
@@ -58,6 +74,50 @@ public class ConcealPrefRepository {
     public void destroySharedPreferences(){
         editor.clear().apply();
         destroyCrypto();
+    }
+
+
+    /* Get Preferences Size */
+    public int getPrefsSize(){
+        return sharedPreferences.getAll().size();
+    }
+
+
+    /* Remove by Key */
+    public void remove(String... keys){
+        for (String key:keys){
+            editor.remove(concealCrypto.hashKey(key));
+        }
+        editor.apply();
+    }
+
+    //special cases for file to remove by key
+    public boolean removeFile(String key){
+        String path = getString(key);
+        if (path != null) {
+            File imagePath = new File(path);
+            if (imagePath.exists()) {
+                if (!imagePath.delete()) {
+                    return false;
+                }
+                remove(key);
+            }
+            return true;
+        }
+        return false;
+    }
+
+
+
+    /* Get Preferences */
+    public SharedPreferences getPreferences(){
+        return sharedPreferences;
+    }
+
+
+    /* Contains */
+    public boolean contains(String key){
+        return sharedPreferences.contains(concealCrypto.hashKey(key));
     }
 
 
@@ -114,6 +174,57 @@ public class ConcealPrefRepository {
         editor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(ConverterListUtils.convertMapToString(values))).apply();
     }
 
+    public void putByte(String key,byte[] bytes){
+        editor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(new String(bytes))).apply();
+    }
+
+    public String putImage(String key, Bitmap bitmap){
+        File imageFile = new File(FileUtils.getImageDirectory(mFolderName),"images_"+System.currentTimeMillis()+".png");
+        if(FileUtils.saveBitmap(imageFile, bitmap)){
+            editor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(imageFile.getAbsolutePath())).apply();
+            return imageFile.getAbsolutePath();
+        }
+        return null;
+    }
+
+    public File putFile(String key,File file,boolean deleteOldFile){
+        try {
+            if (file.exists()) {
+                File enc = concealCrypto.obscureFile(file,deleteOldFile);
+                if (enc == null)
+                    throw new Exception("File can't encrypt");
+
+                editor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(enc.getAbsolutePath())).apply();
+                return enc;
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public File getFile(String key,boolean deleteOldFile){
+        try {
+            String path = getString(key);
+            if (path ==null) return null;
+
+            File getFile = new File(path);
+            if (getFile.exists()) {
+                File dec = concealCrypto.deObscureFile(getFile,deleteOldFile);
+                if (dec == null)
+                    throw new Exception("File can't decrypt");
+
+                return dec;
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
     /* Fetch Data */
     public String getString(String key){
@@ -133,7 +244,7 @@ public class ConcealPrefRepository {
             return Integer.parseInt(value);
         }
         catch (Exception e){
-            throwRunTimeException("Unable to convert to INteger data type",e);
+            throwRunTimeException("Unable to convert to Integer data type",e);
             return -99;
         }
     }
@@ -295,6 +406,22 @@ public class ConcealPrefRepository {
         return ConverterListUtils.convertStringToMap(getString(key));
     }
 
+    public byte[] getArrayBytes(String key){
+        return getString(key).getBytes();
+    }
+
+    public Bitmap getImage(String key){
+        String path = getString(key);
+        if (path !=null) {
+            try {
+                return BitmapFactory.decodeFile(path);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
 
     public static final class Editor {
 
@@ -365,6 +492,37 @@ public class ConcealPrefRepository {
             return this;
         }
 
+        public Editor putByte(String key,byte[] bytes){
+            mEditor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(new String(bytes)));
+            return this;
+        }
+
+        public Editor putImage(String key, Bitmap bitmap){
+            File imageFile = new File(FileUtils.getImageDirectory(mFolderName),"images_"+System.currentTimeMillis()+".png");
+            if(FileUtils.saveBitmap(imageFile, bitmap)){
+                mEditor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(imageFile.getAbsolutePath()));
+            }
+
+            return this;
+        }
+
+        public Editor putFile(String key,File file,boolean deleteOldFile){
+            try {
+                if (file.exists()) {
+                    File enc = concealCrypto.obscureFile(file,deleteOldFile);
+                    if (enc == null)
+                        throw new Exception("File can't encrypt");
+
+                    mEditor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(enc.getAbsolutePath()));
+                }
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+
+            return this;
+        }
+
         public Editor remove(String key) {
             mEditor.remove(concealCrypto.hashKey(key));
             return this;
@@ -394,7 +552,8 @@ public class ConcealPrefRepository {
 
         private Context mContext;
         private CryptoConfig mKeyChain = CryptoConfig.KEY_256;
-        private String mPrefname;
+        private String mPrefname = null;
+        private String mFolderName = null;
         private boolean mEnabledCrypto = false;
         private boolean mEnableCryptKey = false;
         private String mEntityPasswordRaw = null;
@@ -429,7 +588,26 @@ public class ConcealPrefRepository {
             return this;
         }
 
+        public PreferencesBuilder setFolderName(String folderName){
+            mFolderName = folderName;
+            return this;
+        }
+
         public ConcealPrefRepository create(){
+
+            if(mFolderName !=null){
+                File file = new File(mFolderName);
+                try {
+                    file.getCanonicalPath();
+                    mFolderName = (mFolderName.startsWith("."))? mFolderName.substring(1):mFolderName;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    throw new RuntimeException("Folder Name is not Valid",e);
+                }
+            }
+            else{
+                mFolderName = DEFAULT_MAIN_FOLDER;
+            }
 
             if (mPrefname!=null){
                 sharedPreferences = mContext.getSharedPreferences(mPrefname, MODE_PRIVATE);
