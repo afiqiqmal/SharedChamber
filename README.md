@@ -37,24 +37,29 @@ ConcealPrefRepository concealPrefRepository = new ConcealPrefRepository.Preferen
 *setFolderName - folder will be hidden. To see, enable show hidden folder in storage
                - data stored here only images and files
                - sharedpreferences are not store here
+               - created folder by default YOURSTORAGE/.conceal_path/images
+
+               - for images - in folder /images
+               - for files - in folder /files
 
 ```
 
 <b>Save data</b>
 
 ```java
-concealPrefRepository.putString("Bellow","Hello");
-concealPrefRepository.putInt("Number",1000000);
-concealPrefRepository.putDouble("Num",100.00);
+concealPrefRepository.putString(KEY,"Hello");
+concealPrefRepository.putInt(KEY,1000000);
+concealPrefRepository.putDouble(KEY,100.00);
+concealPrefRepository.putbyte(KEY,new byte[]);
+concealPrefRepository.putMap(KEY,new Map<String,String>())
 
 //put files like pdf
 File getFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/testing.pdf");
-concealPrefRepository.putFile(getFile);
-concealPrefRepository.putbyte(new byte[]);
-concealPrefRepository.putMap(new Map<String,String>())
+concealPrefRepository.putFile(KEY,getFile,boolean deleteOldFiles);
+//deleteOldFiles - true or false.. true - will delete choosen file and move to new path
 
 //put images
-concealPrefRepository.putImage("images", BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
+concealPrefRepository.putImage(KEY, BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
 
 ...........
 
@@ -152,7 +157,6 @@ concealCrypto.deObscureFile(File file,boolean deleteOldFile);
 //for images coming soon
 
 ```
-
 ## Licence
 open source project that is licensed under the [MIT license](http://opensource.org/licenses/MIT).
 
