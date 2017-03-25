@@ -31,7 +31,12 @@ ConcealPrefRepository concealPrefRepository = new ConcealPrefRepository.Preferen
         .sharedPrefsBackedKeyChain(CryptoConfig.KEY_256)  //CryptoConfig.KEY_256 or CryptoConfig.KEY_128
         .enableCrypto(true,true) //param 1 - enable value encryption , param 2 - enable key encryption
         .createPassword("Android") //default value - BuildConfig.APPLICATION_ID
+        .setFolderName("testing") //create Folder for data stored: default is - "conceal_path"
         .create();
+
+*setFolderName - folder will be hidden. To see, enable show hidden folder in storage
+               - data stored here only images and files
+               - sharedpreferences are not store here
 
 ```
 
@@ -41,6 +46,16 @@ ConcealPrefRepository concealPrefRepository = new ConcealPrefRepository.Preferen
 concealPrefRepository.putString("Bellow","Hello");
 concealPrefRepository.putInt("Number",1000000);
 concealPrefRepository.putDouble("Num",100.00);
+
+//put files like pdf
+File getFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/testing.pdf");
+concealPrefRepository.putFile(getFile);
+concealPrefRepository.putbyte(new byte[]);
+concealPrefRepository.putMap(new Map<String,String>())
+
+//put images
+concealPrefRepository.putImage("images", BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
+
 ...........
 
 ```
@@ -51,10 +66,18 @@ new ConcealPrefRepository.Editor()
                 .putString("Bellow","Hello")
                 .putInt("Number",1000000)
                 .putBoolean("enable",true)
+                .putByte(new byte[])
+                .putFile(getFile)
+                .putImage("images", BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
                 .putListString("array",STRING_LIST)
                 .putListFloat("array_f",FLOAT_LIST)
                 .........
                 .apply(); //.commit();
+```
+
+<b>Get total data</b>
+```java
+System.out.println(concealPrefRepository.getPrefsSize());
 ```
 
 <b>Fetching data</b>
@@ -66,6 +89,10 @@ concealPrefRepository.getInt(KEY);
 concealPrefRepository.getInt(KEY,DEFAULT_VALUE);
 concealPrefRepository.getDouble(KEY);
 concealPrefRepository.getDouble(KEY,DEFAULT_VALUE);
+
+concealPrefRepository.getImage(KEY);   //return String path
+concealPrefRepository.getFile(KEY);    //return File
+* if you use getString(), it only will return stored path only
 ........
 ```
 
@@ -75,7 +102,21 @@ concealPrefRepository.getDouble(KEY,DEFAULT_VALUE);
 concealPrefRepository.destroyCrypto(); //clear key
 concealPrefRepository.destroySharedPreferences(); // clear all
 
+concealPrefRepository.remove(KEY1,KEY2,KEY3,KEY4) //String... keys
+concealPrefRepository.removeFile(KEY); //delete assosiate file (images and files)
+
 ```
+
+<b>Check if key exists</b>
+```java
+concealPrefRepository.contains(KEY);
+```
+
+<b>Get SharedPreferences</b>
+```java
+concealPrefRepository.getPreferences();
+```
+
 
 <b>Extra Usage for Conceal Encryption and Decryption</b>
 
@@ -103,6 +144,13 @@ String test = "Hello World";
 String cipher =  concealCrypto.obscure(test); //encrypt
 String dec = concealCrypto.deObscure(cipher); //decrypt
 Log.d("Display", cipher+" ===== "+dec);  
+
+//special case for files
+concealCrypto.obscureFile(File file,boolean deleteOldFile);
+concealCrypto.deObscureFile(File file,boolean deleteOldFile);
+
+//for images coming soon
+
 ```
 
 ## Licence
