@@ -30,8 +30,8 @@ public class MainActivity extends AppCompatActivity {
                 .setFolderName("testing")
                 .create();
 
-////        File getFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/.files/here.pdf");
-//
+//        File getFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/.files/here.pdf");
+
 //        new ConcealPrefRepository.Editor()
 //                .putString("Bellow","Hello")
 //                .putInt("Number",1000000)
@@ -39,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
 //                .putImage("images", BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
 ////                .putFile("filing",getFile,true)
 //                .apply();
+
+        concealPrefRepository.getImage("images");
 //
 //        Log.d("DisplayPref",concealPrefRepository.getString("Bellow"));
 //        Log.d("DisplayPref",String.valueOf(concealPrefRepository.getInt("Number")));
@@ -46,8 +48,8 @@ public class MainActivity extends AppCompatActivity {
 //        Log.d("DisplayPref",concealPrefRepository.getString("filing"));
 
 //        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/.testing/files/conceal_enc_here.pdf");
-        File file = concealPrefRepository.getFile("filing",true);
-        Log.d("TAG",file.getAbsolutePath());
+//        File file = concealPrefRepository.getFile("filing",true);
+//        Log.d("TAG",file.getAbsolutePath());
 
 //        String test = "My Name Hafiq";
 //        String test2 = "Live in Semenyih";

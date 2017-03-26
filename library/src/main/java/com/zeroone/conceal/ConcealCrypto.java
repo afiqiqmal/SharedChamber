@@ -1,6 +1,8 @@
 package com.zeroone.conceal;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Base64;
 import android.util.Log;
 
@@ -28,6 +30,7 @@ import java.security.NoSuchAlgorithmException;
 
 import static com.zeroone.conceal.helper.Constant.DEFAULT_DIRECTORY;
 import static com.zeroone.conceal.helper.Constant.DEFAULT_FILES_FOLDER;
+import static com.zeroone.conceal.helper.Constant.DEFAULT_IMAGE_FOLDER;
 import static com.zeroone.conceal.helper.Constant.DEFAULT_MAIN_FOLDER;
 import static com.zeroone.conceal.helper.Constant.DEFAULT_PREFIX_FILENAME;
 
@@ -88,6 +91,10 @@ public class ConcealCrypto {
         return makeDirectory()+DEFAULT_FILES_FOLDER;
     }
 
+    private String makeImagesDirectory(){
+        return makeDirectory()+DEFAULT_IMAGE_FOLDER;
+    }
+
     public void clearCrypto(){
         if (crypto.isAvailable()){
             keyChain.destroyKeys();
@@ -129,6 +136,8 @@ public class ConcealCrypto {
     public File obscureFile(File file,boolean deleteOldFile){
         if (enableCrypto) {
             try {
+                boolean isImage = FileUtils.isFileForImage(file);
+
                 File mEncryptedFile = new File(makeDirectory()+DEFAULT_PREFIX_FILENAME+file.getName());
                 OutputStream fileStream = new BufferedOutputStream(new FileOutputStream(mEncryptedFile));
                 OutputStream outputStream = crypto.getCipherOutputStream(fileStream, mEntityPassword);
@@ -145,7 +154,7 @@ public class ConcealCrypto {
                 if (deleteOldFile)
                     file.delete();
 
-                File pathDir = new File(makeFileDirectory());
+                File pathDir = new File(isImage?makeImagesDirectory():makeFileDirectory());
                 return FileUtils.moveFile(mEncryptedFile,pathDir);
 
             } catch (KeyChainException | CryptoInitializationException | IOException e) {
@@ -189,12 +198,14 @@ public class ConcealCrypto {
         }
     }
 
-
     //decrypt file
     public File deObscureFile(File file,boolean deleteOldFile){
         if (enableCrypto) {
             try {
                 if (file.getName().contains(DEFAULT_PREFIX_FILENAME)) {
+
+                    boolean isImage = FileUtils.isFileForImage(file);
+
                     File mDecryptedFile = new File(makeDirectory() + file.getName().replace(DEFAULT_PREFIX_FILENAME,""));
 
                     InputStream inputStream = crypto.getCipherInputStream(new FileInputStream(file), mEntityPassword);
@@ -216,7 +227,7 @@ public class ConcealCrypto {
                     if (deleteOldFile)
                         file.delete();
 
-                    File pathDir = new File(makeFileDirectory());
+                    File pathDir = new File(isImage?makeImagesDirectory():makeFileDirectory());
                     return FileUtils.moveFile(mDecryptedFile, pathDir);
                 }
 

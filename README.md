@@ -59,6 +59,8 @@ concealPrefRepository.putDouble(KEY,100.00);
 concealPrefRepository.putbyte(KEY,new byte[]);
 concealPrefRepository.putMap(KEY,new Map<String,String>())
 
+// Files and Images will be encrypted
+// prefix of this encrypted images and files start with "conceal_enc_";
 //put files like pdf
 File getFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/testing.pdf");
 concealPrefRepository.putFile(KEY,getFile,boolean deleteOldFiles);
@@ -156,12 +158,10 @@ String cipher =  concealCrypto.obscure(test); //encrypt
 String dec = concealCrypto.deObscure(cipher); //decrypt
 Log.d("Display", cipher+" ===== "+dec);  
 
-//special case for files
+//special case for files and images
 concealCrypto.obscureFile(File file,boolean deleteOldFile);
 concealCrypto.deObscureFile(File file,boolean deleteOldFile);
-
-//for images coming soon
-
+// 1-parameter is original location of file..it will move to other location set as in initialization
 
 ```
 
