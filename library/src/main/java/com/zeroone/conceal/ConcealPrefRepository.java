@@ -553,12 +553,11 @@ public class ConcealPrefRepository {
 
         public Editor putFile(String key,File file,boolean deleteOldFile){
             try {
-                if (file.exists()) {
+                if (file.exists() && !FileUtils.isFileForImage(file)) {
                     File enc = concealCrypto.obscureFile(file,deleteOldFile);
-                    if (enc == null)
-                        throw new Exception("File can't encrypt");
-
-                    mEditor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(enc.getAbsolutePath()));
+                    if (enc != null) {
+                        mEditor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(enc.getAbsolutePath())).apply();
+                    }
                 }
             }
             catch (Exception e){
@@ -567,7 +566,6 @@ public class ConcealPrefRepository {
 
             return this;
         }
-
         public Editor remove(String key) {
             mEditor.remove(concealCrypto.hashKey(key));
             return this;

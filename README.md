@@ -61,10 +61,9 @@ concealPrefRepository.putMap(KEY,new Map<String,String>())
 
 // Files and Images will be encrypted
 // prefix of this encrypted images and files start with "conceal_enc_";
-//put files like pdf
 File getFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/testing.pdf");
 concealPrefRepository.putFile(KEY,getFile,boolean deleteOldFiles);
-//deleteOldFiles - true or false.. true - will delete choosen file and move to new path
+// deleteOldFiles - true or false.. true - will delete choosen file and move to new path
 
 //put images
 concealPrefRepository.putImage(KEY, BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
@@ -76,14 +75,15 @@ concealPrefRepository.putImage(KEY, File file);
 OR
 ```java
 new ConcealPrefRepository.Editor()
-                .putString("Bellow","Hello")
-                .putInt("Number",1000000)
-                .putBoolean("enable",true)
-                .putByte(new byte[])
-                .putFile(getFile)
-                .putImage("images", BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
-                .putListString("array",STRING_LIST)
-                .putListFloat("array_f",FLOAT_LIST)
+                .putString(KEY,"Hello")
+                .putInt(KEY,1000000)
+                .putBoolean(KEY,true)
+                .putByte(KEY,new byte[])
+                .putFile(KEY,getFile,boolean deleteOldFiles);
+                .putImage(KEY, BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
+                .putImage(KEY, imageFile)
+                .putListString(KEY,STRING_LIST)
+                .putListFloat(KEY,FLOAT_LIST)
                 .........
                 .apply(); //.commit();
 ```
@@ -113,9 +113,10 @@ concealPrefRepository.getInt(KEY,DEFAULT_VALUE);
 concealPrefRepository.getDouble(KEY);
 concealPrefRepository.getDouble(KEY,DEFAULT_VALUE);
 
-concealPrefRepository.getImage(KEY);   //return String path
-concealPrefRepository.getFile(KEY);    //return File
-* if you use getString(), it only will return stored path only
+Bitmap bitmap = concealPrefRepository.getImage(KEY);   //return String path
+File enc_file = concealPrefRepository.getFile(KEY,true);    //return File
+// this getImage and getFile will totally decrypted selected file/image. You need to encrypt it back.
+// just call concealPrefRepository.putImage(KEY,bitmap); or concealPrefRepository.putFile(KEY,enc_file,true);
 ........
 ```
 

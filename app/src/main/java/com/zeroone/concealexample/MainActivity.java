@@ -12,70 +12,53 @@ import android.util.Log;
 
 import com.facebook.crypto.CryptoConfig;
 import com.zeroone.conceal.ConcealPrefRepository;
+import com.zeroone.conceal.helper.CryptoFile;
 
 import java.io.File;
+import java.util.List;
+import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
+
+    String NAME_KEY = "user_name";
+    String AGE_KEY = "user_age";
+    String EMAIL_KEY = "user_email";
+    String IMAGE_KEY = "user_image";
+    String FILE_KEY = "user_file";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        File getFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/.files/here.pdf");
 
-        ConcealPrefRepository concealPrefRepository = new ConcealPrefRepository.PreferencesBuilder(this)
-                .useDefaultPrefStorage()
-                .sharedPrefsBackedKeyChain(CryptoConfig.KEY_256)
-                .enableCrypto(true,true)
-                .createPassword("Android")
-                .setFolderName("testing")
-                .create();
+        new ConcealPrefRepository.Editor()
+                .putString(NAME_KEY,"Hafiq Iqmal")
+                .putInt(AGE_KEY,24)
+                .putString(EMAIL_KEY,"hafiqiqmal93@gmail.com")
+//                .putImage(IMAGE_KEY,BitmapFactory.decodeResource(this.getResources(), R.mipmap.ic_launcher))
+//                .putFile(FILE_KEY,getFile,true)
+                .apply();
 
-//        File getFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/.files/here.pdf");
 
-//        new ConcealPrefRepository.Editor()
-//                .putString("Bellow","Hello")
-//                .putInt("Number",1000000)
-//                .putBoolean("enable",true)
-//                .putImage("images", BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
-////                .putFile("filing",getFile,true)
-//                .apply();
+        Map<String,String> map =concealPrefRepository.getAllSharedPrefData();
+        for(Map.Entry<String,?> entry : map.entrySet()){
+            try {
+                Log.d("TAG",entry.getKey()+" :: "+entry.getValue().toString());
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+        }
 
-        concealPrefRepository.getImage("images");
-//
-//        Log.d("DisplayPref",concealPrefRepository.getString("Bellow"));
-//        Log.d("DisplayPref",String.valueOf(concealPrefRepository.getInt("Number")));
-//        Log.d("DisplayPref",concealPrefRepository.getString("images"));
-//        Log.d("DisplayPref",concealPrefRepository.getString("filing"));
+        List<CryptoFile> cryptoFileList = concealPrefRepository.getAllConcealEncryptedFiles();
+        for (CryptoFile cryptoFile :cryptoFileList){
+            Log.d("TAG",cryptoFile.getFileName());
+        }
 
-//        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/.testing/files/conceal_enc_here.pdf");
-//        File file = concealPrefRepository.getFile("filing",true);
-//        Log.d("TAG",file.getAbsolutePath());
 
-//        String test = "My Name Hafiq";
-//        String test2 = "Live in Semenyih";
-//
-//        ConcealCrypto concealCrypto = new ConcealCrypto(this,CryptoConfig.KEY_256);
-//        concealCrypto.setEnableCrypto(true);
-//        concealCrypto.setEntityPassword("Android");
-//        concealCrypto.setEntityPassword(Entity.create("Android"));
-//
-//        String cipher =  concealCrypto.obscure(test);
-//        String cipher2 =  concealCrypto.obscure(test2);
-//
-//        Log.d("DisplayCC", "Name: "+concealCrypto.obscure(test)+" ===== "+concealCrypto.deObscure(cipher));
-//        Log.d("DisplayCC", "Live: "+concealCrypto.obscure(test2)+" ===== "+concealCrypto.deObscure(cipher2));
-//
-//
-//        ConcealCrypto concealCrypto1 = new ConcealCrypto.CryptoBuilder(this)
-//                .setEnableCrypto(true)
-//                .setKeyChain(CryptoConfig.KEY_256)
-//                .createPassword("Mac OSX")
-//                .create();
-//
-//        cipher =  concealCrypto1.obscure(test);
-//        cipher2 =  concealCrypto1.obscure(test2);
-//
-//        Log.d("DisplayCC2", "Name: "+concealCrypto1.obscure(test)+" ===== "+concealCrypto1.deObscure(cipher));
-//        Log.d("DisplayCC2", "Live: "+concealCrypto1.obscure(test2)+" ===== "+concealCrypto1.deObscure(cipher2));
+        concealPrefRepository.getImage(IMAGE_KEY);
+        concealPrefRepository.getFile(FILE_KEY,true);
     }
 }
