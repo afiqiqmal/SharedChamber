@@ -1,12 +1,16 @@
 package com.zeroone.conceal;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresPermission;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
 import com.facebook.crypto.CryptoConfig;
@@ -200,6 +204,7 @@ public class ConcealPrefRepository {
         editor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(new String(bytes))).apply();
     }
 
+    @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     public String putImage(String key, Bitmap bitmap){
         File imageFile = new File(getImageDirectory(mFolderName),"images_"+System.currentTimeMillis()+".png");
         if(FileUtils.saveBitmap(imageFile, bitmap)){
@@ -210,6 +215,7 @@ public class ConcealPrefRepository {
         return null;
     }
 
+    @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     public String putImage(String key, File file){
         if (FileUtils.isFileForImage(file)) {
             File imageFile = FileUtils.moveFile(file,getImageDirectory(mFolderName));
@@ -222,6 +228,7 @@ public class ConcealPrefRepository {
         return null;
     }
 
+    @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     public File putFile(String key,File file,boolean deleteOldFile){
         try {
             if (file.exists() && !FileUtils.isFileForImage(file)) {
@@ -422,6 +429,7 @@ public class ConcealPrefRepository {
         return getString(key).getBytes();
     }
 
+    @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     public Bitmap getImage(String key){
         String path = getString(key);
         if (path !=null) {
@@ -435,6 +443,7 @@ public class ConcealPrefRepository {
         return null;
     }
 
+    @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     public File getFile(String key,boolean deleteOldFile){
         try {
             String path = getString(key);
@@ -533,6 +542,7 @@ public class ConcealPrefRepository {
             return this;
         }
 
+        @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
         public Editor putImage(String key, Bitmap bitmap){
             File imageFile = new File(getImageDirectory(mFolderName),"images_"+System.currentTimeMillis()+".png");
             if(FileUtils.saveBitmap(imageFile, bitmap)){
@@ -541,6 +551,7 @@ public class ConcealPrefRepository {
             return this;
         }
 
+        @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
         public Editor putImage(String key, File file){
             if (FileUtils.isFileForImage(file)) {
                 File imageFile = FileUtils.moveFile(file,getImageDirectory(mFolderName));
@@ -618,9 +629,9 @@ public class ConcealPrefRepository {
             return this;
         }
 
-        public PreferencesBuilder enableCrypto(boolean enabled,boolean cryptKey){
-            mEnabledCrypto = enabled;
-            mEnableCryptKey = cryptKey;
+        public PreferencesBuilder enableCrypto(boolean encryptKey,boolean encryptValue){
+            mEnabledCrypto = encryptValue;
+            mEnableCryptKey = encryptKey;
             return this;
         }
 

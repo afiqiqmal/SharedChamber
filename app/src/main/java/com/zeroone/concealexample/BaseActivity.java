@@ -22,7 +22,7 @@ public class BaseActivity extends AppCompatActivity {
         concealPrefRepository = new ConcealPrefRepository.PreferencesBuilder(this)
                 .useDefaultPrefStorage()
                 .sharedPrefsBackedKeyChain(CryptoConfig.KEY_256)
-                .enableCrypto(true,true)
+                .enableCrypto(false,true)
                 .createPassword("Android")
                 .setFolderName("testing")
                 .create();

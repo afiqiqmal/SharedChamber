@@ -37,8 +37,8 @@ public class MainActivity extends BaseActivity {
                 .putString(NAME_KEY,"Hafiq Iqmal")
                 .putInt(AGE_KEY,24)
                 .putString(EMAIL_KEY,"hafiqiqmal93@gmail.com")
-//                .putImage(IMAGE_KEY,BitmapFactory.decodeResource(this.getResources(), R.mipmap.ic_launcher))
-//                .putFile(FILE_KEY,getFile,true)
+                .putImage(IMAGE_KEY,BitmapFactory.decodeResource(this.getResources(), R.mipmap.ic_launcher))
+                .putFile(FILE_KEY,getFile,true)
                 .apply();
 
 
