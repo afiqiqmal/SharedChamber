@@ -190,5 +190,5 @@ FileUtils.makeFile(File directory,String filename);
 ```
 
 ## Licence
-open source project that is licensed under the [MIT license](http://opensource.org/licenses/MIT).
+open source project that is licensed under the [MIT license](http://opensource.org/licenses/MIT). Please refer to the license file for more information.
 
