@@ -189,6 +189,11 @@ FileUtils.getExtension(String/File);
 FileUtils.makeFile(File directory,String filename);
 ```
 
+
+## Credit
+Facebook Conceal - Conceal provides easy Android APIs for performing fast encryption and authentication of data. [Conceal](http://facebook.github.io/conceal/)
+Documentation - [Here](http://facebook.github.io/conceal/)
+
 ## Licence
 open source project that is licensed under the [MIT license](http://opensource.org/licenses/MIT). Please refer to the license file for more information.
 
