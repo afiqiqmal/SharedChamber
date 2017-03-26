@@ -93,6 +93,16 @@ new ConcealPrefRepository.Editor()
 System.out.println(concealPrefRepository.getPrefsSize());
 ```
 
+<b>Get all sharedpreferences data</b>
+```java
+Map<String,String> getAll = concealPrefRepository.getAllSharedPrefData();
+```
+
+<b>Get all encrypted Files inside created folder</b>
+```java
+List<CryptoFile> getFiles = concealPrefRepository.getAllConcealEncryptedFiles();
+```
+
 <b>Fetching data</b>
 
 ```java

@@ -24,17 +24,6 @@ import static com.zeroone.conceal.helper.Constant.DEFAULT_IMAGE_FOLDER;
 
 public class FileUtils {
 
-    public static File getImageDirectory(String mFolderName){
-        File file = new File(DEFAULT_DIRECTORY+mFolderName+"/"+DEFAULT_IMAGE_FOLDER);
-        Log.d("Conceal",file.getAbsolutePath());
-        if (file.mkdirs())
-            return file;
-        if (file.exists())
-            return file;
-
-        return null;
-    }
-
     public static File makeFile(File dir,String filename){
         File file = new File(dir,filename);
         try {

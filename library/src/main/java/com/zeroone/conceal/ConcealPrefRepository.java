@@ -6,27 +6,27 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.facebook.crypto.CryptoConfig;
-import com.facebook.crypto.streams.FixedSizeByteArrayOutputStream;
-import com.zeroone.conceal.helper.Constant;
 import com.zeroone.conceal.helper.ConverterListUtils;
+import com.zeroone.conceal.helper.CryptoFile;
 import com.zeroone.conceal.helper.FileUtils;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.zeroone.conceal.helper.Constant.DEFAULT_DIRECTORY;
+import static com.zeroone.conceal.helper.Constant.DEFAULT_IMAGE_FOLDER;
 import static com.zeroone.conceal.helper.Constant.DEFAULT_MAIN_FOLDER;
+import static com.zeroone.conceal.helper.Constant.DEFAULT_PREFIX_FILENAME;
 
 /**
  * @author : hafiq on 23/03/2017.
@@ -108,6 +108,27 @@ public class ConcealPrefRepository {
         return false;
     }
 
+    /* get all encrypted file in created folder */
+    public List<CryptoFile> getAllConcealEncryptedFiles(){
+        return getListFiles(getDirectory());
+    }
+
+    /* get list of key and values inside sharedpreferences */
+    public Map<String,String> getAllSharedPrefData(){
+        Map<String,?> keys = getPreferences().getAll();
+        Map<String,String> data = new HashMap<>();
+
+        for(Map.Entry<String,?> entry : keys.entrySet()){
+            try {
+                data.put(entry.getKey(), entry.getValue().toString());
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+
+        return data;
+    }
 
 
     /* Get Preferences */
@@ -180,7 +201,7 @@ public class ConcealPrefRepository {
     }
 
     public String putImage(String key, Bitmap bitmap){
-        File imageFile = new File(FileUtils.getImageDirectory(mFolderName),"images_"+System.currentTimeMillis()+".png");
+        File imageFile = new File(getImageDirectory(mFolderName),"images_"+System.currentTimeMillis()+".png");
         if(FileUtils.saveBitmap(imageFile, bitmap)){
             concealCrypto.obscureFile(imageFile,true);
             editor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(imageFile.getAbsolutePath())).apply();
@@ -191,7 +212,7 @@ public class ConcealPrefRepository {
 
     public String putImage(String key, File file){
         if (FileUtils.isFileForImage(file)) {
-            File imageFile = FileUtils.moveFile(file,FileUtils.getImageDirectory(mFolderName));
+            File imageFile = FileUtils.moveFile(file,getImageDirectory(mFolderName));
             if (imageFile!=null && imageFile.exists()) {
                 concealCrypto.obscureFile(imageFile,true);
                 editor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(imageFile.getAbsolutePath())).apply();
@@ -512,7 +533,7 @@ public class ConcealPrefRepository {
         }
 
         public Editor putImage(String key, Bitmap bitmap){
-            File imageFile = new File(FileUtils.getImageDirectory(mFolderName),"images_"+System.currentTimeMillis()+".png");
+            File imageFile = new File(getImageDirectory(mFolderName),"images_"+System.currentTimeMillis()+".png");
             if(FileUtils.saveBitmap(imageFile, bitmap)){
                 mEditor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(concealCrypto.obscureFile(imageFile,true).getAbsolutePath())).apply();
             }
@@ -521,7 +542,7 @@ public class ConcealPrefRepository {
 
         public Editor putImage(String key, File file){
             if (FileUtils.isFileForImage(file)) {
-                File imageFile = FileUtils.moveFile(file,FileUtils.getImageDirectory(mFolderName));
+                File imageFile = FileUtils.moveFile(file,getImageDirectory(mFolderName));
                 if (imageFile!=null && imageFile.exists()) {
                     concealCrypto.obscureFile(imageFile,true);
                     mEditor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(imageFile.getAbsolutePath())).apply();
@@ -650,17 +671,44 @@ public class ConcealPrefRepository {
     }
 
 
-
-    private static Bitmap encryptBitmap(Bitmap bitmap){
-        byte[] bytes = FileUtils.convertBitmapToArray(bitmap);
-        bytes = concealCrypto.obscure(bytes);
-        return FileUtils.convertBytesToBitmap(bytes);
+    private List<CryptoFile> getListFiles(File parentDir) {
+        List<CryptoFile> inFiles = new ArrayList<>();
+        File[] files = parentDir.listFiles();
+        for (File file : files) {
+            if (file.isDirectory()) {
+                inFiles.addAll(getListFiles(file));
+            } else {
+                if(file.getName().startsWith(DEFAULT_PREFIX_FILENAME)){
+                    CryptoFile cryptoFile = new CryptoFile();
+                    cryptoFile.setFileName(file.getName());
+                    cryptoFile.setPath(file.getAbsolutePath());
+                    cryptoFile.setType(file.getParent());
+                    inFiles.add(cryptoFile);
+                }
+            }
+        }
+        return inFiles;
     }
 
-    private static Bitmap decryptBitmap(Bitmap bitmap){
-        byte[] bytes = FileUtils.convertBitmapToArray(bitmap);
-        bytes = concealCrypto.deObscure(bytes);
-        return FileUtils.convertBytesToBitmap(bytes);
+    @Nullable
+    private static File getDirectory(){
+        File file = new File(DEFAULT_DIRECTORY+mFolderName+"/"+DEFAULT_IMAGE_FOLDER);
+        if (file.exists())
+            return file;
+
+        return null;
+    }
+
+    @Nullable
+    private static File getImageDirectory(String mFolderName){
+        File file = new File(DEFAULT_DIRECTORY+mFolderName+"/"+DEFAULT_IMAGE_FOLDER);
+        Log.d("Conceal",file.getAbsolutePath());
+        if (file.mkdirs())
+            return file;
+        if (file.exists())
+            return file;
+
+        return null;
     }
 
 }
