@@ -685,20 +685,26 @@ public class ConcealPrefRepository {
 
     private List<CryptoFile> getListFiles(File parentDir) {
         List<CryptoFile> inFiles = new ArrayList<>();
-        File[] files = parentDir.listFiles();
-        for (File file : files) {
-            if (file.isDirectory()) {
-                inFiles.addAll(getListFiles(file));
-            } else {
-                if(file.getName().startsWith(DEFAULT_PREFIX_FILENAME)){
-                    CryptoFile cryptoFile = new CryptoFile();
-                    cryptoFile.setFileName(file.getName());
-                    cryptoFile.setPath(file.getAbsolutePath());
-                    cryptoFile.setType(file.getParent());
-                    inFiles.add(cryptoFile);
+        try {
+            File[] files = parentDir.listFiles();
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    inFiles.addAll(getListFiles(file));
+                } else {
+                    if (file.getName().startsWith(DEFAULT_PREFIX_FILENAME)) {
+                        CryptoFile cryptoFile = new CryptoFile();
+                        cryptoFile.setFileName(file.getName());
+                        cryptoFile.setPath(file.getAbsolutePath());
+                        cryptoFile.setType(file.getParent());
+                        inFiles.add(cryptoFile);
+                    }
                 }
             }
         }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
         return inFiles;
     }
 
@@ -714,7 +720,6 @@ public class ConcealPrefRepository {
     @Nullable
     private static File getImageDirectory(String mFolderName){
         File file = new File(DEFAULT_DIRECTORY+mFolderName+"/"+DEFAULT_IMAGE_FOLDER);
-        Log.d("Conceal",file.getAbsolutePath());
         if (file.mkdirs())
             return file;
         if (file.exists())
