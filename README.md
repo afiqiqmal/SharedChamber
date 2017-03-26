@@ -1,7 +1,7 @@
 # ConcealSharedPreference-Android
-Secure Android SharedPreferences Using Conceal Crypto by Facebook
+Secure Android SharedPreferences Using Conceal Crypto by Facebook<br><br>
 [![](https://jitpack.io/v/afiqiqmal/ConcealSharedPreference-Android.svg)](https://jitpack.io/#afiqiqmal/ConcealSharedPreference-Android)
-
+[![](https://img.shields.io/badge/Conceal-1.1.3-brightgreen.svg)]()
 
 ## Installation
 
@@ -190,10 +190,10 @@ FileUtils.makeFile(File directory,String filename);
 ```
 
 
-## Credit
-Facebook Conceal - Conceal provides easy Android APIs for performing fast encryption and authentication of data. [Conceal](http://facebook.github.io/conceal/)
+## Credit<br>
+[Facebook Conceal](http://facebook.github.io/conceal/) - Conceal provides easy Android APIs for performing fast encryption and authentication of data.<br>
 Documentation - [Here](http://facebook.github.io/conceal/)
 
-## Licence
+## Licence<br>
 open source project that is licensed under the [MIT license](http://opensource.org/licenses/MIT). Please refer to the license file for more information.
 
