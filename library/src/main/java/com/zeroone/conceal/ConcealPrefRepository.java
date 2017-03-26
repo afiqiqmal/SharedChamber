@@ -226,10 +226,8 @@ public class ConcealPrefRepository {
         try {
             if (file.exists() && !FileUtils.isFileForImage(file)) {
                 File enc = concealCrypto.obscureFile(file,deleteOldFile);
-                if (enc != null) {
-                    editor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(enc.getAbsolutePath())).apply();
-                    return enc;
-                }
+                editor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(enc.getAbsolutePath())).apply();
+                return enc;
             }
         }
         catch (Exception e){
@@ -555,9 +553,7 @@ public class ConcealPrefRepository {
             try {
                 if (file.exists() && !FileUtils.isFileForImage(file)) {
                     File enc = concealCrypto.obscureFile(file,deleteOldFile);
-                    if (enc != null) {
-                        mEditor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(enc.getAbsolutePath())).apply();
-                    }
+                    mEditor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(enc.getAbsolutePath())).apply();
                 }
             }
             catch (Exception e){
