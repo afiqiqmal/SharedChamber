@@ -80,7 +80,7 @@ public class ConcealPrefRepository {
 
     /* Get Preferences Size */
     public int getPrefsSize(){
-        return sharedPreferences.getAll().size();
+        return getPreferences().getAll().size();
     }
 
 
@@ -456,6 +456,9 @@ public class ConcealPrefRepository {
     }
 
 
+    /***
+     * Editor Builder
+     */
     public static final class Editor {
 
         private SharedPreferences.Editor mEditor;
@@ -587,6 +590,10 @@ public class ConcealPrefRepository {
         }
     }
 
+
+    /***
+     * Preferences builder,  ConcealPrefRepository.PreferencesBuilder
+     */
     public static class PreferencesBuilder{
 
         private Context mContext;

@@ -57,8 +57,6 @@ public class MainActivity extends BaseActivity {
             Log.d("TAG",cryptoFile.getFileName());
         }
 
-
-        concealPrefRepository.getImage(IMAGE_KEY);
-        concealPrefRepository.getFile(FILE_KEY,true);
+        Log.d("TAG",""+concealPrefRepository.getPrefsSize());
     }
 }
