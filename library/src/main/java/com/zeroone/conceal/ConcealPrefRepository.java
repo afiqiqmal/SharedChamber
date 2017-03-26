@@ -533,7 +533,7 @@ public class ConcealPrefRepository {
         public Editor putImage(String key, Bitmap bitmap){
             File imageFile = new File(getImageDirectory(mFolderName),"images_"+System.currentTimeMillis()+".png");
             if(FileUtils.saveBitmap(imageFile, bitmap)){
-                mEditor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(concealCrypto.obscureFile(imageFile,true).getAbsolutePath())).apply();
+                mEditor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(concealCrypto.obscureFile(imageFile,true).getAbsolutePath()));
             }
             return this;
         }
@@ -543,7 +543,7 @@ public class ConcealPrefRepository {
                 File imageFile = FileUtils.moveFile(file,getImageDirectory(mFolderName));
                 if (imageFile!=null && imageFile.exists()) {
                     concealCrypto.obscureFile(imageFile,true);
-                    mEditor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(imageFile.getAbsolutePath())).apply();
+                    mEditor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(imageFile.getAbsolutePath()));
                 }
             }
             return this;
@@ -553,7 +553,7 @@ public class ConcealPrefRepository {
             try {
                 if (file.exists() && !FileUtils.isFileForImage(file)) {
                     File enc = concealCrypto.obscureFile(file,deleteOldFile);
-                    mEditor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(enc.getAbsolutePath())).apply();
+                    mEditor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(enc.getAbsolutePath()));
                 }
             }
             catch (Exception e){
