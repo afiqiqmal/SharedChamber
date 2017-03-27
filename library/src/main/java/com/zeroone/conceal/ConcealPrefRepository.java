@@ -4,15 +4,11 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
-import android.support.v4.app.ActivityCompat;
-import android.util.Log;
-
 import com.facebook.crypto.CryptoConfig;
 import com.zeroone.conceal.helper.ConverterListUtils;
 import com.zeroone.conceal.helper.CryptoFile;

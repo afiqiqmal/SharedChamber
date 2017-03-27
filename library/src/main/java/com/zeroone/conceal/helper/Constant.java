@@ -2,9 +2,6 @@ package com.zeroone.conceal.helper;
 
 import android.os.Environment;
 
-import com.zeroone.conceal.BuildConfig;
-import com.zeroone.conceal.R;
-
 /**
  * @author : hafiq on 25/03/2017.
  */

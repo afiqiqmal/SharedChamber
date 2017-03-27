@@ -2,11 +2,8 @@ package com.zeroone.conceal;
 
 import android.Manifest;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.annotation.RequiresPermission;
 import android.util.Base64;
-import android.util.Log;
 
 import com.facebook.android.crypto.keychain.AndroidConceal;
 import com.facebook.android.crypto.keychain.SharedPrefsBackedKeyChain;

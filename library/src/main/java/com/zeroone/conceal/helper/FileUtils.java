@@ -1,12 +1,9 @@
 package com.zeroone.conceal.helper;
 
-import android.app.Application;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Environment;
 import android.util.Log;
 
-import com.zeroone.conceal.helper.Constant;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -14,9 +11,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
-
-import static com.zeroone.conceal.helper.Constant.DEFAULT_DIRECTORY;
-import static com.zeroone.conceal.helper.Constant.DEFAULT_IMAGE_FOLDER;
 
 /**
  * @author : hafiq on 24/03/2017.
