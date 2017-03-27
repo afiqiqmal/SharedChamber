@@ -1,6 +1,8 @@
-# ConcealSharedPreference-Android
-Secure Android SharedPreferences Using Conceal Crypto by Facebook<br><br>
-[![](https://jitpack.io/v/afiqiqmal/ConcealSharedPreference-Android.svg)](https://jitpack.io/#afiqiqmal/ConcealSharedPreference-Android)
+# ConcealSharedPreference-Android[![](https://jitpack.io/v/afiqiqmal/ConcealSharedPreference-Android.svg)](https://jitpack.io/#afiqiqmal/ConcealSharedPreference-Android)
+<b>Project :</b> Secure Android SharedPreferences Using Conceal Crypto by Facebook<br>
+<b>Description </b>
+<br>
+Conceal provides a set of Java APIs to perform cryptography on Android. It was designed to be able to encrypt large files on disk in a fast and memory efficient manner. Implementation on SharedPreferences of Android would be great data Encryption and Decryption. 
 
 ## Installation
 
