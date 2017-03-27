@@ -117,7 +117,7 @@ public class ConcealPrefRepository {
         return getListFiles(getDirectory());
     }
 
-    /* get list of key and values inside sharedpreferences */
+    /* get list of key and values inside sharedPreferences */
     public Map<String,String> getAllSharedPrefData(){
         Map<String,?> keys = getPreferences().getAll();
         Map<String,String> data = new HashMap<>();
@@ -563,6 +563,7 @@ public class ConcealPrefRepository {
             return this;
         }
 
+        @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
         public Editor putFile(String key,File file,boolean deleteOldFile){
             try {
                 if (file.exists() && !FileUtils.isFileForImage(file)) {

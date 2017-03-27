@@ -1,8 +1,10 @@
 package com.zeroone.conceal;
 
+import android.Manifest;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.annotation.RequiresPermission;
 import android.util.Base64;
 import android.util.Log;
 
@@ -133,6 +135,7 @@ public class ConcealCrypto {
     }
 
     //encrypt files
+    @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     public File obscureFile(File file,boolean deleteOldFile){
         if (enableCrypto) {
             try {
@@ -199,6 +202,7 @@ public class ConcealCrypto {
     }
 
     //decrypt file
+    @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     public File deObscureFile(File file,boolean deleteOldFile){
         if (enableCrypto) {
             try {
