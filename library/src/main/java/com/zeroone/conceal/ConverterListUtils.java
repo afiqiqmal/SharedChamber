@@ -1,4 +1,4 @@
-package com.zeroone.conceal.helper;
+package com.zeroone.conceal;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -12,7 +12,7 @@ import java.util.Map;
  * @author : hafiq on 23/03/2017.
  */
 
-public class ConverterListUtils {
+class ConverterListUtils {
 
     public static List<Integer> toIntArray(String string) {
         String[] strings = string.replace("[", "").replace("]", "").split(", ");

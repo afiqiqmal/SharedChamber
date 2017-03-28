@@ -13,7 +13,6 @@ import com.facebook.crypto.Entity;
 import com.facebook.crypto.exception.CryptoInitializationException;
 import com.facebook.crypto.exception.KeyChainException;
 import com.facebook.crypto.keychain.KeyChain;
-import com.zeroone.conceal.helper.FileUtils;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -37,7 +36,7 @@ import static com.zeroone.conceal.helper.Constant.DEFAULT_PREFIX_FILENAME;
  * @author : hafiq on 23/03/2017.
  */
 
-public class ConcealCrypto {
+class ConcealCrypto {
 
     private Crypto crypto;
     private KeyChain keyChain;
@@ -100,7 +99,12 @@ public class ConcealCrypto {
         }
     }
 
-    //Encrypt
+
+    /***
+     * Encryption of plaintext
+     * @param plain - plaintext of string to be encrypt
+     * @return String
+     */
     public String obscure(String plain){
         if (enableCrypto) {
             try {
@@ -116,6 +120,11 @@ public class ConcealCrypto {
         }
     }
 
+    /***
+     * Encryption of bytes
+     * @param bytes - array bytes to be encrypt
+     * @return bytes
+     */
     public byte[] obscure(byte[] bytes){
         if (enableCrypto) {
             try {

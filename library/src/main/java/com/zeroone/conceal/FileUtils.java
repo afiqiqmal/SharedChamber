@@ -1,4 +1,4 @@
-package com.zeroone.conceal.helper;
+package com.zeroone.conceal;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,7 +16,7 @@ import java.nio.channels.FileChannel;
  * @author : hafiq on 24/03/2017.
  */
 
-public class FileUtils {
+class FileUtils {
 
     public static File makeFile(File dir,String filename){
         File file = new File(dir,filename);

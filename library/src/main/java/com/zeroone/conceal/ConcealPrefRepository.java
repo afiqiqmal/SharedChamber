@@ -10,9 +10,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
 import com.facebook.crypto.CryptoConfig;
-import com.zeroone.conceal.helper.ConverterListUtils;
 import com.zeroone.conceal.helper.CryptoFile;
-import com.zeroone.conceal.helper.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,8 +39,8 @@ public class ConcealPrefRepository {
     private String mEntityPasswordRaw = null;
     private static String mFolderName;
     private static SharedPreferences sharedPreferences;
-    SharedPreferences.Editor editor;
-    static ConcealCrypto concealCrypto;
+    private SharedPreferences.Editor editor;
+    private static ConcealCrypto concealCrypto;
 
     @SuppressLint("CommitPrefEdits")
     ConcealPrefRepository(PreferencesBuilder builder){
@@ -67,7 +65,9 @@ public class ConcealPrefRepository {
                 .create();
     }
 
-    /* Destroy Files*/
+    /**********************
+     * DESTROY FILES
+     **********************/
     public void destroyCrypto(){
         concealCrypto.clearCrypto();
     }
@@ -78,12 +78,17 @@ public class ConcealPrefRepository {
     }
 
 
-    /* Get Preferences Size */
+    /*******************************
+     * GET SHAREDPREFERENCES TOTAL
+     *******************************/
     public int getPrefsSize(){
         return getPreferences().getAll().size();
     }
 
 
+    /*******************************
+     * REMOVING KEYS
+     *******************************/
     /* Remove by Key */
     public void remove(String... keys){
         for (String key:keys){
@@ -107,6 +112,11 @@ public class ConcealPrefRepository {
         }
         return false;
     }
+
+
+    /*******************************
+     * GET SHAREDPREFERENCES VALUES
+     *******************************/
 
     /* get all encrypted file in created folder */
     public List<CryptoFile> getAllConcealEncryptedFiles(){
@@ -241,7 +251,9 @@ public class ConcealPrefRepository {
     }
 
 
-    /* Fetch Data */
+    /************************************
+     * FETCHING DATA FROM SHAREDPREFS
+     ************************************/
     public String getString(String key){
         return concealCrypto.deObscure(sharedPreferences.getString(concealCrypto.hashKey(key),null));
     }
@@ -461,9 +473,9 @@ public class ConcealPrefRepository {
     }
 
 
-    /***
-     * Editor Builder
-     */
+    /******************************************
+     * SharedPreferences Editor Builder
+     ******************************************/
     public static final class Editor {
 
         private SharedPreferences.Editor mEditor;
@@ -599,9 +611,9 @@ public class ConcealPrefRepository {
     }
 
 
-    /***
+    /************************v***************************************************************
      * Preferences builder,  ConcealPrefRepository.PreferencesBuilder
-     */
+     ****************************************************************************************/
     public static class PreferencesBuilder{
 
         private Context mContext;
@@ -679,7 +691,11 @@ public class ConcealPrefRepository {
         new RuntimeException(message,throwable).printStackTrace();
     }
 
-
+    /***
+     * get List of encrypted file
+     * @param parentDir - root directory
+     * @return File
+     */
     private List<CryptoFile> getListFiles(File parentDir) {
         List<CryptoFile> inFiles = new ArrayList<>();
         try {
@@ -705,6 +721,11 @@ public class ConcealPrefRepository {
         return inFiles;
     }
 
+
+    /***
+     * get default directory
+     * @return File
+     */
     @Nullable
     private static File getDirectory(){
         File file = new File(DEFAULT_DIRECTORY+mFolderName+"/"+DEFAULT_IMAGE_FOLDER);
@@ -714,6 +735,10 @@ public class ConcealPrefRepository {
         return null;
     }
 
+    /***
+     * get default folder
+     * @return File
+     */
     @Nullable
     private static File getImageDirectory(String mFolderName){
         File file = new File(DEFAULT_DIRECTORY+mFolderName+"/"+DEFAULT_IMAGE_FOLDER);

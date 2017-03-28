@@ -181,31 +181,6 @@ concealCrypto.deObscureFile(File file,boolean deleteOldFile);
 
 ```
 
-
-
-
-<b>EXTRA USAGE IF WANT</b>
-```java
-//ConverterListUtils.java
-ConverterListUtils.toIntArray(String) // convert string to List<Integer>
-ConverterListUtils.toBooleanArray(String) // convert string to List<Boolean>
-ConverterListUtils.toLongArray(String) // convert string to List<Long>
-ConverterListUtils.toDoubleArray(String) // convert string to List<Double>
-ConverterListUtils.toFloatArray(String) // convert string to List<Float>
-ConverterListUtils.toStringArray(String) // convert string to List<String>
-ConverterListUtils.convertMapToString(Map<String,String> maps) //convert map to string
-ConverterListUtils.convertStringToMap(String) // convert string to map
-
-
-//FileUtils.java
-FileUtils.readContentIntoByteArray(File);
-FileUtils.saveBitmap(File imagesFile,Bitmap bitmap);
-FileUtils.moveFile(File from,File directoryTo); // hello.txt , storage/path/
-FileUtils.getExtension(String/File);
-FileUtils.makeFile(File directory,String filename);
-```
-
-
 ## Credit<br>
 [Facebook Conceal](http://facebook.github.io/conceal/) - Conceal provides easy Android APIs for performing fast encryption and authentication of data.<br>
 Documentation - [Here](http://facebook.github.io/conceal/)
