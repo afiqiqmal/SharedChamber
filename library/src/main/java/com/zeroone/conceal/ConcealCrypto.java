@@ -26,17 +26,17 @@ import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import static com.zeroone.conceal.helper.Constant.DEFAULT_DIRECTORY;
-import static com.zeroone.conceal.helper.Constant.DEFAULT_FILES_FOLDER;
-import static com.zeroone.conceal.helper.Constant.DEFAULT_IMAGE_FOLDER;
-import static com.zeroone.conceal.helper.Constant.DEFAULT_MAIN_FOLDER;
-import static com.zeroone.conceal.helper.Constant.DEFAULT_PREFIX_FILENAME;
+import static com.zeroone.conceal.model.Constant.DEFAULT_DIRECTORY;
+import static com.zeroone.conceal.model.Constant.DEFAULT_FILES_FOLDER;
+import static com.zeroone.conceal.model.Constant.DEFAULT_IMAGE_FOLDER;
+import static com.zeroone.conceal.model.Constant.DEFAULT_MAIN_FOLDER;
+import static com.zeroone.conceal.model.Constant.DEFAULT_PREFIX_FILENAME;
 
 /**
  * @author : hafiq on 23/03/2017.
  */
 
-class ConcealCrypto {
+public class ConcealCrypto {
 
     private Crypto crypto;
     private KeyChain keyChain;
@@ -45,7 +45,7 @@ class ConcealCrypto {
     private boolean enableKeyCrypt=true;
     private String MAIN_DIRECTORY;
 
-    public ConcealCrypto(CryptoBuilder builder){
+    private ConcealCrypto(CryptoBuilder builder){
         crypto = builder.crypto;
         mEntityPassword = builder.mEntityPassword;
         enableCrypto = builder.mEnabledCrypto;

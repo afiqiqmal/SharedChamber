@@ -1,4 +1,4 @@
-package com.zeroone.conceal.helper;
+package com.zeroone.conceal.model;
 
 import android.os.Environment;
 

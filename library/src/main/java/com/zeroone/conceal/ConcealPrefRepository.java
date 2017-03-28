@@ -10,7 +10,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
 import com.facebook.crypto.CryptoConfig;
-import com.zeroone.conceal.helper.CryptoFile;
+import com.zeroone.conceal.model.CryptoFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,10 +21,10 @@ import java.util.List;
 import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
-import static com.zeroone.conceal.helper.Constant.DEFAULT_DIRECTORY;
-import static com.zeroone.conceal.helper.Constant.DEFAULT_IMAGE_FOLDER;
-import static com.zeroone.conceal.helper.Constant.DEFAULT_MAIN_FOLDER;
-import static com.zeroone.conceal.helper.Constant.DEFAULT_PREFIX_FILENAME;
+import static com.zeroone.conceal.model.Constant.DEFAULT_DIRECTORY;
+import static com.zeroone.conceal.model.Constant.DEFAULT_IMAGE_FOLDER;
+import static com.zeroone.conceal.model.Constant.DEFAULT_MAIN_FOLDER;
+import static com.zeroone.conceal.model.Constant.DEFAULT_PREFIX_FILENAME;
 
 /**
  * @author : hafiq on 23/03/2017.

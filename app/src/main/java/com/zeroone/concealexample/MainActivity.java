@@ -8,8 +8,10 @@ import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.facebook.crypto.CryptoConfig;
+import com.zeroone.conceal.ConcealCrypto;
 import com.zeroone.conceal.ConcealPrefRepository;
-import com.zeroone.conceal.helper.CryptoFile;
+import com.zeroone.conceal.model.CryptoFile;
 
 import java.io.File;
 import java.util.List;
@@ -61,5 +63,17 @@ public class MainActivity extends BaseActivity {
         }
 
         Log.d("TAG",""+concealPrefRepository.getPrefsSize());
+
+
+        ConcealCrypto concealCrypto = new ConcealCrypto.CryptoBuilder(this)
+                .setEnableCrypto(true) //default true
+                .setKeyChain(CryptoConfig.KEY_256) // CryptoConfig.KEY_256 or CryptoConfig.KEY_128
+                .createPassword("Mac OSX")
+                .create();
+
+        String test = "Hello World";
+        String cipher =  concealCrypto.obscure(test); //encrypt
+        String dec = concealCrypto.deObscure(cipher); //decrypt
+        Log.d("Display", cipher+" ===== "+dec);
     }
 }

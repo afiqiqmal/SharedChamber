@@ -1,4 +1,4 @@
-package com.zeroone.conceal.helper;
+package com.zeroone.conceal.model;
 
 /**
  * @author : hafiq on 26/03/2017.
