@@ -9,7 +9,7 @@ Conceal provides a set of Java APIs to perform cryptography on Android. It was d
 Gradle
 ```gradle
 dependencies {
-        compile 'com.github.afiqiqmal:ConcealSharedPreference-Android:1.1.2'
+        compile 'com.github.afiqiqmal:ConcealSharedPreference-Android:1.1.3'
 }
 ```
 
@@ -18,7 +18,7 @@ Maven
 <dependency>
 	<groupId>com.github.afiqiqmal</groupId>
 	<artifactId>ConcealSharedPreference-Android</artifactId>
-	<version>1.1.2</version>
+	<version>1.1.3</version>
 </dependency>
 ```
 
@@ -117,6 +117,7 @@ concealPrefRepository.getInt(KEY);
 concealPrefRepository.getInt(KEY,DEFAULT_VALUE);
 concealPrefRepository.getDouble(KEY);
 concealPrefRepository.getDouble(KEY,DEFAULT_VALUE);
+.....
 
 Bitmap bitmap = concealPrefRepository.getImage(KEY);   //return String path
 File enc_file = concealPrefRepository.getFile(KEY,true);    //return File
@@ -132,13 +133,13 @@ concealPrefRepository.destroyCrypto(); //clear key
 concealPrefRepository.destroySharedPreferences(); // clear all
 
 concealPrefRepository.remove(KEY1,KEY2,KEY3,KEY4) //String... keys
-concealPrefRepository.removeFile(KEY); //delete assosiate file (images and files)
+concealPrefRepository.removeFile(KEY); //delete assosiate file (images and files) return boolean
 
 ```
 
 <b>Check if key exists</b>
 ```java
-concealPrefRepository.contains(KEY);
+concealPrefRepository.contains(KEY); // return boolean
 ```
 
 <b>Get SharedPreferences</b>
@@ -178,6 +179,9 @@ Log.d("Display", cipher+" ===== "+dec);
 concealCrypto.obscureFile(File file,boolean deleteOldFile);
 concealCrypto.deObscureFile(File file,boolean deleteOldFile);
 // 1-parameter is original location of file..it will move to other location set as in initialization
+
+//if want to use hashing
+concealCrypto.hashKey(plaintext); // SHA-256
 
 ```
 

@@ -18,33 +18,7 @@ import java.nio.channels.FileChannel;
 
 class FileUtils {
 
-    public static File makeFile(File dir,String filename){
-        File file = new File(dir,filename);
-        try {
-            if (file.exists())
-                file.delete();
-
-            if (file.createNewFile()){
-                return file;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        return null;
-    }
-
-    public static String getExtension(File file){
-        return file.getAbsolutePath().substring(file.getAbsolutePath().lastIndexOf("."));
-    }
-
-    public static String getExtension(String file){
-        return file.substring(file.lastIndexOf("."));
-    }
-
-
-    public static File moveFile(File file, File dir){
+    static File moveFile(File file, File dir){
         if (!dir.exists())
             dir.mkdirs();
 
@@ -71,30 +45,7 @@ class FileUtils {
         return newFile;
     }
 
-    public static byte[] readContentIntoByteArray(File file)
-    {
-        FileInputStream fileInputStream = null;
-        byte[] bFile = new byte[(int) file.length()];
-        try
-        {
-            //convert file into array of bytes
-            fileInputStream = new FileInputStream(file);
-            fileInputStream.read(bFile);
-            fileInputStream.close();
-            for (int i = 0; i < bFile.length; i++)
-            {
-                System.out.print((char) bFile[i]);
-            }
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        return bFile;
-    }
-
-
-    public static boolean saveBitmap(File imageFile, Bitmap bitmap) {
+    static boolean saveBitmap(File imageFile, Bitmap bitmap) {
 
         boolean fileCreated = false;
         boolean bitmapCompressed = false;
@@ -136,17 +87,7 @@ class FileUtils {
         return (fileCreated && bitmapCompressed && streamClosed);
     }
 
-    public static byte[] convertBitmapToArray(Bitmap bitmap){
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        return stream.toByteArray();
-    }
-
-    public static Bitmap convertBytesToBitmap(byte[] bytes){
-        return BitmapFactory.decodeByteArray(bytes , 0, bytes.length);
-    }
-
-    public static boolean isFileForImage(File file) {
+    static boolean isFileForImage(File file) {
         final String[] okFileExtensions =  new String[] {"jpg", "png", "gif","jpeg"};
 
         for (String extension : okFileExtensions) {

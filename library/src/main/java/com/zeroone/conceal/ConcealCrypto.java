@@ -42,14 +42,14 @@ public class ConcealCrypto {
     private KeyChain keyChain;
     private Entity mEntityPassword = Entity.create(BuildConfig.APPLICATION_ID);
     private boolean enableCrypto=true;
-    private boolean enableKeyCrypt=true;
+    private boolean enableHashKey =true;
     private String MAIN_DIRECTORY;
 
     private ConcealCrypto(CryptoBuilder builder){
         crypto = builder.crypto;
         mEntityPassword = builder.mEntityPassword;
         enableCrypto = builder.mEnabledCrypto;
-        enableKeyCrypt = builder.mEnableCryptKey;
+        enableHashKey = builder.mEnableHashKey;
         MAIN_DIRECTORY = builder.mFolderName;
 
         if (MAIN_DIRECTORY == null) MAIN_DIRECTORY = DEFAULT_MAIN_FOLDER;
@@ -72,7 +72,7 @@ public class ConcealCrypto {
     }
 
     public void setEnableKeyCrypto(boolean enableKeyCrypt) {
-        this.enableKeyCrypt = enableKeyCrypt;
+        this.enableHashKey = enableKeyCrypt;
     }
 
     public Crypto getCrypto(){
@@ -109,7 +109,7 @@ public class ConcealCrypto {
         if (enableCrypto) {
             try {
                 byte[] a = crypto.encrypt(plain.getBytes(), mEntityPassword);
-                return Base64.encodeToString(a, Base64.DEFAULT);
+                return Base64Util.Base64String(a);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -129,7 +129,7 @@ public class ConcealCrypto {
         if (enableCrypto) {
             try {
                 byte[] a = crypto.encrypt(bytes, mEntityPassword);
-                return Base64.encode(a, Base64.DEFAULT);
+                return Base64Util.Base64bytes(a);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -181,7 +181,7 @@ public class ConcealCrypto {
         if (enableCrypto) {
             if (cipher == null) return null;
             try {
-                return new String(crypto.decrypt(Base64.decode(cipher, Base64.DEFAULT), mEntityPassword));
+                return new String(crypto.decrypt(Base64Util.decodeBase64(cipher), mEntityPassword));
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -196,7 +196,7 @@ public class ConcealCrypto {
         if (enableCrypto) {
             if (cipher == null) return null;
             try {
-                return crypto.decrypt(Base64.decode(cipher, Base64.DEFAULT), mEntityPassword);
+                return crypto.decrypt(Base64Util.decodeBase64(cipher), mEntityPassword);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -252,9 +252,13 @@ public class ConcealCrypto {
         return file;
     }
 
-    //SHA-256 hash key Message Digest
+    /***
+     * hashing sharedpref key
+     * @param key - key
+     * @return - hash key
+     */
     public String hashKey(String key) {
-        if (enableKeyCrypt) {
+        if (enableHashKey) {
             try {
                 MessageDigest md = MessageDigest.getInstance("SHA-256");
                 byte[] array = md.digest(key.getBytes());
@@ -277,7 +281,7 @@ public class ConcealCrypto {
         private Crypto crypto;
         private CryptoConfig mKeyChain = CryptoConfig.KEY_256;
         private boolean mEnabledCrypto = false;
-        private boolean mEnableCryptKey = false;
+        private boolean mEnableHashKey = false;
         private Entity mEntityPassword = null;
         private String mEntityPasswordRaw = BuildConfig.APPLICATION_ID;
         private String mFolderName;
@@ -297,7 +301,7 @@ public class ConcealCrypto {
         }
 
         public CryptoBuilder setEnableKeyCrypto(boolean enableKeyCrypt) {
-            this.mEnableCryptKey = enableKeyCrypt;
+            this.mEnableHashKey = enableKeyCrypt;
             return this;
         }
 

@@ -258,8 +258,8 @@ public class ConcealPrefRepository {
         return concealCrypto.deObscure(sharedPreferences.getString(concealCrypto.hashKey(key),null));
     }
 
-    public String getString(String key,String def){
-        return concealCrypto.deObscure(sharedPreferences.getString(concealCrypto.hashKey(key),def));
+    public String getString(String key,String defaultValue){
+        return concealCrypto.deObscure(sharedPreferences.getString(concealCrypto.hashKey(key),defaultValue));
     }
 
     public Integer getInt(String key){
@@ -276,12 +276,12 @@ public class ConcealPrefRepository {
         }
     }
 
-    public Integer getInt(String key,int def){
+    public Integer getInt(String key,int defaultValue){
         try {
             String value = getString(key);
 
             if (value == null)
-                return def;
+                return defaultValue;
 
             return Integer.parseInt(value);
         }
@@ -305,18 +305,18 @@ public class ConcealPrefRepository {
         }
     }
 
-    public Float getFloat(String key,float def){
+    public Float getFloat(String key,float defaultValue){
         try {
             String value = getString(key);
 
             if (value == null)
-                return def;
+                return defaultValue;
 
             return Float.parseFloat(value);
         }
         catch (Exception e){
             throwRunTimeException("Unable to convert to Float data type",e);
-            return def;
+            return defaultValue;
         }
     }
 
@@ -334,18 +334,18 @@ public class ConcealPrefRepository {
         }
     }
 
-    public Double getDouble(String key,double def){
+    public Double getDouble(String key,double defaultValue){
         try {
             String value = getString(key);
 
             if (value == null)
-                return def;
+                return defaultValue;
 
             return Double.parseDouble(value);
         }
         catch (Exception e){
             throwRunTimeException("Unable to convert to Double data type",e);
-            return def;
+            return defaultValue;
         }
     }
 
@@ -364,18 +364,18 @@ public class ConcealPrefRepository {
         }
     }
 
-    public Long getLong(String key,long def){
+    public Long getLong(String key,long defaultValue){
         try {
             String value = getString(key);
 
             if (value == null)
-                return def;
+                return defaultValue;
 
             return Long.parseLong(value);
         }
         catch (Exception e){
             throwRunTimeException("Unable to convert to Long data type",e);
-            return def;
+            return defaultValue;
         }
     }
 
@@ -391,11 +391,11 @@ public class ConcealPrefRepository {
         }
     }
 
-    public Boolean getBoolean(String key,boolean def){
+    public Boolean getBoolean(String key,boolean defaultValue){
         try {
             String value = getString(key);
             if (value == null)
-                return def;
+                return defaultValue;
 
             return Boolean.parseBoolean(value);
         }

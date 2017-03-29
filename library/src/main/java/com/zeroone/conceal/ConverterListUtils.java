@@ -14,7 +14,7 @@ import java.util.Map;
 
 class ConverterListUtils {
 
-    public static List<Integer> toIntArray(String string) {
+    static List<Integer> toIntArray(String string) {
         String[] strings = string.replace("[", "").replace("]", "").split(", ");
         Integer result[] = new Integer[strings.length];
         try {
@@ -28,7 +28,7 @@ class ConverterListUtils {
         }
     }
 
-    public static List<Boolean> toBooleanArray(String string) {
+    static List<Boolean> toBooleanArray(String string) {
         String[] strings = string.replace("[", "").replace("]", "").split(", ");
         Boolean result[] = new Boolean[strings.length];
         try {
@@ -42,7 +42,7 @@ class ConverterListUtils {
         }
     }
 
-    public static List<Long> toLongArray(String string) {
+    static List<Long> toLongArray(String string) {
         String[] strings = string.replace("[", "").replace("]", "").split(", ");
         Long result[] = new Long[strings.length];
         try {
@@ -57,7 +57,7 @@ class ConverterListUtils {
 
     }
 
-    public static List<Double> toDoubleArray(String string) {
+    static List<Double> toDoubleArray(String string) {
         String[] strings = string.replace("[", "").replace("]", "").split(", ");
         Double result[] = new Double[strings.length];
         try {
@@ -72,7 +72,7 @@ class ConverterListUtils {
         }
     }
 
-    public static List<Float> toFloatArray(String string) {
+    static List<Float> toFloatArray(String string) {
         String[] strings = string.replace("[", "").replace("]", "").split(", ");
         Float result[] = new Float[strings.length];
         try {
@@ -86,12 +86,12 @@ class ConverterListUtils {
         }
     }
 
-    public static List<String> toStringArray(String string) {
+    static List<String> toStringArray(String string) {
         return Arrays.asList(string.replace("[", "").replace("]", "").split(", "));
     }
 
 
-    public static String convertMapToString(Map<String,String> maps){
+    static String convertMapToString(Map<String,String> maps){
         StringBuilder stringBuilder = new StringBuilder();
 
         for (String key : maps.keySet()) {
@@ -111,7 +111,7 @@ class ConverterListUtils {
         return stringBuilder.toString();
     }
 
-    public static LinkedHashMap<String,String> convertStringToMap(String input){
+    static LinkedHashMap<String,String> convertStringToMap(String input){
         LinkedHashMap<String, String> map = new LinkedHashMap<>();
 
         String[] nameValuePairs = input.split("&");
