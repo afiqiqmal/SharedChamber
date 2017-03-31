@@ -275,6 +275,29 @@ public class ConcealCrypto {
         return key;
     }
 
+
+    /***
+     * encrypt base64 with iteration Conceal
+     */
+
+    public String obscureWithIteration(String plainText,int iteration){
+        String cipher = plainText;
+        for (int x=0;x<iteration;x++){
+            cipher = obscure(cipher);
+        }
+
+        return cipher;
+    }
+
+    public String deObscureWithIteration(String cipher,int iteration){
+        String plainText = cipher;
+        for (int x=0;x<iteration;x++){
+            plainText = deObscure(plainText);
+        }
+
+        return plainText;
+    }
+
     public static class CryptoBuilder{
         Context context;
         private KeyChain makeKeyChain;

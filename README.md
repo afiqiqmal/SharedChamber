@@ -159,7 +159,12 @@ concealCrypto.setmEntityPassword(Entity.create("Android"));
 String test = "Hello World";
 String cipher =  concealCrypto.obscure(test); //encrypt
 String dec = concealCrypto.deObscure(cipher); //decrypt
-Log.d("Display", cipher+" ===== "+dec);          
+Log.d("Display", cipher+" ===== "+dec);
+
+String cipher =  concealCrypto.obscureWithIteration(test,4); //encrypt with 4 times iteration
+String dec = concealCrypto.deObscureWithIteration(cipher,4); //decrypt with 4 times iteration
+Log.d("Display", cipher+" ===== "+dec);    
+
 ```
 
 OR
@@ -174,6 +179,10 @@ String test = "Hello World";
 String cipher =  concealCrypto.obscure(test); //encrypt
 String dec = concealCrypto.deObscure(cipher); //decrypt
 Log.d("Display", cipher+" ===== "+dec);  
+
+String cipher =  concealCrypto.obscureWithIteration(test,4); //encrypt with 4 times iteration
+String dec = concealCrypto.deObscureWithIteration(cipher,4); //decrypt with 4 times iteration
+Log.d("Display", cipher+" ===== "+dec);    
 
 //special case for files and images
 concealCrypto.obscureFile(File file,boolean deleteOldFile);

@@ -4,11 +4,15 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
+import android.support.annotation.StringRes;
+
 import com.facebook.crypto.CryptoConfig;
 import com.zeroone.conceal.model.CryptoFile;
 
@@ -158,6 +162,10 @@ public class ConcealPrefRepository {
         editor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(value)).apply();
     }
 
+    public void putString(String key, @StringRes int value) {
+        editor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(mContext.getResources().getString(value))).apply();
+    }
+
     public void putInt(String key, int value) {
         editor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(Integer.toString(value))).apply();
     }
@@ -218,6 +226,24 @@ public class ConcealPrefRepository {
             editor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(imageFile.getAbsolutePath())).apply();
             return imageFile.getAbsolutePath();
         }
+        return null;
+    }
+
+    @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
+    public String putImage(String key, @DrawableRes int resId){
+        Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), resId);
+        if (bitmap!=null) {
+            File imageFile = new File(getImageDirectory(mFolderName), "images_" + System.currentTimeMillis() + ".png");
+            if (FileUtils.saveBitmap(imageFile, bitmap)) {
+                concealCrypto.obscureFile(imageFile, true);
+                editor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(imageFile.getAbsolutePath())).apply();
+                return imageFile.getAbsolutePath();
+            }
+        }
+        else{
+            throw new IllegalArgumentException(resId+" : Drawable not found!");
+        }
+
         return null;
     }
 
@@ -482,7 +508,11 @@ public class ConcealPrefRepository {
 
         @SuppressLint("CommitPrefEdits")
         public Editor() {
-            mEditor = sharedPreferences.edit();
+            if (sharedPreferences != null)
+                mEditor = sharedPreferences.edit();
+            else {
+                throw new RuntimeException("Need to initialize ConcealPrefRepository.PreferencesBuilder first");
+            }
         }
 
         public Editor putString(String key, String value) {
@@ -547,6 +577,21 @@ public class ConcealPrefRepository {
 
         public Editor putByte(String key,byte[] bytes){
             mEditor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(new String(bytes)));
+            return this;
+        }
+
+        @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
+        public Editor putImage(String key, @DrawableRes int resId, Context context){
+            Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resId);
+            if (bitmap!=null) {
+                File imageFile = new File(getImageDirectory(mFolderName), "images_" + System.currentTimeMillis() + ".png");
+                if (FileUtils.saveBitmap(imageFile, bitmap)) {
+                    mEditor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(concealCrypto.obscureFile(imageFile, true).getAbsolutePath()));
+                }
+            }
+            else{
+                throw new RuntimeException(resId+" : Drawable not found!");
+            }
             return this;
         }
 
