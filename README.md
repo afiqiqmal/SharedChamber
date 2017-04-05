@@ -194,6 +194,33 @@ concealCrypto.hashKey(plaintext); // SHA-256
 
 ```
 
+## Proguard
+```proguard
+-keep,allowobfuscation @interface com.facebook.crypto.proguard.annotations.DoNotStrip
+-keep,allowobfuscation @interface com.facebook.crypto.proguard.annotations.KeepGettersAndSetters
+
+# Do not strip any method/class that is annotated with @DoNotStrip
+-keep @com.facebook.crypto.proguard.annotations.DoNotStrip class *
+-keepclassmembers class * {
+    @com.facebook.crypto.proguard.annotations.DoNotStrip *;
+}
+
+-keepclassmembers @com.facebook.crypto.proguard.annotations.KeepGettersAndSetters class * {
+  void set*(***);
+  *** get*();
+}
+```
+
+Or more simpler proguard
+
+```proguard
+-keep class com.facebook.** { *; }
+-keep interface com.facebook.** { *; }
+-dontwarn com.facebook.**
+```
+
+
+
 ## Credit<br>
 [Facebook Conceal](http://facebook.github.io/conceal/) - Conceal provides easy Android APIs for performing fast encryption and authentication of data.<br>
 Documentation - [Here](http://facebook.github.io/conceal/)
