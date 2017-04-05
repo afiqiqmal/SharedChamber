@@ -8,21 +8,21 @@ import java.io.UnsupportedEncodingException;
  * @author : hafiq on 29/03/2017.
  */
 
-class Base64Util {
+class CipherUtils {
 
-    static String Base64String(byte[] plaintext){
+    static String obscureEncodeSixFourString(byte[] plaintext){
         return Base64.encodeToString(plaintext, Base64.DEFAULT);
     }
 
-    static byte[] Base64bytes(byte[] plaintext){
+    static byte[] obscureEncodeSixFourBytes(byte[] plaintext){
         return Base64.encode(plaintext, Base64.DEFAULT);
     }
 
-    static byte[] decodeBase64(String cipher){
+    static byte[] deObscureSixFour(String cipher){
         return Base64.decode(cipher, Base64.DEFAULT);
     }
 
-    static byte[] decodeBase64(byte[] cipher){
+    static byte[] deObscureSixFour(byte[] cipher){
         return Base64.decode(cipher, Base64.DEFAULT);
     }
 
@@ -30,7 +30,7 @@ class Base64Util {
         try {
             byte[] dataDec = plaintext.getBytes("UTF-8");
             for (int x=0;x<iteration;x++){
-                dataDec = Base64bytes(dataDec);
+                dataDec = obscureEncodeSixFourBytes(dataDec);
             }
 
             return new String(dataDec);
@@ -45,7 +45,7 @@ class Base64Util {
         try {
             byte[] dataDec = plaintext.getBytes("UTF-8");
             for (int x=0;x<iteration;x++){
-                dataDec = decodeBase64(dataDec);
+                dataDec = deObscureSixFour(dataDec);
             }
 
             return new String(dataDec);

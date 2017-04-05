@@ -3,7 +3,6 @@ package com.zeroone.conceal;
 import android.Manifest;
 import android.content.Context;
 import android.support.annotation.RequiresPermission;
-import android.util.Base64;
 
 import com.facebook.android.crypto.keychain.AndroidConceal;
 import com.facebook.android.crypto.keychain.SharedPrefsBackedKeyChain;
@@ -64,7 +63,7 @@ public class ConcealCrypto {
         if (mEntityPassword!=null)this.mEntityPassword = mEntityPassword;
     }
     public void setEntityPassword(String password) {
-        if (password!=null)this.mEntityPassword = Entity.create(Base64.encodeToString(password.getBytes(),Base64.DEFAULT));
+        if (password!=null)this.mEntityPassword = Entity.create(CipherUtils.obscureEncodeSixFourString(password.getBytes()));
     }
 
     public void setEnableCrypto(boolean enableCrypto) {
@@ -109,7 +108,7 @@ public class ConcealCrypto {
         if (enableCrypto) {
             try {
                 byte[] a = crypto.encrypt(plain.getBytes(), mEntityPassword);
-                return Base64Util.Base64String(a);
+                return CipherUtils.obscureEncodeSixFourString(a);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -129,7 +128,7 @@ public class ConcealCrypto {
         if (enableCrypto) {
             try {
                 byte[] a = crypto.encrypt(bytes, mEntityPassword);
-                return Base64Util.Base64bytes(a);
+                return CipherUtils.obscureEncodeSixFourBytes(a);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -181,7 +180,7 @@ public class ConcealCrypto {
         if (enableCrypto) {
             if (cipher == null) return null;
             try {
-                return new String(crypto.decrypt(Base64Util.decodeBase64(cipher), mEntityPassword));
+                return new String(crypto.decrypt(CipherUtils.deObscureSixFour(cipher), mEntityPassword));
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -196,7 +195,7 @@ public class ConcealCrypto {
         if (enableCrypto) {
             if (cipher == null) return null;
             try {
-                return crypto.decrypt(Base64Util.decodeBase64(cipher), mEntityPassword);
+                return crypto.decrypt(CipherUtils.deObscureSixFour(cipher), mEntityPassword);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -344,7 +343,7 @@ public class ConcealCrypto {
 
         public ConcealCrypto create(){
 
-            mEntityPassword = Entity.create(Base64.encodeToString(mEntityPasswordRaw.getBytes(),Base64.DEFAULT));
+            mEntityPassword = Entity.create(CipherUtils.obscureEncodeSixFourString(mEntityPasswordRaw.getBytes()));
             makeKeyChain = new SharedPrefsBackedKeyChain(context,(mKeyChain==null)?CryptoConfig.KEY_256:mKeyChain);
 
             if (mKeyChain == null) {
