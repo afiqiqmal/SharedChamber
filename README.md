@@ -126,7 +126,7 @@ File enc_file = concealPrefRepository.getFile(KEY,true);    //return File
 ........
 ```
 
-<b>Clear key and SharedPreferences
+<b>Clear key and SharedPreferences</b>
 
 ```java
 concealPrefRepository.destroyCrypto(); //clear key
