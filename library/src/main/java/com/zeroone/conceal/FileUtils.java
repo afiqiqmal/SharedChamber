@@ -19,30 +19,33 @@ import java.nio.channels.FileChannel;
 class FileUtils {
 
     static File moveFile(File file, File dir){
-        if (!dir.exists())
-            dir.mkdirs();
+        if (!dir.exists()) {
+            if (dir.mkdirs()) {
+                File newFile = new File(dir, file.getName());
+                FileChannel outputChannel;
+                FileChannel inputChannel;
+                try {
+                    outputChannel = new FileOutputStream(newFile).getChannel();
+                    inputChannel = new FileInputStream(file).getChannel();
+                    inputChannel.transferTo(0, inputChannel.size(), outputChannel);
+                    inputChannel.close();
 
-        File newFile = new File(dir, file.getName());
-        FileChannel outputChannel;
-        FileChannel inputChannel;
-        try {
-            outputChannel = new FileOutputStream(newFile).getChannel();
-            inputChannel = new FileInputStream(file).getChannel();
-            inputChannel.transferTo(0, inputChannel.size(), outputChannel);
-            inputChannel.close();
+                    inputChannel.close();
+                    outputChannel.close();
 
-            inputChannel.close();
-            outputChannel.close();
+                    file.delete();
 
-            file.delete();
+                    Log.d("Files","File have been moved to : "+newFile.getAbsolutePath());
+                }
+                catch (Exception e){
+                    return null;
+                }
 
-            Log.d("Files","File have been moved to : "+newFile.getAbsolutePath());
+                return newFile;
+            }
         }
-        catch (Exception e){
-            return null;
-        }
 
-        return newFile;
+        return file;
     }
 
     static boolean saveBitmap(File imageFile, Bitmap bitmap) {
