@@ -148,6 +148,24 @@ concealPrefRepository.getPreferences();
 ```
 
 
+<b>Easier Save User Detail Preferences</b>
+```java
+new ConcealPrefRepository.UserPref()
+.setFirstName("Firstname")
+.setLastName("Lasname")
+.setEmail("hello@gmail.com")
+.....
+.apply();
+
+
+//get user details
+Log.d("TAG",new ConcealPrefRepository.UserPref().getFirstName());
+Log.d("TAG",new ConcealPrefRepository.UserPref().getLastName());
+Log.d("TAG",new ConcealPrefRepository.UserPref().getEmail());
+.....
+
+```
+
 <b>Extra Usage for Conceal Encryption and Decryption</b>
 
 ```java
