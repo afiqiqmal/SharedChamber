@@ -39,25 +39,11 @@ public class MainActivity extends BaseActivity {
 //            return;
 //        }
 
-        ConcealPrefRepository concealPrefRepository = new ConcealPrefRepository.PreferencesBuilder(this)
-                .useDefaultPrefStorage()
-                //.useThisPrefStorage("Android_Prefs")
-                .sharedPrefsBackedKeyChain(CryptoConfig.KEY_256)  //CryptoConfig.KEY_256 or CryptoConfig.KEY_128
-                .enableCrypto(true,true) //param 1 - enable value encryption , param 2 - enable key encryption
-                .createPassword("Android") //default value - BuildConfig.APPLICATION_ID
-                .setFolderName("testing") //create Folder for data stored: default is - "conceal_path"
-                .create();
-
-        ConcealPrefRepository.Editor editor = new ConcealPrefRepository.Editor();
-        editor.putString(NAME_KEY,"Hafiq Iqmal").apply();
-
 
         new ConcealPrefRepository.Editor()
                 .putString(NAME_KEY, "Hafiq Iqmal")
                 .putInt(AGE_KEY, 24)
                 .putString(EMAIL_KEY, "hafiqiqmal93@gmail.com")
-//                .putImage(IMAGE_KEY, BitmapFactory.decodeResource(this.getResources(), R.mipmap.ic_launcher))
-//                .putFile(FILE_KEY, getFile, true)
                 .apply();
 
 

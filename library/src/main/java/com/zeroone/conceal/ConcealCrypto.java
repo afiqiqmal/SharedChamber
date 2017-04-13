@@ -105,6 +105,9 @@ public class ConcealCrypto {
      * @return String
      */
     public String obscure(String plain){
+        if (plain == null)
+            return null;
+
         if (enableCrypto) {
             try {
                 byte[] a = crypto.encrypt(plain.getBytes(), mEntityPassword);
@@ -125,6 +128,9 @@ public class ConcealCrypto {
      * @return bytes
      */
     public byte[] obscure(byte[] bytes){
+        if (bytes == null)
+            return null;
+
         if (enableCrypto) {
             try {
                 byte[] a = crypto.encrypt(bytes, mEntityPassword);
@@ -177,8 +183,10 @@ public class ConcealCrypto {
 
     //Decrypt
     public String deObscure(String cipher){
+        if (cipher == null)
+            return null;
+
         if (enableCrypto) {
-            if (cipher == null) return null;
             try {
                 return new String(crypto.decrypt(CipherUtils.deObscureSixFour(cipher), mEntityPassword));
             } catch (Exception e) {
@@ -192,8 +200,10 @@ public class ConcealCrypto {
     }
 
     public byte[] deObscure(byte[] cipher){
+        if (cipher == null)
+            return null;
+
         if (enableCrypto) {
-            if (cipher == null) return null;
             try {
                 return crypto.decrypt(CipherUtils.deObscureSixFour(cipher), mEntityPassword);
             } catch (Exception e) {
@@ -257,6 +267,9 @@ public class ConcealCrypto {
      * @return - hash key
      */
     public String hashKey(String key) {
+        if (key == null || key.equals(""))
+            throw new NullPointerException("Key cannot be null or empty");
+
         if (enableHashKey) {
             try {
                 MessageDigest md = MessageDigest.getInstance("SHA-256");

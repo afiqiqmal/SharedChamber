@@ -19,6 +19,9 @@ import java.nio.channels.FileChannel;
 class FileUtils {
 
     static File moveFile(File file, File dir){
+        if (dir == null || file == null)
+            return null;
+
         if (!dir.exists()) {
             if (dir.mkdirs()) {
                 File newFile = new File(dir, file.getName());
@@ -91,6 +94,9 @@ class FileUtils {
     }
 
     static boolean isFileForImage(File file) {
+        if (file == null)
+            return false;
+
         final String[] okFileExtensions =  new String[] {"jpg", "png", "gif","jpeg"};
 
         for (String extension : okFileExtensions) {

@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
 import android.support.annotation.StringRes;
@@ -46,7 +47,7 @@ public class ConcealPrefRepository {
     private static ConcealCrypto concealCrypto;
 
     @SuppressLint("CommitPrefEdits")
-    ConcealPrefRepository(PreferencesBuilder builder){
+    private ConcealPrefRepository(@NonNull PreferencesBuilder builder){
         mContext = builder.mContext;
         mKeyChain = builder.mKeyChain;
         mEnabledCrypto = builder.mEnabledCrypto;
@@ -93,7 +94,7 @@ public class ConcealPrefRepository {
      * REMOVING KEYS
      *******************************/
     /* Remove by Key */
-    public void remove(String... keys){
+    public void remove(@NonNull String... keys){
         for (String key:keys){
             editor.remove(hashKey(key));
         }
@@ -101,7 +102,7 @@ public class ConcealPrefRepository {
     }
 
     //special cases for file to remove by key
-    public boolean removeFile(String key){
+    public boolean removeFile(@NonNull String key){
         String path = getString(key);
         if (path != null) {
             File imagePath = new File(path);
@@ -151,75 +152,75 @@ public class ConcealPrefRepository {
 
 
     /* Contains */
-    public boolean contains(String key){
+    public boolean contains(@NonNull String key){
         return sharedPreferences.contains(hashKey(key));
     }
 
 
     /* Save Data */
 
-    public void putString(String key, String value) {
+    public void putString(@NonNull String key, String value) {
         editor.putString(hashKey(key), hideValue(value)).apply();
     }
 
-    public void putString(String key, @StringRes int value) {
+    public void putString(@NonNull String key, @StringRes int value) {
         editor.putString(hashKey(key), hideValue(mContext.getResources().getString(value))).apply();
     }
 
-    public void putInt(String key, int value) {
+    public void putInt(@NonNull String key, int value) {
         editor.putString(hashKey(key), hideValue(Integer.toString(value))).apply();
     }
 
-    public void putLong(String key, long value) {
+    public void putLong(@NonNull String key, long value) {
         editor.putString(hashKey(key), hideValue(Long.toString(value))).apply();
     }
 
-    public void putDouble(String key, double value) {
+    public void putDouble(@NonNull String key, double value) {
         editor.putString(hashKey(key), hideValue(Double.toString(value))).apply();
     }
 
-    public void putFloat(String key, float value) {
+    public void putFloat(@NonNull String key, float value) {
         editor.putString(hashKey(key), hideValue(Float.toString(value))).apply();
     }
 
-    public void putBoolean(String key, boolean value) {
+    public void putBoolean(@NonNull String key, boolean value) {
         editor.putString(hashKey(key), hideValue(Boolean.toString(value))).apply();
     }
 
-    public void putListString(String key, List<String> value){
+    public void putListString(@NonNull String key, List<String> value){
         editor.putString(hashKey(key), hideValue(value.toString())).apply();
     }
 
-    public void putListFloat(String key, List<Float> value){
+    public void putListFloat(@NonNull String key, List<Float> value){
         editor.putString(hashKey(key),hideValue(value.toString())).apply();
     }
 
-    public void putListInteger(String key, List<Integer> value){
+    public void putListInteger(@NonNull String key, List<Integer> value){
         editor.putString(hashKey(key),hideValue(value.toString())).apply();
     }
 
-    public void putListDouble(String key, List<Double> value){
+    public void putListDouble(@NonNull String key, List<Double> value){
         editor.putString(hashKey(key),hideValue(value.toString())).apply();
     }
 
-    public void putListLong(String key, List<Long> value){
+    public void putListLong(@NonNull String key, List<Long> value){
         editor.putString(hashKey(key),hideValue(value.toString())).apply();
     }
 
-    public void putListBoolean(String key, List<Boolean> value){
+    public void putListBoolean(@NonNull String key, List<Boolean> value){
         editor.putString(hashKey(key),hideValue(value.toString())).apply();
     }
 
-    public void putMap(String key,Map<String,String> values){
+    public void putMap(@NonNull String key,Map<String,String> values){
         editor.putString(hashKey(key),hideValue(ConverterListUtils.convertMapToString(values))).apply();
     }
 
-    public void putByte(String key,byte[] bytes){
+    public void putByte(@NonNull String key,byte[] bytes){
         editor.putString(hashKey(key),hideValue(new String(bytes))).apply();
     }
 
     @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
-    public String putImage(String key, Bitmap bitmap){
+    public String putImage(@NonNull String key, Bitmap bitmap){
         File imageFile = new File(getImageDirectory(mFolderName),"images_"+System.currentTimeMillis()+".png");
         if(FileUtils.saveBitmap(imageFile, bitmap)){
             concealCrypto.obscureFile(imageFile,true);
@@ -230,7 +231,7 @@ public class ConcealPrefRepository {
     }
 
     @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
-    public String putImage(String key, @DrawableRes int resId){
+    public String putImage(@NonNull String key, @DrawableRes int resId){
         Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), resId);
         if (bitmap!=null) {
             File imageFile = new File(getImageDirectory(mFolderName), "images_" + System.currentTimeMillis() + ".png");
@@ -248,7 +249,7 @@ public class ConcealPrefRepository {
     }
 
     @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
-    public String putImage(String key, File file){
+    public String putImage(@NonNull String key, @Nullable File file){
         if (FileUtils.isFileForImage(file)) {
             File imageFile = FileUtils.moveFile(file,getImageDirectory(mFolderName));
             if (imageFile!=null && imageFile.exists()) {
@@ -261,7 +262,11 @@ public class ConcealPrefRepository {
     }
 
     @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
-    public File putFile(String key,File file,boolean deleteOldFile){
+    public File putFile(@NonNull String key,@Nullable File file,boolean deleteOldFile){
+
+        if (file == null)
+            return null;
+
         try {
             if (file.exists() && !FileUtils.isFileForImage(file)) {
                 File enc = concealCrypto.obscureFile(file,deleteOldFile);
@@ -280,15 +285,15 @@ public class ConcealPrefRepository {
     /************************************
      * FETCHING DATA FROM SHAREDPREFS
      ************************************/
-    public String getString(String key){
+    public String getString(@NonNull String key){
         return concealCrypto.deObscure(sharedPreferences.getString(hashKey(key),null));
     }
 
-    public String getString(String key,String defaultValue){
+    public String getString(@NonNull String key,String defaultValue){
         return concealCrypto.deObscure(sharedPreferences.getString(hashKey(key),defaultValue));
     }
 
-    public Integer getInt(String key){
+    public Integer getInt(@NonNull String key){
         try {
             String value = getString(key);
             if (value == null)
@@ -302,7 +307,7 @@ public class ConcealPrefRepository {
         }
     }
 
-    public Integer getInt(String key,int defaultValue){
+    public Integer getInt(@NonNull String key,int defaultValue){
         try {
             String value = getString(key);
 
@@ -317,7 +322,7 @@ public class ConcealPrefRepository {
         }
     }
 
-    public Float getFloat(String key){
+    public Float getFloat(@NonNull String key){
         try {
             String value = getString(key);
             if (value == null)
@@ -331,7 +336,7 @@ public class ConcealPrefRepository {
         }
     }
 
-    public Float getFloat(String key,float defaultValue){
+    public Float getFloat(@NonNull String key,float defaultValue){
         try {
             String value = getString(key);
 
@@ -346,7 +351,7 @@ public class ConcealPrefRepository {
         }
     }
 
-    public Double getDouble(String key){
+    public Double getDouble(@NonNull String key){
         try {
             String value = getString(key);
             if (value == null)
@@ -360,7 +365,7 @@ public class ConcealPrefRepository {
         }
     }
 
-    public Double getDouble(String key,double defaultValue){
+    public Double getDouble(@NonNull String key,double defaultValue){
         try {
             String value = getString(key);
 
@@ -376,7 +381,7 @@ public class ConcealPrefRepository {
     }
 
 
-    public Long getLong(String key){
+    public Long getLong(@NonNull String key){
         try {
             String value = getString(key);
             if (value == null)
@@ -390,7 +395,7 @@ public class ConcealPrefRepository {
         }
     }
 
-    public Long getLong(String key,long defaultValue){
+    public Long getLong(@NonNull String key,long defaultValue){
         try {
             String value = getString(key);
 
@@ -406,7 +411,7 @@ public class ConcealPrefRepository {
     }
 
 
-    public Boolean getBoolean(String key){
+    public Boolean getBoolean(@NonNull String key){
         try {
             String value = getString(key);
             return value != null && Boolean.parseBoolean(value);
@@ -417,7 +422,7 @@ public class ConcealPrefRepository {
         }
     }
 
-    public Boolean getBoolean(String key,boolean defaultValue){
+    public Boolean getBoolean(@NonNull String key,boolean defaultValue){
         try {
             String value = getString(key);
             if (value == null)
@@ -431,40 +436,40 @@ public class ConcealPrefRepository {
         }
     }
 
-    public List<String> getListString(String key){
+    public List<String> getListString(@NonNull String key){
         return ConverterListUtils.toStringArray(getString(key));
     }
 
-    public List<Float> getListFloat(String key){
+    public List<Float> getListFloat(@NonNull String key){
         return ConverterListUtils.toFloatArray(getString(key));
     }
 
-    public List<Double> getListDouble(String key){
+    public List<Double> getListDouble(@NonNull String key){
         return ConverterListUtils.toDoubleArray(getString(key));
     }
 
-    public List<Boolean> getListBoolean(String key){
+    public List<Boolean> getListBoolean(@NonNull String key){
         return ConverterListUtils.toBooleanArray(getString(key));
     }
 
-    public List<Integer> getListInteger(String key){
+    public List<Integer> getListInteger(@NonNull String key){
         return ConverterListUtils.toIntArray(getString(key));
     }
 
-    public List<Long> getListLong(String key){
+    public List<Long> getListLong(@NonNull String key){
         return ConverterListUtils.toLongArray(getString(key));
     }
 
-    public LinkedHashMap<String,String> getMaps(String key){
+    public LinkedHashMap<String,String> getMaps(@NonNull String key){
         return ConverterListUtils.convertStringToMap(getString(key));
     }
 
-    public byte[] getArrayBytes(String key){
+    public byte[] getArrayBytes(@NonNull String key){
         return getString(key).getBytes();
     }
 
     @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
-    public Bitmap getImage(String key){
+    public Bitmap getImage(@NonNull String key){
         String path = getString(key);
         if (path !=null) {
             try {
@@ -478,7 +483,7 @@ public class ConcealPrefRepository {
     }
 
     @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
-    public File getFile(String key,boolean deleteOldFile){
+    public File getFile(@NonNull String key,boolean deleteOldFile){
         try {
             String path = getString(key);
             if (path ==null) return null;
@@ -514,11 +519,9 @@ public class ConcealPrefRepository {
         private static String HAS_LOGIN = "user.has_login";
         private static String PASSWORD = "user.password";
 
-
-        @SuppressLint("CommitPrefEdits")
         public UserPref() {
             if (editor == null){
-                throw new RuntimeException("Need to initialize ConcealPrefRepository.PreferencesBuilder first");
+                throw new IllegalArgumentException("Need to initialize ConcealPrefRepository.PreferencesBuilder first");
             }
         }
 
@@ -649,89 +652,84 @@ public class ConcealPrefRepository {
      ******************************************/
     public static final class Editor {
 
-        private SharedPreferences.Editor mEditor;
-
-        @SuppressLint("CommitPrefEdits")
         public Editor() {
-            if (sharedPreferences != null)
-                mEditor = sharedPreferences.edit();
-            else {
-                throw new RuntimeException("Need to initialize ConcealPrefRepository.PreferencesBuilder first");
+            if (editor ==null){
+                throw new IllegalArgumentException("Need to initialize ConcealPrefRepository.PreferencesBuilder first");
             }
         }
 
-        public Editor putString(String key, String value) {
-            mEditor.putString(hashKey(key), hideValue(value));
+        public Editor putString(@NonNull String key, String value) {
+            editor.putString(hashKey(key), hideValue(value));
             return this;
         }
 
-        public Editor putInt(String key, int value) {
-            mEditor.putString(hashKey(key), hideValue(Integer.toString(value)));
+        public Editor putInt(@NonNull String key, int value) {
+            editor.putString(hashKey(key), hideValue(Integer.toString(value)));
             return this;
         }
 
-        public Editor putLong(String key, long value) {
-            mEditor.putString(hashKey(key), hideValue(Long.toString(value)));
+        public Editor putLong(@NonNull String key, long value) {
+            editor.putString(hashKey(key), hideValue(Long.toString(value)));
             return this;
         }
 
-        public Editor putDouble(String key, double value) {
-            mEditor.putString(hashKey(key), hideValue(Double.toString(value)));
+        public Editor putDouble(@NonNull String key, double value) {
+            editor.putString(hashKey(key), hideValue(Double.toString(value)));
             return this;
         }
 
-        public Editor putFloat(String key, float value) {
-            mEditor.putString(hashKey(key), hideValue(Float.toString(value)));
+        public Editor putFloat(@NonNull String key, float value) {
+            editor.putString(hashKey(key), hideValue(Float.toString(value)));
             return this;
         }
 
-        public Editor putBoolean(String key, boolean value) {
-            mEditor.putString(hashKey(key), hideValue(Boolean.toString(value)));
+        public Editor putBoolean(@NonNull String key, boolean value) {
+            editor.putString(hashKey(key), hideValue(Boolean.toString(value)));
             return this;
         }
 
-        public Editor putListString(String key, List<String> value){
-            mEditor.putString(hashKey(key),hideValue(value.toString()));
+        public Editor putListString(@NonNull String key, List<String> value){
+            editor.putString(hashKey(key),hideValue(value.toString()));
             return this;
         }
 
-        public Editor putListFloat(String key, List<Float> value){
-            mEditor.putString(hashKey(key),hideValue(value.toString()));
+        public Editor putListFloat(@NonNull String key, List<Float> value){
+            editor.putString(hashKey(key),hideValue(value.toString()));
             return this;
         }
 
-        public Editor putListInteger(String key, List<Integer> value){
-            mEditor.putString(hashKey(key),hideValue(value.toString()));
+        public Editor putListInteger(@NonNull String key, List<Integer> value){
+            editor.putString(hashKey(key),hideValue(value.toString()));
             return this;
         }
 
-        public Editor putListDouble(String key, List<Double> value){
-            mEditor.putString(hashKey(key),hideValue(value.toString()));
+        public Editor putListDouble(@NonNull String key, List<Double> value){
+            editor.putString(hashKey(key),hideValue(value.toString()));
             return this;
         }
 
-        public Editor putListLong(String key, List<Long> value){
-            mEditor.putString(hashKey(key),hideValue(value.toString()));
+        public Editor putListLong(@NonNull String key, List<Long> value){
+            editor.putString(hashKey(key),hideValue(value.toString()));
             return this;
         }
 
-        public Editor putListBoolean(String key, List<Boolean> value){
-            mEditor.putString(hashKey(key),hideValue(value.toString()));
+        public Editor putListBoolean(@NonNull String key, List<Boolean> value){
+            editor.putString(hashKey(key),hideValue(value.toString()));
             return this;
         }
 
-        public Editor putByte(String key,byte[] bytes){
-            mEditor.putString(hashKey(key),hideValue(new String(bytes)));
+        public Editor putByte(@NonNull String key,byte[] bytes){
+            editor.putString(hashKey(key),hideValue(new String(bytes)));
             return this;
         }
 
         @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
-        public Editor putImage(String key, @DrawableRes int resId, Context context){
+        public Editor putImage(@NonNull String key, @DrawableRes int resId, Context context){
             Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resId);
             if (bitmap!=null) {
                 File imageFile = new File(getImageDirectory(mFolderName), "images_" + System.currentTimeMillis() + ".png");
                 if (FileUtils.saveBitmap(imageFile, bitmap)) {
-                    mEditor.putString(hashKey(key), hideValue(concealCrypto.obscureFile(imageFile, true).getAbsolutePath()));
+                    editor.putString(hashKey(key), hideValue(concealCrypto.obscureFile(imageFile, true).getAbsolutePath()));
                 }
             }
             else{
@@ -741,32 +739,32 @@ public class ConcealPrefRepository {
         }
 
         @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
-        public Editor putImage(String key, Bitmap bitmap){
+        public Editor putImage(@NonNull String key, Bitmap bitmap){
             File imageFile = new File(getImageDirectory(mFolderName),"images_"+System.currentTimeMillis()+".png");
             if(FileUtils.saveBitmap(imageFile, bitmap)){
-                mEditor.putString(hashKey(key),hideValue(concealCrypto.obscureFile(imageFile,true).getAbsolutePath()));
+                editor.putString(hashKey(key),hideValue(concealCrypto.obscureFile(imageFile,true).getAbsolutePath()));
             }
             return this;
         }
 
         @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
-        public Editor putImage(String key, File file){
+        public Editor putImage(@NonNull String key, File file){
             if (FileUtils.isFileForImage(file)) {
                 File imageFile = FileUtils.moveFile(file,getImageDirectory(mFolderName));
                 if (imageFile!=null && imageFile.exists()) {
                     concealCrypto.obscureFile(imageFile,true);
-                    mEditor.putString(hashKey(key), hideValue(imageFile.getAbsolutePath()));
+                    editor.putString(hashKey(key), hideValue(imageFile.getAbsolutePath()));
                 }
             }
             return this;
         }
 
         @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
-        public Editor putFile(String key,File file,boolean deleteOldFile){
+        public Editor putFile(@NonNull String key,File file,boolean deleteOldFile){
             try {
                 if (file.exists() && !FileUtils.isFileForImage(file)) {
                     File enc = concealCrypto.obscureFile(file,deleteOldFile);
-                    mEditor.putString(hashKey(key), hideValue(enc.getAbsolutePath()));
+                    editor.putString(hashKey(key), hideValue(enc.getAbsolutePath()));
                 }
             }
             catch (Exception e){
@@ -775,28 +773,28 @@ public class ConcealPrefRepository {
 
             return this;
         }
-        public Editor remove(String key) {
-            mEditor.remove(hashKey(key));
+        public Editor remove(@NonNull String key) {
+            editor.remove(hashKey(key));
             return this;
         }
 
-        public Editor putMap(String key,Map<String,String> values){
-            mEditor.putString(hashKey(key),hideValue(ConverterListUtils.convertMapToString(values)));
+        public Editor putMap(@NonNull String key,Map<String,String> values){
+            editor.putString(hashKey(key),hideValue(ConverterListUtils.convertMapToString(values)));
             return this;
         }
 
         public Editor clear() {
-            mEditor.clear();
+            editor.clear();
             return this;
         }
 
         public boolean commit() {
-            return mEditor.commit();
+            return editor.commit();
         }
 
 
         public void apply() {
-            mEditor.apply();
+            editor.apply();
         }
     }
 
@@ -877,11 +875,14 @@ public class ConcealPrefRepository {
         }
     }
 
-    private void throwRunTimeException(String message, Throwable throwable){
+    private static void throwRunTimeException(String message, Throwable throwable){
         new RuntimeException(message,throwable).printStackTrace();
     }
 
     private static String hashKey(String key){
+        if (key == null || key.equals(""))
+            throw new NullPointerException("Key cannot be null or empty");
+
         return concealCrypto.hashKey(key);
     }
 
@@ -894,20 +895,22 @@ public class ConcealPrefRepository {
      * @param parentDir - root directory
      * @return File
      */
-    private List<CryptoFile> getListFiles(File parentDir) {
+    private List<CryptoFile> getListFiles(@Nullable File parentDir) {
         List<CryptoFile> inFiles = new ArrayList<>();
         try {
-            File[] files = parentDir.listFiles();
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    inFiles.addAll(getListFiles(file));
-                } else {
-                    if (file.getName().startsWith(DEFAULT_PREFIX_FILENAME)) {
-                        CryptoFile cryptoFile = new CryptoFile();
-                        cryptoFile.setFileName(file.getName());
-                        cryptoFile.setPath(file.getAbsolutePath());
-                        cryptoFile.setType(file.getParent());
-                        inFiles.add(cryptoFile);
+            if (parentDir!=null) {
+                File[] files = parentDir.listFiles();
+                for (File file : files) {
+                    if (file.isDirectory()) {
+                        inFiles.addAll(getListFiles(file));
+                    } else {
+                        if (file.getName().startsWith(DEFAULT_PREFIX_FILENAME)) {
+                            CryptoFile cryptoFile = new CryptoFile();
+                            cryptoFile.setFileName(file.getName());
+                            cryptoFile.setPath(file.getAbsolutePath());
+                            cryptoFile.setType(file.getParent());
+                            inFiles.add(cryptoFile);
+                        }
                     }
                 }
             }
