@@ -651,7 +651,6 @@ public class ConcealPrefRepository {
      * SharedPreferences Editor Builder
      ******************************************/
     public static final class Editor {
-
         public Editor() {
             if (editor ==null){
                 throw new IllegalArgumentException("Need to initialize ConcealPrefRepository.PreferencesBuilder first");
@@ -826,27 +825,52 @@ public class ConcealPrefRepository {
             return this;
         }
 
+        /**
+         * Enable encryption for keys-values
+         * @param encryptKey true/false to enable encryption for key
+         * @param encryptValue true/false to enable encryption for values
+         * @return PreferencesBuilder
+         */
         public PreferencesBuilder enableCrypto(boolean encryptKey,boolean encryptValue){
             mEnabledCrypto = encryptValue;
             mEnableCryptKey = encryptKey;
             return this;
         }
 
+        /**
+         * Use Conceal keychain
+         * @param keyChain Cryptography type
+         * @return PreferencesBuilder
+         */
         public PreferencesBuilder sharedPrefsBackedKeyChain(CryptoConfig keyChain){
             mKeyChain = keyChain;
             return this;
         }
 
+        /**
+         * Setup password / paraphrase for encryption
+         * @param password string password
+         * @return PreferencesBuilder
+         */
         public PreferencesBuilder createPassword(String password){
             mEntityPasswordRaw = password;
             return this;
         }
 
+        /**
+         * Set folder name to store files and images
+         * @param folderName folder path
+         * @return PreferencesBuilder
+         */
         public PreferencesBuilder setFolderName(String folderName){
             mFolderName = folderName;
             return this;
         }
 
+        /**
+         * Create Preferences
+         * @return ConcealPrefRepository
+         */
         public ConcealPrefRepository create(){
 
             if(mFolderName !=null){

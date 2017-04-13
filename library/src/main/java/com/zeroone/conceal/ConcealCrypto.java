@@ -181,7 +181,11 @@ public class ConcealCrypto {
         }
     }
 
-    //Decrypt
+    /**
+     * Decryption string
+     * @param cipher cipher string
+     * @return String plaintext
+     */
     public String deObscure(String cipher){
         if (cipher == null)
             return null;
@@ -199,6 +203,11 @@ public class ConcealCrypto {
         }
     }
 
+    /**
+     * Decryption bytes
+     * @param cipher cipher bytes[]
+     * @return String plaintext
+     */
     public byte[] deObscure(byte[] cipher){
         if (cipher == null)
             return null;
