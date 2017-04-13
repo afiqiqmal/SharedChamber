@@ -42,7 +42,7 @@ public class ConcealPrefRepository {
     private String mEntityPasswordRaw = null;
     private static String mFolderName;
     private static SharedPreferences sharedPreferences;
-    private SharedPreferences.Editor editor;
+    private static SharedPreferences.Editor editor;
     private static ConcealCrypto concealCrypto;
 
     @SuppressLint("CommitPrefEdits")
@@ -95,7 +95,7 @@ public class ConcealPrefRepository {
     /* Remove by Key */
     public void remove(String... keys){
         for (String key:keys){
-            editor.remove(concealCrypto.hashKey(key));
+            editor.remove(hashKey(key));
         }
         editor.apply();
     }
@@ -152,69 +152,70 @@ public class ConcealPrefRepository {
 
     /* Contains */
     public boolean contains(String key){
-        return sharedPreferences.contains(concealCrypto.hashKey(key));
+        return sharedPreferences.contains(hashKey(key));
     }
 
 
     /* Save Data */
+
     public void putString(String key, String value) {
-        editor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(value)).apply();
+        editor.putString(hashKey(key), hideValue(value)).apply();
     }
 
     public void putString(String key, @StringRes int value) {
-        editor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(mContext.getResources().getString(value))).apply();
+        editor.putString(hashKey(key), hideValue(mContext.getResources().getString(value))).apply();
     }
 
     public void putInt(String key, int value) {
-        editor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(Integer.toString(value))).apply();
+        editor.putString(hashKey(key), hideValue(Integer.toString(value))).apply();
     }
 
     public void putLong(String key, long value) {
-        editor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(Long.toString(value))).apply();
+        editor.putString(hashKey(key), hideValue(Long.toString(value))).apply();
     }
 
     public void putDouble(String key, double value) {
-        editor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(Double.toString(value))).apply();
+        editor.putString(hashKey(key), hideValue(Double.toString(value))).apply();
     }
 
     public void putFloat(String key, float value) {
-        editor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(Float.toString(value))).apply();
+        editor.putString(hashKey(key), hideValue(Float.toString(value))).apply();
     }
 
     public void putBoolean(String key, boolean value) {
-        editor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(Boolean.toString(value))).apply();
+        editor.putString(hashKey(key), hideValue(Boolean.toString(value))).apply();
     }
 
     public void putListString(String key, List<String> value){
-        editor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(value.toString())).apply();
+        editor.putString(hashKey(key), hideValue(value.toString())).apply();
     }
 
     public void putListFloat(String key, List<Float> value){
-        editor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(value.toString())).apply();
+        editor.putString(hashKey(key),hideValue(value.toString())).apply();
     }
 
     public void putListInteger(String key, List<Integer> value){
-        editor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(value.toString())).apply();
+        editor.putString(hashKey(key),hideValue(value.toString())).apply();
     }
 
     public void putListDouble(String key, List<Double> value){
-        editor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(value.toString())).apply();
+        editor.putString(hashKey(key),hideValue(value.toString())).apply();
     }
 
     public void putListLong(String key, List<Long> value){
-        editor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(value.toString())).apply();
+        editor.putString(hashKey(key),hideValue(value.toString())).apply();
     }
 
     public void putListBoolean(String key, List<Boolean> value){
-        editor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(value.toString())).apply();
+        editor.putString(hashKey(key),hideValue(value.toString())).apply();
     }
 
     public void putMap(String key,Map<String,String> values){
-        editor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(ConverterListUtils.convertMapToString(values))).apply();
+        editor.putString(hashKey(key),hideValue(ConverterListUtils.convertMapToString(values))).apply();
     }
 
     public void putByte(String key,byte[] bytes){
-        editor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(new String(bytes))).apply();
+        editor.putString(hashKey(key),hideValue(new String(bytes))).apply();
     }
 
     @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
@@ -222,7 +223,7 @@ public class ConcealPrefRepository {
         File imageFile = new File(getImageDirectory(mFolderName),"images_"+System.currentTimeMillis()+".png");
         if(FileUtils.saveBitmap(imageFile, bitmap)){
             concealCrypto.obscureFile(imageFile,true);
-            editor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(imageFile.getAbsolutePath())).apply();
+            editor.putString(hashKey(key),hideValue(imageFile.getAbsolutePath())).apply();
             return imageFile.getAbsolutePath();
         }
         return null;
@@ -235,7 +236,7 @@ public class ConcealPrefRepository {
             File imageFile = new File(getImageDirectory(mFolderName), "images_" + System.currentTimeMillis() + ".png");
             if (FileUtils.saveBitmap(imageFile, bitmap)) {
                 concealCrypto.obscureFile(imageFile, true);
-                editor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(imageFile.getAbsolutePath())).apply();
+                editor.putString(hashKey(key), hideValue(imageFile.getAbsolutePath())).apply();
                 return imageFile.getAbsolutePath();
             }
         }
@@ -252,7 +253,7 @@ public class ConcealPrefRepository {
             File imageFile = FileUtils.moveFile(file,getImageDirectory(mFolderName));
             if (imageFile!=null && imageFile.exists()) {
                 concealCrypto.obscureFile(imageFile,true);
-                editor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(imageFile.getAbsolutePath())).apply();
+                editor.putString(hashKey(key), hideValue(imageFile.getAbsolutePath())).apply();
                 return imageFile.getAbsolutePath();
             }
         }
@@ -264,7 +265,7 @@ public class ConcealPrefRepository {
         try {
             if (file.exists() && !FileUtils.isFileForImage(file)) {
                 File enc = concealCrypto.obscureFile(file,deleteOldFile);
-                editor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(enc.getAbsolutePath())).apply();
+                editor.putString(hashKey(key), hideValue(enc.getAbsolutePath())).apply();
                 return enc;
             }
         }
@@ -280,11 +281,11 @@ public class ConcealPrefRepository {
      * FETCHING DATA FROM SHAREDPREFS
      ************************************/
     public String getString(String key){
-        return concealCrypto.deObscure(sharedPreferences.getString(concealCrypto.hashKey(key),null));
+        return concealCrypto.deObscure(sharedPreferences.getString(hashKey(key),null));
     }
 
     public String getString(String key,String defaultValue){
-        return concealCrypto.deObscure(sharedPreferences.getString(concealCrypto.hashKey(key),defaultValue));
+        return concealCrypto.deObscure(sharedPreferences.getString(hashKey(key),defaultValue));
     }
 
     public Integer getInt(String key){
@@ -497,6 +498,151 @@ public class ConcealPrefRepository {
         return null;
     }
 
+    public static class UserPref{
+        private static String NAME = "user.username";
+        private static String FULLNAME = "user.fullname";
+        private static String FIRST_NAME = "user.first_name";
+        private static String LAST_NAME = "user.last_name";
+        private static String AGE = "user.age";
+        private static String GENDER = "user.gender";
+        private static String ADDRESS = "user.address";
+        private static String EMAIL = "user.email";
+        private static String PUSH_TOKEN = "user.push.token";
+        private static String PHONE_NO = "user.phone_number";
+        private static String MOBILE_NO = "user.mobile_number";
+        private static String DEVICE_ID = "user.device.id";
+        private static String HAS_LOGIN = "user.has_login";
+        private static String PASSWORD = "user.password";
+
+
+        @SuppressLint("CommitPrefEdits")
+        public UserPref() {
+            if (editor == null){
+                throw new RuntimeException("Need to initialize ConcealPrefRepository.PreferencesBuilder first");
+            }
+        }
+
+        public UserPref setUserName(String name){
+            editor.putString(hashKey(NAME),hideValue(name));
+            return this;
+        }
+        public UserPref setFullName(String fullName){
+            editor.putString(hashKey(FULLNAME),hideValue(fullName));
+            return this;
+        }
+        public UserPref setFirstName(String firstName){
+            editor.putString(hashKey(FIRST_NAME),hideValue(firstName));
+            return this;
+        }
+        public UserPref setLastName(String lastName){
+            editor.putString(hashKey(LAST_NAME),hideValue(lastName));
+            return this;
+        }
+        public UserPref setAge(int age){
+            editor.putString(hashKey(AGE),hideValue(String.valueOf(age)));
+            return this;
+        }
+        public UserPref setGender(String gender){
+            editor.putString(hashKey(GENDER),hideValue(gender));
+            return this;
+        }
+        public UserPref setAddress(String address){
+            editor.putString(hashKey(ADDRESS),hideValue(address));
+            return this;
+        }
+        public UserPref setEmail(String email){
+            editor.putString(hashKey(EMAIL),hideValue(email));
+            return this;
+        }
+        public UserPref setPushToken(String token){
+            editor.putString(hashKey(PUSH_TOKEN),hideValue(token));
+            return this;
+        }
+        public UserPref setPhoneNumber(String phoneNumber){
+            editor.putString(hashKey(PHONE_NO),hideValue(phoneNumber));
+            return this;
+        }
+        public UserPref setMobileNumber(String mobileNumber){
+            editor.putString(hashKey(MOBILE_NO),hideValue(mobileNumber));
+            return this;
+        }
+        public UserPref setDeviceId(String deviceId){
+            editor.putString(hashKey(DEVICE_ID),hideValue(deviceId));
+            return this;
+        }
+        public UserPref setLogin(boolean login){
+            editor.putString(hashKey(HAS_LOGIN),hideValue(String.valueOf(login)));
+            return this;
+        }
+        public UserPref setPassword(String password){
+            editor.putString(hashKey(PASSWORD),hideValue(password));
+            return this;
+        }
+
+        public String getUserName(){
+            return returnValue(NAME);
+        }
+        public String getFullName(){
+            return returnValue(FULLNAME);
+        }
+        public String getFirstName(){
+            return returnValue(FIRST_NAME);
+        }
+        public String getLastName(){
+            return returnValue(LAST_NAME);
+        }
+        public Integer getAge(){
+            try {
+                return Integer.parseInt(returnValue(AGE));
+            }
+            catch (Exception e){
+                e.printStackTrace();
+                return null;
+            }
+        }
+        public String getGender(){
+            return returnValue(GENDER);
+        }
+        public String getAddress(){
+            return returnValue(ADDRESS);
+        }
+        public String getEmail(){
+            return returnValue(EMAIL);
+        }
+        public String getPushToken(){
+            return returnValue(PUSH_TOKEN);
+        }
+        public String getPhoneNumber(){
+            return returnValue(PHONE_NO);
+        }
+        public String getMobileNumber(){
+            return returnValue(MOBILE_NO);
+        }
+        public String getDeviceId(){
+            return returnValue(DEVICE_ID);
+        }
+        public Boolean hasLogin(){
+            try {
+                return Boolean.parseBoolean(returnValue(HAS_LOGIN));
+            }
+            catch (Exception e){
+                e.printStackTrace();
+                return null;
+            }
+        }
+        public String getPassword(){
+            return returnValue(PASSWORD);
+        }
+
+        private String returnValue(String KEY){
+            return concealCrypto.deObscure(sharedPreferences.getString(hashKey(KEY),null));
+        }
+
+        public void apply() {
+            editor.apply();
+        }
+    }
+
 
     /******************************************
      * SharedPreferences Editor Builder
@@ -515,67 +661,67 @@ public class ConcealPrefRepository {
         }
 
         public Editor putString(String key, String value) {
-            mEditor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(value));
+            mEditor.putString(hashKey(key), hideValue(value));
             return this;
         }
 
         public Editor putInt(String key, int value) {
-            mEditor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(Integer.toString(value)));
+            mEditor.putString(hashKey(key), hideValue(Integer.toString(value)));
             return this;
         }
 
         public Editor putLong(String key, long value) {
-            mEditor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(Long.toString(value)));
+            mEditor.putString(hashKey(key), hideValue(Long.toString(value)));
             return this;
         }
 
         public Editor putDouble(String key, double value) {
-            mEditor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(Double.toString(value)));
+            mEditor.putString(hashKey(key), hideValue(Double.toString(value)));
             return this;
         }
 
         public Editor putFloat(String key, float value) {
-            mEditor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(Float.toString(value)));
+            mEditor.putString(hashKey(key), hideValue(Float.toString(value)));
             return this;
         }
 
         public Editor putBoolean(String key, boolean value) {
-            mEditor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(Boolean.toString(value)));
+            mEditor.putString(hashKey(key), hideValue(Boolean.toString(value)));
             return this;
         }
 
         public Editor putListString(String key, List<String> value){
-            mEditor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(value.toString()));
+            mEditor.putString(hashKey(key),hideValue(value.toString()));
             return this;
         }
 
         public Editor putListFloat(String key, List<Float> value){
-            mEditor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(value.toString()));
+            mEditor.putString(hashKey(key),hideValue(value.toString()));
             return this;
         }
 
         public Editor putListInteger(String key, List<Integer> value){
-            mEditor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(value.toString()));
+            mEditor.putString(hashKey(key),hideValue(value.toString()));
             return this;
         }
 
         public Editor putListDouble(String key, List<Double> value){
-            mEditor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(value.toString()));
+            mEditor.putString(hashKey(key),hideValue(value.toString()));
             return this;
         }
 
         public Editor putListLong(String key, List<Long> value){
-            mEditor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(value.toString()));
+            mEditor.putString(hashKey(key),hideValue(value.toString()));
             return this;
         }
 
         public Editor putListBoolean(String key, List<Boolean> value){
-            mEditor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(value.toString()));
+            mEditor.putString(hashKey(key),hideValue(value.toString()));
             return this;
         }
 
         public Editor putByte(String key,byte[] bytes){
-            mEditor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(new String(bytes)));
+            mEditor.putString(hashKey(key),hideValue(new String(bytes)));
             return this;
         }
 
@@ -585,7 +731,7 @@ public class ConcealPrefRepository {
             if (bitmap!=null) {
                 File imageFile = new File(getImageDirectory(mFolderName), "images_" + System.currentTimeMillis() + ".png");
                 if (FileUtils.saveBitmap(imageFile, bitmap)) {
-                    mEditor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(concealCrypto.obscureFile(imageFile, true).getAbsolutePath()));
+                    mEditor.putString(hashKey(key), hideValue(concealCrypto.obscureFile(imageFile, true).getAbsolutePath()));
                 }
             }
             else{
@@ -598,7 +744,7 @@ public class ConcealPrefRepository {
         public Editor putImage(String key, Bitmap bitmap){
             File imageFile = new File(getImageDirectory(mFolderName),"images_"+System.currentTimeMillis()+".png");
             if(FileUtils.saveBitmap(imageFile, bitmap)){
-                mEditor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(concealCrypto.obscureFile(imageFile,true).getAbsolutePath()));
+                mEditor.putString(hashKey(key),hideValue(concealCrypto.obscureFile(imageFile,true).getAbsolutePath()));
             }
             return this;
         }
@@ -609,7 +755,7 @@ public class ConcealPrefRepository {
                 File imageFile = FileUtils.moveFile(file,getImageDirectory(mFolderName));
                 if (imageFile!=null && imageFile.exists()) {
                     concealCrypto.obscureFile(imageFile,true);
-                    mEditor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(imageFile.getAbsolutePath()));
+                    mEditor.putString(hashKey(key), hideValue(imageFile.getAbsolutePath()));
                 }
             }
             return this;
@@ -620,7 +766,7 @@ public class ConcealPrefRepository {
             try {
                 if (file.exists() && !FileUtils.isFileForImage(file)) {
                     File enc = concealCrypto.obscureFile(file,deleteOldFile);
-                    mEditor.putString(concealCrypto.hashKey(key), concealCrypto.obscure(enc.getAbsolutePath()));
+                    mEditor.putString(hashKey(key), hideValue(enc.getAbsolutePath()));
                 }
             }
             catch (Exception e){
@@ -630,12 +776,12 @@ public class ConcealPrefRepository {
             return this;
         }
         public Editor remove(String key) {
-            mEditor.remove(concealCrypto.hashKey(key));
+            mEditor.remove(hashKey(key));
             return this;
         }
 
         public Editor putMap(String key,Map<String,String> values){
-            mEditor.putString(concealCrypto.hashKey(key),concealCrypto.obscure(ConverterListUtils.convertMapToString(values)));
+            mEditor.putString(hashKey(key),hideValue(ConverterListUtils.convertMapToString(values)));
             return this;
         }
 
@@ -733,6 +879,14 @@ public class ConcealPrefRepository {
 
     private void throwRunTimeException(String message, Throwable throwable){
         new RuntimeException(message,throwable).printStackTrace();
+    }
+
+    private static String hashKey(String key){
+        return concealCrypto.hashKey(key);
+    }
+
+    private static String hideValue(String value){
+        return concealCrypto.obscure(value);
     }
 
     /***
