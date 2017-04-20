@@ -8,12 +8,13 @@ import android.util.Log;
 
 import com.facebook.crypto.CryptoConfig;
 import com.zeroone.conceal.ConcealPrefRepository;
+import com.zeroone.conceal.OnDataChangeListener;
 
 /**
  * @author : hafiq on 27/03/2017.
  */
 
-public class BaseActivity extends AppCompatActivity implements ConcealPrefRepository.OnDataChangeListener{
+public class BaseActivity extends AppCompatActivity implements OnDataChangeListener {
 
     ConcealPrefRepository concealPrefRepository;
 

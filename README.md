@@ -43,6 +43,7 @@ ConcealPrefRepository concealPrefRepository = new ConcealPrefRepository.Preferen
         .enableCrypto(true,true) //param 1 - enable value encryption , param 2 - enable key encryption
         .createPassword("Android") //default value - BuildConfig.APPLICATION_ID
         .setFolderName("testing") //create Folder for data stored: default is - "conceal_path"
+        .setPrefListener(this) // listen to data changes 
         .create();
 
 *setFolderName - folder will be hidden. To see, enable show hidden folder in storage
@@ -147,6 +148,16 @@ concealPrefRepository.contains(KEY); // return boolean
 concealPrefRepository.getPreferences();
 ```
 
+<b>Listener Data Changes</b>
+```java
+public class BaseActivity extends AppCompatActivity implements OnDataChangeListener{
+    ....
+    @Override
+    public void onDataChange(String key,String value) {
+         //code here
+    }
+}
+```
 
 <b>Easier Save User Detail Preferences</b>
 ```java
