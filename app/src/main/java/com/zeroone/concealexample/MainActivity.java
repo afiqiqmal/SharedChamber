@@ -56,39 +56,39 @@ public class MainActivity extends BaseActivity {
         Log.d("TAG",new ConcealPrefRepository.UserPref().getEmail());
 
 
-        Map<String,String> map =concealPrefRepository.getAllSharedPrefData();
-        for(Map.Entry<String,?> entry : map.entrySet()){
-            try {
-                Log.d("TAG",entry.getKey()+" :: "+entry.getValue().toString());
-            }
-            catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-
-        List<CryptoFile> cryptoFileList = concealPrefRepository.getAllConcealEncryptedFiles();
-        for (CryptoFile cryptoFile :cryptoFileList){
-            Log.d("TAG",cryptoFile.getFileName());
-        }
-
-        Log.d("TAG",""+concealPrefRepository.getPrefsSize());
-
-        ConcealCrypto concealCrypto = new ConcealCrypto.CryptoBuilder(this)
-                .setEnableCrypto(true) //default true
-                .setKeyChain(CryptoConfig.KEY_256) // CryptoConfig.KEY_256 or CryptoConfig.KEY_128
-                .createPassword("Mac OSX")
-                .create();
-
-        String test = "Hello World";
-        String cipher =  concealCrypto.obscure(test); //encrypt
-        Log.d("Display", cipher);
-        String dec = concealCrypto.deObscure(cipher); //decrypt
-        Log.d("Display", cipher+" ===== "+dec);
-
-
-        cipher =  concealCrypto.obscureWithIteration(test,4); //encrypt with 4 times
-        Log.d("Display", cipher);
-        dec = concealCrypto.deObscureWithIteration(cipher,3); //decrypt with 4 times
-        Log.d("Display", cipher+" ===== "+dec);
+//        Map<String,String> map =concealPrefRepository.getAllSharedPrefData();
+//        for(Map.Entry<String,?> entry : map.entrySet()){
+//            try {
+//                Log.d("TAG",entry.getKey()+" :: "+entry.getValue().toString());
+//            }
+//            catch (Exception e){
+//                e.printStackTrace();
+//            }
+//        }
+//
+//        List<CryptoFile> cryptoFileList = concealPrefRepository.getAllConcealEncryptedFiles();
+//        for (CryptoFile cryptoFile :cryptoFileList){
+//            Log.d("TAG",cryptoFile.getFileName());
+//        }
+//
+//        Log.d("TAG",""+concealPrefRepository.getPrefsSize());
+//
+//        ConcealCrypto concealCrypto = new ConcealCrypto.CryptoBuilder(this)
+//                .setEnableCrypto(true) //default true
+//                .setKeyChain(CryptoConfig.KEY_256) // CryptoConfig.KEY_256 or CryptoConfig.KEY_128
+//                .createPassword("Mac OSX")
+//                .create();
+//
+//        String test = "Hello World";
+//        String cipher =  concealCrypto.obscure(test); //encrypt
+//        Log.d("Display", cipher);
+//        String dec = concealCrypto.deObscure(cipher); //decrypt
+//        Log.d("Display", cipher+" ===== "+dec);
+//
+//
+//        cipher =  concealCrypto.obscureWithIteration(test,4); //encrypt with 4 times
+//        Log.d("Display", cipher);
+//        dec = concealCrypto.deObscureWithIteration(cipher,3); //decrypt with 4 times
+//        Log.d("Display", cipher+" ===== "+dec);
     }
 }

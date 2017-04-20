@@ -1,8 +1,10 @@
 package com.zeroone.concealexample;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.facebook.crypto.CryptoConfig;
 import com.zeroone.conceal.ConcealPrefRepository;
@@ -11,7 +13,7 @@ import com.zeroone.conceal.ConcealPrefRepository;
  * @author : hafiq on 27/03/2017.
  */
 
-public class BaseActivity extends AppCompatActivity {
+public class BaseActivity extends AppCompatActivity implements ConcealPrefRepository.OnDataChangeListener{
 
     ConcealPrefRepository concealPrefRepository;
 
@@ -25,6 +27,12 @@ public class BaseActivity extends AppCompatActivity {
                 .enableCrypto(false,true)
                 .createPassword("Android")
                 .setFolderName("testing")
+                .setPrefListener(this)
                 .create();
+    }
+
+    @Override
+    public void onDataChange(String key,String value) {
+
     }
 }

@@ -19,6 +19,7 @@ import com.zeroone.conceal.model.CryptoFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -45,6 +46,7 @@ public class ConcealPrefRepository {
     private static SharedPreferences sharedPreferences;
     private static SharedPreferences.Editor editor;
     private static ConcealCrypto concealCrypto;
+    private static OnDataChangeListener onDataChangeListener;
 
     @SuppressLint("CommitPrefEdits")
     private ConcealPrefRepository(@NonNull PreferencesBuilder builder){
@@ -52,9 +54,10 @@ public class ConcealPrefRepository {
         mKeyChain = builder.mKeyChain;
         mEnabledCrypto = builder.mEnabledCrypto;
         mEnableCryptKey = builder.mEnableCryptKey;
-        sharedPreferences = builder.sharedPreferences;
         mEntityPasswordRaw = builder.mEntityPasswordRaw;
         mFolderName = builder.mFolderName;
+        sharedPreferences = builder.sharedPreferences;
+        onDataChangeListener = builder.onDataChangeListener;
 
         //init editor
         editor = sharedPreferences.edit();
@@ -67,6 +70,16 @@ public class ConcealPrefRepository {
                 .setEnableKeyCrypto(mEnableCryptKey)
                 .setStoredFolder(mFolderName)
                 .create();
+
+        //init listener if set
+        if (onDataChangeListener!=null) {
+            sharedPreferences.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
+                @Override
+                public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                    onDataChangeListener.onDataChange(key, sharedPreferences.getString(key,""));
+                }
+            });
+        }
     }
 
     /**********************
@@ -410,7 +423,6 @@ public class ConcealPrefRepository {
         }
     }
 
-
     public Boolean getBoolean(@NonNull String key){
         try {
             String value = getString(key);
@@ -510,6 +522,7 @@ public class ConcealPrefRepository {
         private static String LAST_NAME = "user.last_name";
         private static String AGE = "user.age";
         private static String GENDER = "user.gender";
+        private static String BIRTH_DATE = "user.dob";
         private static String ADDRESS = "user.address";
         private static String EMAIL = "user.email";
         private static String PUSH_TOKEN = "user.push.token";
@@ -518,6 +531,7 @@ public class ConcealPrefRepository {
         private static String DEVICE_ID = "user.device.id";
         private static String HAS_LOGIN = "user.has_login";
         private static String PASSWORD = "user.password";
+        private static String FIRST_TIME_USER = "user.first_time";
 
         public UserPref() {
             if (editor == null){
@@ -547,6 +561,10 @@ public class ConcealPrefRepository {
         }
         public UserPref setGender(String gender){
             editor.putString(hashKey(GENDER),hideValue(gender));
+            return this;
+        }
+        public UserPref setBirthDate(String birthDate){
+            editor.putString(hashKey(BIRTH_DATE),hideValue(birthDate));
             return this;
         }
         public UserPref setAddress(String address){
@@ -581,6 +599,10 @@ public class ConcealPrefRepository {
             editor.putString(hashKey(PASSWORD),hideValue(password));
             return this;
         }
+        public UserPref setFirstTimeUser(boolean firstTime){
+            editor.putString(hashKey(FIRST_TIME_USER),hideValue(String.valueOf(firstTime)));
+            return this;
+        }
 
         public String getUserName(){
             return returnValue(NAME);
@@ -605,6 +627,9 @@ public class ConcealPrefRepository {
         }
         public String getGender(){
             return returnValue(GENDER);
+        }
+        public String getBirthDate(){
+            return returnValue(BIRTH_DATE);
         }
         public String getAddress(){
             return returnValue(ADDRESS);
@@ -635,6 +660,16 @@ public class ConcealPrefRepository {
         }
         public String getPassword(){
             return returnValue(PASSWORD);
+        }
+
+        public Boolean isFirstTimeUser(){
+            try {
+                return Boolean.parseBoolean(returnValue(FIRST_TIME_USER));
+            }
+            catch (Exception e){
+                e.printStackTrace();
+                return null;
+            }
         }
 
         private String returnValue(String KEY){
@@ -811,6 +846,7 @@ public class ConcealPrefRepository {
         private boolean mEnableCryptKey = false;
         private String mEntityPasswordRaw = null;
         private SharedPreferences sharedPreferences;
+        private OnDataChangeListener onDataChangeListener;
 
         public PreferencesBuilder(Context context) {
             mContext = context;
@@ -868,6 +904,16 @@ public class ConcealPrefRepository {
         }
 
         /**
+         * Listen to data changes
+         * @param listener OnDataChangeListener listener
+         * @return PreferencesBuilder
+         */
+        public PreferencesBuilder setPrefListener(OnDataChangeListener listener){
+            onDataChangeListener = listener;
+            return this;
+        }
+
+        /**
          * Create Preferences
          * @return ConcealPrefRepository
          */
@@ -888,9 +934,9 @@ public class ConcealPrefRepository {
             }
 
             if (mPrefname!=null){
-                sharedPreferences = mContext.getSharedPreferences(mPrefname, MODE_PRIVATE);
+                sharedPreferences = mContext.getSharedPreferences(CipherUtils.obscureEncodeSixFourString(mPrefname.getBytes()), MODE_PRIVATE);
             }
-            else{
+            else {
                 sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
             }
 
@@ -898,6 +944,8 @@ public class ConcealPrefRepository {
 
         }
     }
+
+    // ============================================================================================================
 
     private static void throwRunTimeException(String message, Throwable throwable){
         new RuntimeException(message,throwable).printStackTrace();
@@ -913,6 +961,8 @@ public class ConcealPrefRepository {
     private static String hideValue(String value){
         return concealCrypto.obscure(value);
     }
+
+    // ============================================================================================================
 
     /***
      * get List of encrypted file
