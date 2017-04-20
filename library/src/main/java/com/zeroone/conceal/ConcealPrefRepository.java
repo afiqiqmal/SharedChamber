@@ -19,7 +19,6 @@ import com.zeroone.conceal.model.CryptoFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -114,7 +113,12 @@ public class ConcealPrefRepository {
         editor.apply();
     }
 
-    //special cases for file to remove by key
+
+    /**
+     * special cases for file to remove by key
+     * @param key preferences key
+     * @return boolean
+     */
     public boolean removeFile(@NonNull String key){
         String path = getString(key);
         if (path != null) {
@@ -131,16 +135,18 @@ public class ConcealPrefRepository {
     }
 
 
-    /*******************************
-     * GET SHAREDPREFERENCES VALUES
-     *******************************/
-
-    /* get all encrypted file in created folder */
+    /**
+     * get all encrypted file in created folder
+     * @return @CryptoFile
+     */
     public List<CryptoFile> getAllConcealEncryptedFiles(){
         return getListFiles(getDirectory());
     }
 
-    /* get list of key and values inside sharedPreferences */
+    /**
+     * get list of key and values inside sharedPreferences
+     * @return Map
+     */
     public Map<String,String> getAllSharedPrefData(){
         Map<String,?> keys = getPreferences().getAll();
         Map<String,String> data = new HashMap<>();
@@ -158,13 +164,20 @@ public class ConcealPrefRepository {
     }
 
 
-    /* Get Preferences */
+    /**
+     * get SharedPreferences
+     * @return SharedPreferences
+     */
     public SharedPreferences getPreferences(){
         return sharedPreferences;
     }
 
 
-    /* Contains */
+    /**
+     * check whether value is existed or not
+     * @param key - key string
+     * @return - value
+     */
     public boolean contains(@NonNull String key){
         return sharedPreferences.contains(hashKey(key));
     }
