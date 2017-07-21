@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.ref.WeakReference;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -38,6 +39,7 @@ import static com.zeroone.conceal.model.Constant.DEFAULT_PREFIX_FILENAME;
 public class ConcealCrypto {
 
     private Crypto crypto;
+    private Context mContext;
     private KeyChain keyChain;
     private Entity mEntityPassword = Entity.create(BuildConfig.APPLICATION_ID);
     private boolean enableCrypto=true;
@@ -46,6 +48,7 @@ public class ConcealCrypto {
 
     private ConcealCrypto(CryptoBuilder builder){
         crypto = builder.crypto;
+        mContext = builder.context.get();
         mEntityPassword = builder.mEntityPassword;
         enableCrypto = builder.mEnabledCrypto;
         enableHashKey = builder.mEnableHashKey;
@@ -320,7 +323,7 @@ public class ConcealCrypto {
     }
 
     public static class CryptoBuilder{
-        Context context;
+        private WeakReference<Context> context;
         private KeyChain makeKeyChain;
         private Crypto crypto;
         private CryptoConfig mKeyChain = CryptoConfig.KEY_256;
@@ -331,7 +334,7 @@ public class ConcealCrypto {
         private String mFolderName;
 
         public CryptoBuilder(Context context) {
-            this.context = context;
+            this.context = new WeakReference<Context>(context.getApplicationContext());
         }
 
         public CryptoBuilder setKeyChain(CryptoConfig config){
@@ -365,8 +368,12 @@ public class ConcealCrypto {
 
         public ConcealCrypto create(){
 
+            if (this.context == null){
+                throw new RuntimeException("Context cannot be null");
+            }
+
             mEntityPassword = Entity.create(CipherUtils.obscureEncodeSixFourString(mEntityPasswordRaw.getBytes()));
-            makeKeyChain = new SharedPrefsBackedKeyChain(context,(mKeyChain==null)?CryptoConfig.KEY_256:mKeyChain);
+            makeKeyChain = new SharedPrefsBackedKeyChain(this.context.get(),(mKeyChain==null)?CryptoConfig.KEY_256:mKeyChain);
 
             if (mKeyChain == null) {
                 crypto = AndroidConceal.get().createDefaultCrypto(makeKeyChain);

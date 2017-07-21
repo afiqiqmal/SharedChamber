@@ -18,6 +18,7 @@ import com.zeroone.conceal.model.CryptoFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -49,7 +50,7 @@ public class ConcealPrefRepository {
 
     @SuppressLint("CommitPrefEdits")
     private ConcealPrefRepository(@NonNull PreferencesBuilder builder){
-        mContext = builder.mContext;
+        mContext = builder.mContext.get();
         mKeyChain = builder.mKeyChain;
         mEnabledCrypto = builder.mEnabledCrypto;
         mEnableCryptKey = builder.mEnableCryptKey;
@@ -851,7 +852,7 @@ public class ConcealPrefRepository {
      ****************************************************************************************/
     public static class PreferencesBuilder{
 
-        private Context mContext;
+        private WeakReference<Context> mContext;
         private CryptoConfig mKeyChain = CryptoConfig.KEY_256;
         private String mPrefname = null;
         private String mFolderName = null;
@@ -862,7 +863,7 @@ public class ConcealPrefRepository {
         private OnDataChangeListener onDataChangeListener;
 
         public PreferencesBuilder(Context context) {
-            mContext = context;
+            mContext = new WeakReference<>(context.getApplicationContext());
         }
 
         public PreferencesBuilder useDefaultPrefStorage(){
@@ -932,6 +933,10 @@ public class ConcealPrefRepository {
          */
         public ConcealPrefRepository create(){
 
+            if (this.mContext == null){
+                throw new RuntimeException("Context cannot be null");
+            }
+
             if(mFolderName !=null){
                 File file = new File(mFolderName);
                 try {
@@ -947,10 +952,10 @@ public class ConcealPrefRepository {
             }
 
             if (mPrefname!=null){
-                sharedPreferences = mContext.getSharedPreferences(CipherUtils.obscureEncodeSixFourString(mPrefname.getBytes()), MODE_PRIVATE);
+                sharedPreferences = this.mContext.get().getSharedPreferences(CipherUtils.obscureEncodeSixFourString(mPrefname.getBytes()), MODE_PRIVATE);
             }
             else {
-                sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+                sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.mContext.get());
             }
 
             return new ConcealPrefRepository(this);
