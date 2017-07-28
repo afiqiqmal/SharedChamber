@@ -9,7 +9,7 @@ Conceal provides a set of Java APIs to perform cryptography on Android. It was d
 Gradle
 ```gradle
 dependencies {
-        compile 'com.github.afiqiqmal:ConcealSharedPreference-Android:1.2.0'
+        compile 'com.github.afiqiqmal:ConcealSharedPreference-Android:1.2.1'
 }
 ```
 
