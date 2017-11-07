@@ -2,14 +2,14 @@
 <b>Project :</b> Secure Android SharedPreferences Using Conceal Crypto by Facebook<br>
 <b>Description </b>
 <br>
-Conceal provides a set of Java APIs to perform cryptography on Android. It was designed to be able to encrypt large files on disk in a fast and memory efficient manner. Implementation on SharedPreferences of Android would be great data Encryption and Decryption. 
+Conceal provides a set of Java APIs to perform cryptography on Android. It was designed to be able to encrypt large files on disk in a fast and memory efficient manner. Implementation on SharedPreferences of Android would be great data Encryption and Decryption. Currently supported Facebook Conceal V2.0 
 
 ## Installation
 
 Gradle
 ```gradle
 dependencies {
-        compile 'com.github.afiqiqmal:ConcealSharedPreference-Android:1.2.1'
+        compile 'com.github.afiqiqmal:ConcealSharedPreference-Android:1.3.0'
 }
 ```
 
@@ -18,7 +18,7 @@ Maven
 <dependency>
 	<groupId>com.github.afiqiqmal</groupId>
 	<artifactId>ConcealSharedPreference-Android</artifactId>
-	<version>1.2.0</version>
+	<version>1.3.0</version>
 </dependency>
 ```
 
@@ -27,6 +27,14 @@ Maven
 [![](https://preview.ibb.co/mLpRtv/Screen_Shot_2017_03_27_at_10_12_12_AM.png)]()
 
 ## Usage
+
+#### First of All
+
+it needed to first init in Application class in `oncreate` method or on Base Activity Class. or everything is not working =D
+```java
+ConcealPrefRepository.applicationInit(this, false);
+```
+
 
 Permission need to use in your project. Please Allow it first, or it will affect .putImage and .putFile method
 ```xml

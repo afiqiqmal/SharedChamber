@@ -2,6 +2,7 @@ package com.zeroone.conceal;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -14,6 +15,7 @@ import android.support.annotation.RequiresPermission;
 import android.support.annotation.StringRes;
 
 import com.facebook.crypto.CryptoConfig;
+import com.facebook.soloader.SoLoader;
 import com.zeroone.conceal.model.CryptoFile;
 
 import java.io.File;
@@ -80,6 +82,19 @@ public class ConcealPrefRepository {
                 }
             });
         }
+    }
+
+
+    /***
+     * Since Conceal facebook v2.0.+ (2017-06-27) you will need to initialize the native library loader.
+     * This step is needed because the library loader uses the context.
+     * The highly suggested way to do it is in the application class onCreate method like this:
+     * @param application
+     * @param type
+     */
+
+    public static void applicationInit(Application application, boolean type){
+        SoLoader.init(application, type);
     }
 
     /**********************
