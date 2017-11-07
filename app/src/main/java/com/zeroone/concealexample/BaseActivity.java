@@ -30,6 +30,7 @@ public class BaseActivity extends AppCompatActivity implements OnDataChangeListe
                 .setFolderName("testing")
                 .setPrefListener(this)
                 .create();
+
     }
 
     @Override

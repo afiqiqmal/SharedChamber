@@ -334,7 +334,7 @@ public class ConcealCrypto {
         private String mFolderName;
 
         public CryptoBuilder(Context context) {
-            this.context = new WeakReference<Context>(context.getApplicationContext());
+            this.context = new WeakReference<>(context.getApplicationContext());
         }
 
         public CryptoBuilder setKeyChain(CryptoConfig config){

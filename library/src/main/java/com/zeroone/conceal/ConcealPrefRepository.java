@@ -89,17 +89,27 @@ public class ConcealPrefRepository {
         concealCrypto.clearCrypto();
     }
 
-    public void destroySharedPreferences(){
-        editor.clear().apply();
-        destroyCrypto();
-    }
+    public void clearPrefs(){
+        try {
+            editor.clear().apply();
+            destroyCrypto();
+        } catch (Exception ignored) {
 
+        }
+    }
 
     /*******************************
      * GET SHAREDPREFERENCES TOTAL
      *******************************/
     public int getPrefsSize(){
         return getPreferences().getAll().size();
+    }
+
+    /*******************************
+     * GET Current ConcealCrypto
+     *******************************/
+    public ConcealCrypto getCrypto(){
+        return concealCrypto;
     }
 
 
@@ -114,6 +124,9 @@ public class ConcealPrefRepository {
         editor.apply();
     }
 
+    public void remove(@NonNull String key) {
+        editor.remove(hashKey(key)).apply();
+    }
 
     /**
      * special cases for file to remove by key
@@ -529,23 +542,87 @@ public class ConcealPrefRepository {
         return null;
     }
 
+    public static class DevicePref{
+        private static final String DEVICE_ID = "device.id";
+        private static final String DEVICE_IS_UPDATE = "device.is_update";
+        private static final String DEVICE_VERSION = "device.version";
+        private static final String DEVICE_OS = "device.os";
+
+        public DevicePref() {
+            if (editor == null){
+                throw new IllegalArgumentException("Need to initialize ConcealPrefRepository.PreferencesBuilder first");
+            }
+        }
+
+        public DevicePref setDeviceId(String deviceId){
+            editor.putString(hashKey(DEVICE_ID),hideValue(deviceId));
+            return this;
+        }
+
+        public DevicePref setDeviceVersion(String version){
+            editor.putString(hashKey(DEVICE_VERSION), hideValue(version));
+            return this;
+        }
+
+        public DevicePref setDeviceIsUpdated(boolean updated){
+            editor.putString(hashKey(DEVICE_IS_UPDATE), hideValue(String.valueOf(updated)));
+            return this;
+        }
+
+        public DevicePref setDeviceOS(String os){
+            editor.putString(hashKey(DEVICE_OS), hideValue(String.valueOf(os)));
+            return this;
+        }
+
+        public Boolean isDeviceUpdate(){
+            try {
+                return Boolean.parseBoolean(returnValue(DEVICE_IS_UPDATE));
+            }
+            catch (Exception e){
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        public String getDeviceId(){
+            return returnValue(DEVICE_ID);
+        }
+
+        public String getDeviceVersion(){
+            return returnValue(DEVICE_VERSION);
+        }
+
+        public String getDeviceOs(){
+            return returnValue(DEVICE_OS);
+        }
+
+
+        private String returnValue(String KEY){
+            return concealCrypto.deObscure(sharedPreferences.getString(hashKey(KEY),null));
+        }
+
+        public void apply() {
+            editor.apply();
+        }
+
+    }
+
     public static class UserPref{
-        private static String NAME = "user.username";
-        private static String FULLNAME = "user.fullname";
-        private static String FIRST_NAME = "user.first_name";
-        private static String LAST_NAME = "user.last_name";
-        private static String AGE = "user.age";
-        private static String GENDER = "user.gender";
-        private static String BIRTH_DATE = "user.dob";
-        private static String ADDRESS = "user.address";
-        private static String EMAIL = "user.email";
-        private static String PUSH_TOKEN = "user.push.token";
-        private static String PHONE_NO = "user.phone_number";
-        private static String MOBILE_NO = "user.mobile_number";
-        private static String DEVICE_ID = "user.device.id";
-        private static String HAS_LOGIN = "user.has_login";
-        private static String PASSWORD = "user.password";
-        private static String FIRST_TIME_USER = "user.first_time";
+        private static final String NAME = "user.username";
+        private static final String FULLNAME = "user.fullname";
+        private static final String FIRST_NAME = "user.first_name";
+        private static final String LAST_NAME = "user.last_name";
+        private static final String AGE = "user.age";
+        private static final String GENDER = "user.gender";
+        private static final String BIRTH_DATE = "user.dob";
+        private static final String ADDRESS = "user.address";
+        private static final String EMAIL = "user.email";
+        private static final String PUSH_TOKEN = "user.push.token";
+        private static final String PHONE_NO = "user.phone_number";
+        private static final String MOBILE_NO = "user.mobile_number";
+        private static final String HAS_LOGIN = "user.has_login";
+        private static final String PASSWORD = "user.password";
+        private static final String FIRST_TIME_USER = "user.first_time";
 
         public UserPref() {
             if (editor == null){
@@ -601,10 +678,7 @@ public class ConcealPrefRepository {
             editor.putString(hashKey(MOBILE_NO),hideValue(mobileNumber));
             return this;
         }
-        public UserPref setDeviceId(String deviceId){
-            editor.putString(hashKey(DEVICE_ID),hideValue(deviceId));
-            return this;
-        }
+
         public UserPref setLogin(boolean login){
             editor.putString(hashKey(HAS_LOGIN),hideValue(String.valueOf(login)));
             return this;
@@ -659,9 +733,6 @@ public class ConcealPrefRepository {
         }
         public String getMobileNumber(){
             return returnValue(MOBILE_NO);
-        }
-        public String getDeviceId(){
-            return returnValue(DEVICE_ID);
         }
         public Boolean hasLogin(){
             try {
@@ -1013,7 +1084,6 @@ public class ConcealPrefRepository {
 
         return inFiles;
     }
-
 
     /***
      * get default directory
