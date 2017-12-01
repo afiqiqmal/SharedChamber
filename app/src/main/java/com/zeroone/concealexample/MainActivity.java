@@ -30,57 +30,111 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ConcealPrefRepository.applicationInit(getApplication(), false);
+        ConcealPrefRepository.applicationInit(getApplication());
 
+        concealPrefRepository.clearPrefs();
+
+
+        //FIRST TEST
+        concealPrefRepository.putString(NAME_KEY, "HAFIQ IQMAL");
+        concealPrefRepository.putInt(AGE_KEY, 24);
+
+        Log.d("FIRST TEST", concealPrefRepository.getString(NAME_KEY));
+        Log.d("FIRST TEST",concealPrefRepository.getString(AGE_KEY));
+        Log.d("FIRST TEST SIZE", ""+concealPrefRepository.getPrefsSize());
+
+        concealPrefRepository.clearPrefs();
+
+        //SECOND TEST
         new ConcealPrefRepository.Editor()
                 .putString(NAME_KEY, "Hafiq Iqmal")
                 .putInt(AGE_KEY, 24)
                 .putString(EMAIL_KEY, "hafiqiqmal93@gmail.com")
                 .apply();
 
+        Log.d("SECOND TEST", concealPrefRepository.getString(NAME_KEY));
+        Log.d("SECOND TEST",concealPrefRepository.getString(AGE_KEY));
+        Log.d("SECOND TEST SIZE", ""+concealPrefRepository.getPrefsSize());
+
+
+
+        concealPrefRepository.clearPrefs();
 
         //add user details preferences
         new ConcealPrefRepository.UserPref("PREFIX").setFirstName("Firstname").setLastName("Lasname").setEmail("hello@gmail.com").apply();
 
         //get user details
-        Log.d("TAG",new ConcealPrefRepository.UserPref("PREFIX").getFirstName());
-        Log.d("TAG",new ConcealPrefRepository.UserPref().setDefault("No Data").getLastName());
-        Log.d("TAG",new ConcealPrefRepository.UserPref().setDefault("No Data").getEmail());
+        Log.d("THIRD_TEST",new ConcealPrefRepository.UserPref("PREFIX").getFirstName());
+        Log.d("THIRD_TEST",new ConcealPrefRepository.UserPref().setDefault("No Data").getLastName());
+        Log.d("THIRD_TEST",new ConcealPrefRepository.UserPref("PREFIX").setDefault("No Data").getEmail());
+        Log.d("THIRD_TEST TEST SIZE", ""+concealPrefRepository.getPrefsSize());
 
 
-//        Map<String,String> map =concealPrefRepository.getAllSharedPrefData();
-//        for(Map.Entry<String,?> entry : map.entrySet()){
-//            try {
-//                Log.d("TAG",entry.getKey()+" :: "+entry.getValue().toString());
-//            }
-//            catch (Exception e){
-//                e.printStackTrace();
-//            }
-//        }
-//
-//        List<CryptoFile> cryptoFileList = concealPrefRepository.getAllConcealEncryptedFiles();
-//        for (CryptoFile cryptoFile :cryptoFileList){
-//            Log.d("TAG",cryptoFile.getFileName());
-//        }
-//
-//        Log.d("TAG",""+concealPrefRepository.getPrefsSize());
-//
-//        ConcealCrypto concealCrypto = new ConcealCrypto.CryptoBuilder(this)
-//                .setEnableCrypto(true) //default true
-//                .setKeyChain(CryptoConfig.KEY_256) // CryptoConfig.KEY_256 or CryptoConfig.KEY_128
-//                .createPassword("Mac OSX")
-//                .create();
-//
-//        String test = "Hello World";
-//        String cipher =  concealCrypto.obscure(test); //encrypt
-//        Log.d("Display", cipher);
-//        String dec = concealCrypto.deObscure(cipher); //decrypt
-//        Log.d("Display", cipher+" ===== "+dec);
-//
-//
-//        cipher =  concealCrypto.obscureWithIteration(test,4); //encrypt with 4 times
-//        Log.d("Display", cipher);
-//        dec = concealCrypto.deObscureWithIteration(cipher,3); //decrypt with 4 times
-//        Log.d("Display", cipher+" ===== "+dec);
+
+        concealPrefRepository.clearPrefs();
+
+
+        ConcealPrefRepository.UserPref userPref = new ConcealPrefRepository.UserPref("PREFIX", "No Data");
+        userPref.setUserName("afiqiqmal");
+        userPref.setEmail("afiqiqmal@example.com");
+        userPref.apply();
+
+
+        //get user details
+        Log.d("FOURTH_TEST",userPref.getUserName());
+        Log.d("FOURTH_TEST",userPref.getEmail());
+
+
+
+        ConcealPrefRepository.DevicePref devicePref = new ConcealPrefRepository.DevicePref("PREFIX", "No Data");
+        devicePref.setDeviceId("ABC123123123");
+        devicePref.setDeviceOS("android");
+        devicePref.apply();
+
+
+        //get user details
+        Log.d("FIFTH_TEST",devicePref.getDeviceId());
+        Log.d("FIFTH_TEST",devicePref.getDeviceOs());
+
+
+
+        Map<String,String> map =concealPrefRepository.getAllSharedPrefData();
+        for(Map.Entry<String,?> entry : map.entrySet()){
+            try {
+                Log.d("VIEW_ALL",entry.getKey()+" :: "+entry.getValue().toString());
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        Log.d("VIEW ALL SIZE", ""+concealPrefRepository.getPrefsSize());
+
+
+        ConcealCrypto concealCrypto = new ConcealCrypto.CryptoBuilder(this)
+                .setEnableCrypto(true) //default true
+                .setKeyChain(CryptoConfig.KEY_256) // CryptoConfig.KEY_256 or CryptoConfig.KEY_128
+                .createPassword("Mac OSX")
+                .create();
+
+        String test = "Hello World";
+        String cipher =  concealCrypto.obscure(test); //encrypt
+        Log.d("CYRPTO TEST E", cipher);
+        String dec = concealCrypto.deObscure(cipher); //decrypt
+        Log.d("CYRPTO TEST D", dec);
+
+        test = "Hello World Iteration";
+        cipher =  concealCrypto.obscureWithIteration(test,4); //encrypt with 4 times
+        Log.d("CYRPTO TEST E", cipher);
+        dec = concealCrypto.deObscureWithIteration(cipher,4); //decrypt with 4 times
+        Log.d("CYRPTO TEST D", dec);
+
+
+
+        cipher =  concealCrypto.aesEncrypt("Hello World is World Hello Aes Cryption");
+        Log.d("AES E", cipher);
+        dec = concealCrypto.aesDecrypt(cipher);
+        Log.d("AES D", dec);
+
+
     }
 }

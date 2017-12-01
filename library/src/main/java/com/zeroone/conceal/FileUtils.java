@@ -1,16 +1,22 @@
 package com.zeroone.conceal;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.zeroone.conceal.model.CryptoFile;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.zeroone.conceal.model.Constant.DEFAULT_DIRECTORY;
+import static com.zeroone.conceal.model.Constant.DEFAULT_IMAGE_FOLDER;
+import static com.zeroone.conceal.model.Constant.DEFAULT_PREFIX_FILENAME;
 
 /**
  * @author : hafiq on 24/03/2017.
@@ -105,6 +111,66 @@ class FileUtils {
             }
         }
         return false;
+    }
+
+    /***
+     * get default directory
+     * @return File
+     */
+    @Nullable
+    static File getDirectory(String mFolderName){
+        File file = new File(DEFAULT_DIRECTORY+mFolderName+"/"+DEFAULT_IMAGE_FOLDER);
+        if (file.exists())
+            return file;
+
+        return null;
+    }
+
+    /***
+     * get default folder
+     * @return File
+     */
+    @Nullable
+    static File getImageDirectory(String mFolderName){
+        File file = new File(DEFAULT_DIRECTORY+mFolderName+"/"+DEFAULT_IMAGE_FOLDER);
+        if (file.mkdirs())
+            return file;
+        if (file.exists())
+            return file;
+
+        return null;
+    }
+
+    /***
+     * get List of encrypted file
+     * @param parentDir - root directory
+     * @return File
+     */
+    static List<CryptoFile> getListFiles(@Nullable File parentDir) {
+        List<CryptoFile> inFiles = new ArrayList<>();
+        try {
+            if (parentDir!=null) {
+                File[] files = parentDir.listFiles();
+                for (File file : files) {
+                    if (file.isDirectory()) {
+                        inFiles.addAll(getListFiles(file));
+                    } else {
+                        if (file.getName().startsWith(DEFAULT_PREFIX_FILENAME)) {
+                            CryptoFile cryptoFile = new CryptoFile();
+                            cryptoFile.setFileName(file.getName());
+                            cryptoFile.setPath(file.getAbsolutePath());
+                            cryptoFile.setType(file.getParent());
+                            inFiles.add(cryptoFile);
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return inFiles;
     }
 
 }

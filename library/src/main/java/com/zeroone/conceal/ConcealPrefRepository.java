@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
 import android.support.annotation.StringRes;
+import android.util.Log;
 
 import com.facebook.crypto.CryptoConfig;
 import com.facebook.soloader.SoLoader;
@@ -21,17 +22,16 @@ import com.zeroone.conceal.model.CryptoFile;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
-import static com.zeroone.conceal.model.Constant.DEFAULT_DIRECTORY;
-import static com.zeroone.conceal.model.Constant.DEFAULT_IMAGE_FOLDER;
+import static com.zeroone.conceal.FileUtils.getDirectory;
+import static com.zeroone.conceal.FileUtils.getImageDirectory;
+import static com.zeroone.conceal.FileUtils.getListFiles;
 import static com.zeroone.conceal.model.Constant.DEFAULT_MAIN_FOLDER;
-import static com.zeroone.conceal.model.Constant.DEFAULT_PREFIX_FILENAME;
 
 /**
  * @author : hafiq on 23/03/2017.
@@ -40,10 +40,6 @@ import static com.zeroone.conceal.model.Constant.DEFAULT_PREFIX_FILENAME;
 public class ConcealPrefRepository {
 
     private Context mContext;
-    private CryptoConfig mKeyChain = CryptoConfig.KEY_256;
-    private boolean mEnabledCrypto = false;
-    private boolean mEnableCryptKey = false;
-    private String mEntityPasswordRaw = null;
     private static String mFolderName;
     private static SharedPreferences sharedPreferences;
     private static SharedPreferences.Editor editor;
@@ -53,13 +49,14 @@ public class ConcealPrefRepository {
     @SuppressLint("CommitPrefEdits")
     private ConcealPrefRepository(@NonNull PreferencesBuilder builder){
         mContext = builder.mContext.get();
-        mKeyChain = builder.mKeyChain;
-        mEnabledCrypto = builder.mEnabledCrypto;
-        mEnableCryptKey = builder.mEnableCryptKey;
-        mEntityPasswordRaw = builder.mEntityPasswordRaw;
         mFolderName = builder.mFolderName;
         sharedPreferences = builder.sharedPreferences;
         onDataChangeListener = builder.onDataChangeListener;
+
+        CryptoConfig mKeyChain = builder.mKeyChain;
+        boolean mEnabledCrypto = builder.mEnabledCrypto;
+        boolean mEnableCryptKey = builder.mEnableCryptKey;
+        String mEntityPasswordRaw = builder.mEntityPasswordRaw;
 
         //init editor
         editor = sharedPreferences.edit();
@@ -84,17 +81,15 @@ public class ConcealPrefRepository {
         }
     }
 
-
     /***
      * Since Conceal facebook v2.0.+ (2017-06-27) you will need to initialize the native library loader.
      * This step is needed because the library loader uses the context.
      * The highly suggested way to do it is in the application class onCreate method like this:
      * @param application - Application Context ex: this
-     * @param type - false
      */
 
-    public static void applicationInit(Application application, boolean type){
-        SoLoader.init(application, type);
+    public static void applicationInit(Application application){
+        SoLoader.init(application, false);
     }
 
     /**********************
@@ -107,9 +102,8 @@ public class ConcealPrefRepository {
     public void clearPrefs(){
         try {
             editor.clear().apply();
-            destroyCrypto();
-        } catch (Exception ignored) {
-
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -169,7 +163,7 @@ public class ConcealPrefRepository {
      * @return @CryptoFile
      */
     public List<CryptoFile> getAllConcealEncryptedFiles(){
-        return getListFiles(getDirectory());
+        return getListFiles(getDirectory(mFolderName));
     }
 
     /**
@@ -686,7 +680,10 @@ public class ConcealPrefRepository {
         }
 
         private String setHashKey(String key) {
-            return hashKey(PREFIX+key);
+            if (PREFIX == null)
+                return hashKey(key);
+            else
+                return hashKey(PREFIX+key);
         }
 
         public void apply() {
@@ -994,7 +991,10 @@ public class ConcealPrefRepository {
         }
 
         private String setHashKey(String key) {
-            return hashKey(PREFIX+key);
+            if (PREFIX == null)
+                return hashKey(key);
+            else
+                return hashKey(PREFIX+key);
         }
 
         public void apply() {
@@ -1213,7 +1213,10 @@ public class ConcealPrefRepository {
         }
 
         private String setHashKey(String key) {
-            return hashKey(PREFIX+key);
+            if (PREFIX == null)
+                return hashKey(key);
+            else
+                return hashKey(PREFIX+key);
         }
 
         public boolean commit() {
@@ -1359,65 +1362,5 @@ public class ConcealPrefRepository {
     }
 
     // ============================================================================================================
-
-    /***
-     * get List of encrypted file
-     * @param parentDir - root directory
-     * @return File
-     */
-    private List<CryptoFile> getListFiles(@Nullable File parentDir) {
-        List<CryptoFile> inFiles = new ArrayList<>();
-        try {
-            if (parentDir!=null) {
-                File[] files = parentDir.listFiles();
-                for (File file : files) {
-                    if (file.isDirectory()) {
-                        inFiles.addAll(getListFiles(file));
-                    } else {
-                        if (file.getName().startsWith(DEFAULT_PREFIX_FILENAME)) {
-                            CryptoFile cryptoFile = new CryptoFile();
-                            cryptoFile.setFileName(file.getName());
-                            cryptoFile.setPath(file.getAbsolutePath());
-                            cryptoFile.setType(file.getParent());
-                            inFiles.add(cryptoFile);
-                        }
-                    }
-                }
-            }
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-
-        return inFiles;
-    }
-
-    /***
-     * get default directory
-     * @return File
-     */
-    @Nullable
-    private static File getDirectory(){
-        File file = new File(DEFAULT_DIRECTORY+mFolderName+"/"+DEFAULT_IMAGE_FOLDER);
-        if (file.exists())
-            return file;
-
-        return null;
-    }
-
-    /***
-     * get default folder
-     * @return File
-     */
-    @Nullable
-    private static File getImageDirectory(String mFolderName){
-        File file = new File(DEFAULT_DIRECTORY+mFolderName+"/"+DEFAULT_IMAGE_FOLDER);
-        if (file.mkdirs())
-            return file;
-        if (file.exists())
-            return file;
-
-        return null;
-    }
 
 }

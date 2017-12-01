@@ -25,6 +25,7 @@ import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Random;
 
 import static com.zeroone.conceal.model.Constant.DEFAULT_DIRECTORY;
 import static com.zeroone.conceal.model.Constant.DEFAULT_FILES_FOLDER;
@@ -39,17 +40,17 @@ import static com.zeroone.conceal.model.Constant.DEFAULT_PREFIX_FILENAME;
 public class ConcealCrypto {
 
     private Crypto crypto;
-    private Context mContext;
     private KeyChain keyChain;
     private Entity mEntityPassword = Entity.create(BuildConfig.APPLICATION_ID);
+    private String mEntityPasswordRaw = null;
     private boolean enableCrypto=true;
     private boolean enableHashKey =true;
     private String MAIN_DIRECTORY;
 
     private ConcealCrypto(CryptoBuilder builder){
         crypto = builder.crypto;
-        mContext = builder.context.get();
         mEntityPassword = builder.mEntityPassword;
+        mEntityPasswordRaw = builder.mEntityPasswordRaw;
         enableCrypto = builder.mEnabledCrypto;
         enableHashKey = builder.mEnableHashKey;
         MAIN_DIRECTORY = builder.mFolderName;
@@ -320,6 +321,14 @@ public class ConcealCrypto {
         }
 
         return plainText;
+    }
+
+    public String aesEncrypt(String plainText) {
+        return CipherUtils.AesCrypt(mEntityPasswordRaw, CipherUtils.getRandomString(16) ,plainText);
+    }
+
+    public String aesDecrypt(String plainText) {
+        return CipherUtils.AesDecrypt(mEntityPasswordRaw , plainText);
     }
 
     public static class CryptoBuilder{
