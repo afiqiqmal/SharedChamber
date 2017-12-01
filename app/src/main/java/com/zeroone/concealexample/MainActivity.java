@@ -40,12 +40,12 @@ public class MainActivity extends BaseActivity {
 
 
         //add user details preferences
-        new ConcealPrefRepository.UserPref().setFirstName("Firstname").setLastName("Lasname").setEmail("hello@gmail.com").apply();
+        new ConcealPrefRepository.UserPref("PREFIX").setFirstName("Firstname").setLastName("Lasname").setEmail("hello@gmail.com").apply();
 
         //get user details
-        Log.d("TAG",new ConcealPrefRepository.UserPref().getFirstName());
-        Log.d("TAG",new ConcealPrefRepository.UserPref().getLastName());
-        Log.d("TAG",new ConcealPrefRepository.UserPref().getEmail());
+        Log.d("TAG",new ConcealPrefRepository.UserPref("PREFIX").getFirstName());
+        Log.d("TAG",new ConcealPrefRepository.UserPref().setDefault("No Data").getLastName());
+        Log.d("TAG",new ConcealPrefRepository.UserPref().setDefault("No Data").getEmail());
 
 
 //        Map<String,String> map =concealPrefRepository.getAllSharedPrefData();

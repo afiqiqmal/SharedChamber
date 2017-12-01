@@ -168,15 +168,26 @@ public class BaseActivity extends AppCompatActivity implements OnDataChangeListe
 ```
 
 <b>Easier Save User Detail Preferences</b>
+
 ```java
 new ConcealPrefRepository.UserPref()
 .setFirstName("Firstname")
 .setLastName("Lasname")
 .setEmail("hello@gmail.com")
 .....
-.apply();
+.apply(); // need to apply() or commit()
+
+```
+
+or
+
+```java
+ConcealPrefRepository.UserPref().applyFirstName("Firstname"); //directly apply
+ConcealPrefRepository.UserPref().applyLastName("Firstname"); //directly apply
+```
 
 
+```java
 //get user details
 Log.d("TAG",new ConcealPrefRepository.UserPref().getFirstName());
 Log.d("TAG",new ConcealPrefRepository.UserPref().getLastName());
@@ -185,7 +196,15 @@ Log.d("TAG",new ConcealPrefRepository.UserPref().getEmail());
 
 ```
 
-<b>Extra Usage for Conceal Encryption and Decryption</b>
+Key prefix - Apply key with prefix
+```java
+new ConcealPrefRepository.UserPref("KEY PREFIX").setFirstName("Firstname").apply();
+new ConcealPrefRepository.UserPref("KEY PREFIX").setLastName("Firstname").apply();
+
+```
+
+
+### Extra Usage for Conceal Encryption and Decryption
 
 ```java
 ConcealCrypto concealCrypto = new ConcealCrypto(this,CryptoConfig.KEY_256); // CryptoConfig.KEY_256 or CryptoConfig.KEY_128
