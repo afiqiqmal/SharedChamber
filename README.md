@@ -32,7 +32,7 @@ Maven
 
 it needed to first init in Application class in `oncreate` method or on Base Activity Class. or everything is not working =D
 ```java
-ConcealPrefRepository.applicationInit(this, false);
+ConcealPrefRepository.applicationInit(this);
 ```
 
 
@@ -239,6 +239,11 @@ Log.d("Display", cipher+" ===== "+dec);
 String cipher =  concealCrypto.obscureWithIteration(test,4); //encrypt with 4 times iteration
 String dec = concealCrypto.deObscureWithIteration(cipher,4); //decrypt with 4 times iteration
 Log.d("Display", cipher+" ===== "+dec);    
+
+String cipher =  concealCrypto.aesEncrypt("Hello World is World Hello Aes Cryption");
+Log.d("AES E", cipher);
+String dec = concealCrypto.aesDecrypt(cipher);
+Log.d("AES D", dec);
 
 //special case for files and images
 concealCrypto.obscureFile(File file,boolean deleteOldFile);
