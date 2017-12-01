@@ -24,7 +24,7 @@ Maven
 
 ## Method
 
-[![](https://preview.ibb.co/mLpRtv/Screen_Shot_2017_03_27_at_10_12_12_AM.png)]()
+[![](http://image.ibb.co/cQpGZb/Screen_Shot_2017_12_01_at_7_31_42_PM.png)]()
 
 ## Usage
 
