@@ -3,7 +3,7 @@ package com.zeroone.conceal.model;
 /**
  * @author : hafiq on 26/03/2017.
  */
-
+@SuppressWarnings("unused")
 public class CryptoFile {
 
     private int id;

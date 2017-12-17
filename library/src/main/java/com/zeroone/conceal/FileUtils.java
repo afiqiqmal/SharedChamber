@@ -43,8 +43,6 @@ class FileUtils {
                     outputChannel.close();
 
                     file.delete();
-
-                    Log.d("Files","File have been moved to : "+newFile.getAbsolutePath());
                 }
                 catch (Exception e){
                     return null;

@@ -1,10 +1,8 @@
 package com.zeroone.concealexample;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import com.facebook.crypto.CryptoConfig;
 import com.zeroone.conceal.ConcealPrefRepository;
@@ -26,8 +24,7 @@ public class BaseActivity extends AppCompatActivity implements OnDataChangeListe
                 .useDefaultPrefStorage()
                 .sharedPrefsBackedKeyChain(CryptoConfig.KEY_256)
                 .enableCrypto(false,true)
-                .createPassword("Android")
-                .setFolderName("testing")
+                .createPassword("Password@123")
                 .setPrefListener(this)
                 .create();
 

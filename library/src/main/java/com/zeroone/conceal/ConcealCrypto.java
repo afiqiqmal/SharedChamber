@@ -25,7 +25,6 @@ import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Random;
 
 import static com.zeroone.conceal.model.Constant.DEFAULT_DIRECTORY;
 import static com.zeroone.conceal.model.Constant.DEFAULT_FILES_FOLDER;
@@ -36,7 +35,7 @@ import static com.zeroone.conceal.model.Constant.DEFAULT_PREFIX_FILENAME;
 /**
  * @author : hafiq on 23/03/2017.
  */
-
+@SuppressWarnings("unused")
 public class ConcealCrypto {
 
     private Crypto crypto;
@@ -371,7 +370,7 @@ public class ConcealCrypto {
          * @return - CryptoBuilder
          */
         public CryptoBuilder setStoredFolder(String folderName){
-            mFolderName = (folderName!=null)?folderName:null;
+            mFolderName = folderName;
             return this;
         }
 

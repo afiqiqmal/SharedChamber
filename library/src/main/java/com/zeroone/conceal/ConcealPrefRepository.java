@@ -13,7 +13,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
 import android.support.annotation.StringRes;
-import android.util.Log;
 
 import com.facebook.crypto.CryptoConfig;
 import com.facebook.soloader.SoLoader;
@@ -36,7 +35,7 @@ import static com.zeroone.conceal.model.Constant.DEFAULT_MAIN_FOLDER;
 /**
  * @author : hafiq on 23/03/2017.
  */
-
+@SuppressWarnings("unused")
 public class ConcealPrefRepository {
 
     private Context mContext;
@@ -552,10 +551,10 @@ public class ConcealPrefRepository {
     }
 
     public static class DevicePref{
-        private static final String DEVICE_ID = "device.id";
-        private static final String DEVICE_IS_UPDATE = "device.is_update";
-        private static final String DEVICE_VERSION = "device.version";
-        private static final String DEVICE_OS = "device.os";
+        private static final String DEVICE_ID = "conceal.device.id";
+        private static final String DEVICE_IS_UPDATE = "conceal.device.is_update";
+        private static final String DEVICE_VERSION = "conceal.device.version";
+        private static final String DEVICE_OS = "conceal.device.os";
 
         private String DEFAULT_VALUE = null;
         private String PREFIX = "conceal";
@@ -696,23 +695,23 @@ public class ConcealPrefRepository {
     }
 
     public static class UserPref{
-        private static final String NAME = "user.username";
-        private static final String FULLNAME = "user.fullname";
-        private static final String FIRST_NAME = "user.first_name";
-        private static final String LAST_NAME = "user.last_name";
-        private static final String AGE = "user.age";
-        private static final String GENDER = "user.gender";
-        private static final String BIRTH_DATE = "user.dob";
-        private static final String ADDRESS = "user.address";
-        private static final String EMAIL = "user.email";
-        private static final String PUSH_TOKEN = "user.push.token";
-        private static final String PHONE_NO = "user.phone_number";
-        private static final String MOBILE_NO = "user.mobile_number";
-        private static final String HAS_LOGIN = "user.has_login";
-        private static final String PASSWORD = "user.password";
-        private static final String FIRST_TIME_USER = "user.first_time";
-        private static final String USER_ID = "user.user_id";
-        private static final String USER_JSON = "user.json";
+        private static final String NAME = "conceal.user.username";
+        private static final String FULLNAME = "conceal.user.fullname";
+        private static final String FIRST_NAME = "conceal.user.first_name";
+        private static final String LAST_NAME = "conceal.user.last_name";
+        private static final String AGE = "conceal.user.age";
+        private static final String GENDER = "conceal.user.gender";
+        private static final String BIRTH_DATE = "conceal.user.dob";
+        private static final String ADDRESS = "conceal.user.address";
+        private static final String EMAIL = "conceal.user.email";
+        private static final String PUSH_TOKEN = "conceal.user.push.token";
+        private static final String PHONE_NO = "conceal.user.phone_number";
+        private static final String MOBILE_NO = "conceal.conceal.user.mobile_number";
+        private static final String HAS_LOGIN = "conceal.user.has_login";
+        private static final String PASSWORD = "conceal.user.password";
+        private static final String FIRST_TIME_USER = "conceal.user.first_time";
+        private static final String USER_ID = "conceal.user.user_id";
+        private static final String USER_JSON = "conceal.user.json";
 
         private String PREFIX = "conceal";
         private String DEFAULT_VALUE = null;
@@ -1351,7 +1350,7 @@ public class ConcealPrefRepository {
     }
 
     private static String hashKey(String key){
-        if (key == null || key.equals(""))
+        if (key == null || key.isEmpty())
             throw new NullPointerException("Key cannot be null or empty");
 
         return concealCrypto.hashKey(key);
