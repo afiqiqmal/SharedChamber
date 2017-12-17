@@ -42,5 +42,10 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:3.0.1', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile project(':library')
+
+    compile (project(':library')) {
+        exclude group: 'com.google.code.gson', module: 'gson'
+    }
+
+    compile 'com.google.code.gson:gson:2.8.2'
 }

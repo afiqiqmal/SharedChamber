@@ -9,11 +9,13 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.facebook.crypto.CryptoConfig;
+import com.google.gson.reflect.TypeToken;
 import com.zeroone.conceal.ConcealCrypto;
 import com.zeroone.conceal.ConcealPrefRepository;
 import com.zeroone.conceal.model.CryptoFile;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +24,8 @@ public class MainActivity extends BaseActivity {
     String NAME_KEY = "user_name";
     String AGE_KEY = "user_age";
     String EMAIL_KEY = "user_email";
+    String USER_DETAIL = "user_detail";
+    String TASK_DETAIL = "task_detail";
     String IMAGE_KEY = "user_image";
     String FILE_KEY = "user_file";
 
@@ -38,9 +42,13 @@ public class MainActivity extends BaseActivity {
         //FIRST TEST
         concealPrefRepository.putString(NAME_KEY, "HAFIQ IQMAL");
         concealPrefRepository.putInt(AGE_KEY, 24);
+        concealPrefRepository.putModel(USER_DETAIL, Data.getUser(this));
+        concealPrefRepository.putModel(TASK_DETAIL, Data.getTaskData(this));
 
         Log.d("FIRST TEST", concealPrefRepository.getString(NAME_KEY));
-        Log.d("FIRST TEST",concealPrefRepository.getString(AGE_KEY));
+        Log.d("FIRST TEST", concealPrefRepository.getString(AGE_KEY));
+        Log.d("FIRST TEST", concealPrefRepository.getModel(USER_DETAIL, User.class).toString());
+        Log.d("FIRST TEST", concealPrefRepository.getModel(TASK_DETAIL, new TypeToken<ArrayList<Task>>(){}.getType()).toString());
         Log.d("FIRST TEST SIZE", ""+concealPrefRepository.getPrefsSize());
 
         concealPrefRepository.clearPrefs();

@@ -10,6 +10,12 @@ Gradle
 ```gradle
 dependencies {
         compile 'com.github.afiqiqmal:ConcealSharedPreference-Android:1.3.1'
+
+        //or
+
+        compile 'com.github.afiqiqmal:ConcealSharedPreference-Android:1.3.1' {
+            exclude group: 'com.google.code.gson', module: 'gson'
+        }
 }
 ```
 
@@ -71,7 +77,10 @@ concealPrefRepository.putString(KEY,"Hello");
 concealPrefRepository.putInt(KEY,1000000);
 concealPrefRepository.putDouble(KEY,100.00);
 concealPrefRepository.putbyte(KEY,new byte[]);
-concealPrefRepository.putMap(KEY,new Map<String,String>())
+concealPrefRepository.putMap(KEY,new Map<String,String>());
+//using gson
+concealPrefRepository.putModel(KEY, Data.getUser(this));
+concealPrefRepository.putModel(KEY, Data.getTaskData(this));
 
 // Files and Images will be encrypted
 // prefix of this encrypted images and files start with "conceal_enc_";
@@ -126,6 +135,10 @@ concealPrefRepository.getInt(KEY);
 concealPrefRepository.getInt(KEY,DEFAULT_VALUE);
 concealPrefRepository.getDouble(KEY);
 concealPrefRepository.getDouble(KEY,DEFAULT_VALUE);
+
+//using gson
+concealPrefRepository.getModel(KEY, User.class).toString();
+concealPrefRepository.getModel(KEY, new TypeToken<ArrayList<Task>>(){}.getType()).toString();
 .....
 
 Bitmap bitmap = concealPrefRepository.getImage(KEY);   //return String path

@@ -16,11 +16,15 @@ import android.support.annotation.StringRes;
 
 import com.facebook.crypto.CryptoConfig;
 import com.facebook.soloader.SoLoader;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.zeroone.conceal.model.CryptoFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -36,7 +40,7 @@ import static com.zeroone.conceal.model.Constant.DEFAULT_MAIN_FOLDER;
  * @author : hafiq on 23/03/2017.
  */
 @SuppressWarnings("unused")
-public class ConcealPrefRepository {
+public class ConcealPrefRepository<Object> {
 
     private Context mContext;
     private static String mFolderName;
@@ -212,59 +216,59 @@ public class ConcealPrefRepository {
     }
 
     public void putString(@NonNull String key, @StringRes int value) {
-        editor.putString(hashKey(key), hideValue(mContext.getResources().getString(value))).apply();
+        putString(key, mContext.getResources().getString(value));
     }
 
     public void putInt(@NonNull String key, int value) {
-        editor.putString(hashKey(key), hideValue(Integer.toString(value))).apply();
+        putString(key, Integer.toString(value));
     }
 
     public void putLong(@NonNull String key, long value) {
-        editor.putString(hashKey(key), hideValue(Long.toString(value))).apply();
+        putString(key, Long.toString(value));
     }
 
     public void putDouble(@NonNull String key, double value) {
-        editor.putString(hashKey(key), hideValue(Double.toString(value))).apply();
+        putString(key, Double.toString(value));
     }
 
     public void putFloat(@NonNull String key, float value) {
-        editor.putString(hashKey(key), hideValue(Float.toString(value))).apply();
+        putString(key, Float.toString(value));
     }
 
     public void putBoolean(@NonNull String key, boolean value) {
-        editor.putString(hashKey(key), hideValue(Boolean.toString(value))).apply();
+        putString(key, Boolean.toString(value));
     }
 
     public void putListString(@NonNull String key, List<String> value){
-        editor.putString(hashKey(key), hideValue(value.toString())).apply();
+        putString(key, value.toString());
     }
 
     public void putListFloat(@NonNull String key, List<Float> value){
-        editor.putString(hashKey(key),hideValue(value.toString())).apply();
+        putString(key,value.toString());
     }
 
     public void putListInteger(@NonNull String key, List<Integer> value){
-        editor.putString(hashKey(key),hideValue(value.toString())).apply();
+        putString(key,value.toString());
     }
 
     public void putListDouble(@NonNull String key, List<Double> value){
-        editor.putString(hashKey(key),hideValue(value.toString())).apply();
+        putString(key,value.toString());
     }
 
     public void putListLong(@NonNull String key, List<Long> value){
-        editor.putString(hashKey(key),hideValue(value.toString())).apply();
+        putString(key,value.toString());
     }
 
     public void putListBoolean(@NonNull String key, List<Boolean> value){
-        editor.putString(hashKey(key),hideValue(value.toString())).apply();
+        putString(key,value.toString());
     }
 
     public void putMap(@NonNull String key,Map<String,String> values){
-        editor.putString(hashKey(key),hideValue(ConverterListUtils.convertMapToString(values))).apply();
+        putString(key,ConverterListUtils.convertMapToString(values));
     }
 
     public void putByte(@NonNull String key,byte[] bytes){
-        editor.putString(hashKey(key),hideValue(new String(bytes))).apply();
+        putString(key,new String(bytes));
     }
 
     @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
@@ -272,7 +276,7 @@ public class ConcealPrefRepository {
         File imageFile = new File(getImageDirectory(mFolderName),"images_"+System.currentTimeMillis()+".png");
         if(FileUtils.saveBitmap(imageFile, bitmap)){
             concealCrypto.obscureFile(imageFile,true);
-            editor.putString(hashKey(key),hideValue(imageFile.getAbsolutePath())).apply();
+            editor.putString(key,imageFile.getAbsolutePath()).apply();
             return imageFile.getAbsolutePath();
         }
         return null;
@@ -285,7 +289,7 @@ public class ConcealPrefRepository {
             File imageFile = new File(getImageDirectory(mFolderName), "images_" + System.currentTimeMillis() + ".png");
             if (FileUtils.saveBitmap(imageFile, bitmap)) {
                 concealCrypto.obscureFile(imageFile, true);
-                editor.putString(hashKey(key), hideValue(imageFile.getAbsolutePath())).apply();
+                putString(key, imageFile.getAbsolutePath());
                 return imageFile.getAbsolutePath();
             }
         }
@@ -302,7 +306,7 @@ public class ConcealPrefRepository {
             File imageFile = FileUtils.moveFile(file,getImageDirectory(mFolderName));
             if (imageFile!=null && imageFile.exists()) {
                 concealCrypto.obscureFile(imageFile,true);
-                editor.putString(hashKey(key), hideValue(imageFile.getAbsolutePath())).apply();
+                putString(key, imageFile.getAbsolutePath());
                 return imageFile.getAbsolutePath();
             }
         }
@@ -310,7 +314,7 @@ public class ConcealPrefRepository {
     }
 
     @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
-    public File putFile(@NonNull String key,@Nullable File file,boolean deleteOldFile){
+    public File putFile(@NonNull String key, @Nullable File file,boolean deleteOldFile){
 
         if (file == null)
             return null;
@@ -318,7 +322,7 @@ public class ConcealPrefRepository {
         try {
             if (file.exists() && !FileUtils.isFileForImage(file)) {
                 File enc = concealCrypto.obscureFile(file,deleteOldFile);
-                editor.putString(hashKey(key), hideValue(enc.getAbsolutePath())).apply();
+                putString(key, enc.getAbsolutePath());
                 return enc;
             }
         }
@@ -327,6 +331,10 @@ public class ConcealPrefRepository {
         }
 
         return null;
+    }
+
+    public void putModel(@NonNull String key, Object object) {
+        putString(key, new Gson().toJson(object));
     }
 
 
@@ -339,6 +347,16 @@ public class ConcealPrefRepository {
 
     public String getString(@NonNull String key,String defaultValue){
         return concealCrypto.deObscure(sharedPreferences.getString(hashKey(key),defaultValue));
+    }
+
+    public Object getModel(@NonNull String key, Type typeOfT) {
+        String value = getString(key);
+        return new Gson().fromJson(value, typeOfT);
+    }
+
+    public Object getModel(@NonNull String key, Class<Object> classOfT) {
+        String value = getString(key);
+        return new Gson().fromJson(value, classOfT);
     }
 
     public Integer getInt(@NonNull String key){
@@ -550,11 +568,12 @@ public class ConcealPrefRepository {
         return null;
     }
 
-    public static class DevicePref{
+    public static class DevicePref<T>{
         private static final String DEVICE_ID = "conceal.device.id";
         private static final String DEVICE_IS_UPDATE = "conceal.device.is_update";
         private static final String DEVICE_VERSION = "conceal.device.version";
         private static final String DEVICE_OS = "conceal.device.os";
+        private static final String DEVICE_DETAIL = "conceal.device.detail";
 
         private String DEFAULT_VALUE = null;
         private String PREFIX = "conceal";
@@ -639,6 +658,15 @@ public class ConcealPrefRepository {
             editor.putString(setHashKey(DEVICE_OS), hideValue(String.valueOf(os))).apply();
         }
 
+        public DevicePref setDeviceDetail(T object) {
+            editor.putString(setHashKey(DEVICE_DETAIL), hideValue(new Gson().toJson(object)));
+            return this;
+        }
+
+        public void applyDeviceDetail(T object) {
+            editor.putString(setHashKey(DEVICE_DETAIL), hideValue(new Gson().toJson(object))).apply();
+        }
+
         /**
          * GET DATA
          */
@@ -665,6 +693,15 @@ public class ConcealPrefRepository {
             return returnValue(DEVICE_OS);
         }
 
+        public T getUserDetail(Type typeOfT) {
+            String value = returnValue(DEVICE_DETAIL);
+            return new Gson().fromJson(value, typeOfT);
+        }
+
+        public T getUserDetail(Class<T> classOfT) {
+            String value = returnValue(DEVICE_DETAIL);
+            return new Gson().fromJson(value, classOfT);
+        }
 
         /**
          * UTIL DATA
@@ -694,7 +731,7 @@ public class ConcealPrefRepository {
 
     }
 
-    public static class UserPref{
+    public static class UserPref<T>{
         private static final String NAME = "conceal.user.username";
         private static final String FULLNAME = "conceal.user.fullname";
         private static final String FIRST_NAME = "conceal.user.first_name";
@@ -910,11 +947,29 @@ public class ConcealPrefRepository {
             editor.putString(setHashKey(FIRST_TIME_USER),hideValue(String.valueOf(firstTime))).apply();
         }
 
+        public UserPref setUserDetail(T object) {
+            editor.putString(setHashKey(USER_JSON), hideValue(new Gson().toJson(object)));
+            return this;
+        }
+
+        public void applyModel(T object) {
+            editor.putString(setHashKey(USER_JSON), hideValue(new Gson().toJson(object))).apply();
+        }
+
         public String getUserId(){
             return returnValue(USER_ID);
         }
         public String getUserDetail(){
             return returnValue(USER_JSON);
+        }
+        public T getUserDetail(Type typeOfT) {
+            String value = returnValue(USER_JSON);
+            return new Gson().fromJson(value, typeOfT);
+        }
+
+        public T getUserDetail(Class<T> classOfT) {
+            String value = returnValue(USER_JSON);
+            return new Gson().fromJson(value, classOfT);
         }
         public String getUserName(){
             return returnValue(NAME);
