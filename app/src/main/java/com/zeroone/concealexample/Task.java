@@ -1,7 +1,5 @@
 package com.zeroone.concealexample;
 
-import java.util.List;
-
 /**
  * @author : hafiq on 22/09/2017.
  */

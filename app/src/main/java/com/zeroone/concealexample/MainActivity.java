@@ -1,10 +1,5 @@
 package com.zeroone.concealexample;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.graphics.BitmapFactory;
-import android.os.Environment;
-import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -12,11 +7,8 @@ import com.facebook.crypto.CryptoConfig;
 import com.google.gson.reflect.TypeToken;
 import com.zeroone.conceal.ConcealCrypto;
 import com.zeroone.conceal.ConcealPrefRepository;
-import com.zeroone.conceal.model.CryptoFile;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends BaseActivity {
@@ -106,7 +98,7 @@ public class MainActivity extends BaseActivity {
 
 
 
-        Map<String,String> map =concealPrefRepository.getAllSharedPrefData();
+        Map<String,String> map = concealPrefRepository.getAllSharedPrefData();
         for(Map.Entry<String,?> entry : map.entrySet()){
             try {
                 Log.d("VIEW_ALL",entry.getKey()+" :: "+entry.getValue().toString());

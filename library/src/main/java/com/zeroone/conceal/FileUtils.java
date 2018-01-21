@@ -2,7 +2,6 @@ package com.zeroone.conceal;
 
 import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.zeroone.conceal.model.CryptoFile;
 

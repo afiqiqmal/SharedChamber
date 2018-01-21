@@ -17,14 +17,12 @@ import android.support.annotation.StringRes;
 import com.facebook.crypto.CryptoConfig;
 import com.facebook.soloader.SoLoader;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.zeroone.conceal.model.CryptoFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -35,6 +33,7 @@ import static com.zeroone.conceal.FileUtils.getDirectory;
 import static com.zeroone.conceal.FileUtils.getImageDirectory;
 import static com.zeroone.conceal.FileUtils.getListFiles;
 import static com.zeroone.conceal.model.Constant.DEFAULT_MAIN_FOLDER;
+import static com.zeroone.conceal.model.Constant.*;
 
 /**
  * @author : hafiq on 23/03/2017.
@@ -569,11 +568,6 @@ public class ConcealPrefRepository<Object> {
     }
 
     public static class DevicePref<T>{
-        private static final String DEVICE_ID = "conceal.device.id";
-        private static final String DEVICE_IS_UPDATE = "conceal.device.is_update";
-        private static final String DEVICE_VERSION = "conceal.device.version";
-        private static final String DEVICE_OS = "conceal.device.os";
-        private static final String DEVICE_DETAIL = "conceal.device.detail";
 
         private String DEFAULT_VALUE = null;
         private String PREFIX = "conceal";
@@ -732,23 +726,7 @@ public class ConcealPrefRepository<Object> {
     }
 
     public static class UserPref<T>{
-        private static final String NAME = "conceal.user.username";
-        private static final String FULLNAME = "conceal.user.fullname";
-        private static final String FIRST_NAME = "conceal.user.first_name";
-        private static final String LAST_NAME = "conceal.user.last_name";
-        private static final String AGE = "conceal.user.age";
-        private static final String GENDER = "conceal.user.gender";
-        private static final String BIRTH_DATE = "conceal.user.dob";
-        private static final String ADDRESS = "conceal.user.address";
-        private static final String EMAIL = "conceal.user.email";
-        private static final String PUSH_TOKEN = "conceal.user.push.token";
-        private static final String PHONE_NO = "conceal.user.phone_number";
-        private static final String MOBILE_NO = "conceal.conceal.user.mobile_number";
-        private static final String HAS_LOGIN = "conceal.user.has_login";
-        private static final String PASSWORD = "conceal.user.password";
-        private static final String FIRST_TIME_USER = "conceal.user.first_time";
-        private static final String USER_ID = "conceal.user.user_id";
-        private static final String USER_JSON = "conceal.user.json";
+
 
         private String PREFIX = "conceal";
         private String DEFAULT_VALUE = null;
