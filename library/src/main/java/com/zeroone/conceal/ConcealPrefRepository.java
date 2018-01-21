@@ -727,7 +727,6 @@ public class ConcealPrefRepository<Object> {
 
     public static class UserPref<T>{
 
-
         private String PREFIX = "conceal";
         private String DEFAULT_VALUE = null;
         private String SEPARATOR = "_";

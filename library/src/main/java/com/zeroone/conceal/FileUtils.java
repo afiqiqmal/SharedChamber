@@ -57,7 +57,7 @@ class FileUtils {
     static boolean saveBitmap(File imageFile, Bitmap bitmap) {
 
         boolean fileCreated = false;
-        boolean bitmapCompressed = false;
+        boolean bitmapCompressed;
         boolean streamClosed = false;
 
         if (imageFile.exists())

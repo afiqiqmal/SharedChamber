@@ -9,6 +9,8 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import static com.zeroone.conceal.model.Constant.UTF8;
+
 /**
  * @author : hafiq on 29/03/2017.
  */
@@ -33,7 +35,7 @@ class CipherUtils {
 
     static String encode64WithIteration(String plaintext,int iteration){
         try {
-            byte[] dataDec = plaintext.getBytes("UTF-8");
+            byte[] dataDec = plaintext.getBytes(UTF8);
             for (int x=0;x<iteration;x++){
                 dataDec = obscureEncodeSixFourBytes(dataDec);
             }
@@ -48,7 +50,7 @@ class CipherUtils {
 
     static String decode64WithIteration(String plaintext,int iteration){
         try {
-            byte[] dataDec = plaintext.getBytes("UTF-8");
+            byte[] dataDec = plaintext.getBytes(UTF8);
             for (int x=0;x<iteration;x++){
                 dataDec = deObscureSixFour(dataDec);
             }
@@ -90,8 +92,8 @@ class CipherUtils {
             }
 
 
-            IvParameterSpec initVector = new IvParameterSpec(iv.getBytes("UTF-8"));
-            SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
+            IvParameterSpec initVector = new IvParameterSpec(iv.getBytes(UTF8));
+            SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes(UTF8), "AES");
 
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
             cipher.init(Cipher.ENCRYPT_MODE, skeySpec, initVector);
@@ -99,9 +101,9 @@ class CipherUtils {
             byte[] encryptedData = cipher.doFinal((data.getBytes()));
 
             String base64_EncryptedData = Base64.encodeToString(encryptedData, Base64.DEFAULT);
-            String base64_IV = Base64.encodeToString(iv.getBytes("UTF-8"), Base64.DEFAULT);
+            String base64_IV = Base64.encodeToString(iv.getBytes(UTF8), Base64.DEFAULT);
 
-            return Base64.encodeToString((base64_EncryptedData + ":" + base64_IV).getBytes("UTF-8"), Base64.DEFAULT);
+            return Base64.encodeToString((base64_EncryptedData + ":" + base64_IV).getBytes(UTF8), Base64.DEFAULT);
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -130,7 +132,7 @@ class CipherUtils {
             String[] parts = new String(Base64.decode(data, Base64.DEFAULT)).split(":");
 
             IvParameterSpec iv = new IvParameterSpec(Base64.decode(parts[1], Base64.DEFAULT));
-            SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
+            SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes(UTF8), "AES");
 
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
             cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);

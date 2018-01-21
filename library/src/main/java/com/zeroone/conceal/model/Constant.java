@@ -8,6 +8,10 @@ import android.os.Environment;
 
 public class Constant {
 
+
+    public static final String UTF8 = "UTF-8";
+
+
     public static final String DEFAULT_DIRECTORY = Environment.getExternalStorageDirectory()+"/.";
     public static final String DEFAULT_FILES_FOLDER = "files";
     public static final String DEFAULT_IMAGE_FOLDER = "images";
