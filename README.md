@@ -56,7 +56,7 @@ ConcealPrefRepository concealPrefRepository = new ConcealPrefRepository.Preferen
         //.useThisPrefStorage("Android_Prefs")
         .sharedPrefsBackedKeyChain(CryptoType.KEY_256)  //CryptoType.KEY_256 or CryptoType.KEY_128
         .enableCrypto(true,true) //param 1 - enable value encryption , param 2 - enable key encryption
-        .enableKeyPrefix(true, "walaoweh") 1- if false, prefix will be ignore
+        .enableKeyPrefix(true, "walaoweh") //1- if false, prefix will be ignore
         .createPassword("Android") //default value - BuildConfig.APPLICATION_ID
         .setFolderName("testing") //create Folder for data stored: default is - "conceal_path"
         .setPrefListener(this) // listen to data changes 
