@@ -1,4 +1,5 @@
-# Conceal SharedPreferences Android[![](https://jitpack.io/v/afiqiqmal/ConcealSharedPreference-Android.svg)](https://jitpack.io/#afiqiqmal/ConcealSharedPreference-Android)
+# Conceal SharedPreferences Android[![](https://jitpack.io/v/afiqiqmal/ConcealSharedPreference-Android.svg)](https://jitpack.io/#afiqiqmal/ConcealSharedPreference-Android) [![API](https://img.shields.io/badge/API-16%2B-blue.svg?style=flat)](https://android-arsenal.com/api?level=16)
+
 <b>Project :</b> Secure Android SharedPreferences Using Conceal Crypto by Facebook<br>
 <b>Description </b>
 <br>
