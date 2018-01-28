@@ -119,7 +119,8 @@ public class MainActivity extends BaseActivity {
 
 
         ConcealCrypto concealCrypto = new ConcealCrypto.CryptoBuilder(this)
-                .setEnableCrypto(true) //default true
+                .setEnableValueEncryption(true) //default true
+                .setEnableKeyEncryption(true) // default true
                 .setKeyChain(CryptoType.KEY_256) // CryptoType.KEY_256 or CryptoType.KEY_128
                 .createPassword("Mac OSX")
                 .create();

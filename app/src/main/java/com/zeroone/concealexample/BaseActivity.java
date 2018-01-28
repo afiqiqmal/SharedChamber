@@ -22,7 +22,7 @@ public class BaseActivity extends AppCompatActivity implements OnDataChangeListe
 
         concealPrefRepository = new ConcealPrefRepository.PreferencesBuilder(this)
                 .sharedPrefsBackedKeyChain(CryptoType.KEY_256)
-                .enableCrypto(false,true)
+                .enableCrypto(true,true)
                 .createPassword("Password@123")
                 .setPrefListener(this)
                 .create();

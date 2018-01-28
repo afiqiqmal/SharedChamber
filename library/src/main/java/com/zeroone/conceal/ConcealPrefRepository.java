@@ -13,7 +13,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
 import android.support.annotation.StringRes;
-import android.util.Log;
 
 import com.facebook.soloader.SoLoader;
 import com.google.gson.Gson;
@@ -22,7 +21,6 @@ import com.zeroone.conceal.model.CryptoType;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -90,8 +88,8 @@ public class ConcealPrefRepository<T> {
         concealCrypto = new ConcealCrypto.CryptoBuilder(mContext)
                 .createPassword(mEntityPasswordRaw)
                 .setKeyChain(mKeyChain)
-                .setEnableCrypto(mEnabledCrypto)
-                .setEnableKeyCrypto(mEnableCryptKey)
+                .setEnableValueEncryption(mEnabledCrypto)
+                .setEnableKeyEncryption(mEnableCryptKey)
                 .setStoredFolder(mFolderName)
                 .create();
 

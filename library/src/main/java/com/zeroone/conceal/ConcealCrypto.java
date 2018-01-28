@@ -335,8 +335,8 @@ public class ConcealCrypto {
         private KeyChain makeKeyChain;
         private Crypto crypto;
         private CryptoType mKeyChain = CryptoType.KEY_256;
-        private boolean mEnabledCrypto = false;
-        private boolean mEnableHashKey = false;
+        private boolean mEnabledCrypto = true;
+        private boolean mEnableHashKey = true;
         private Entity mEntityPassword = null;
         private String mEntityPasswordRaw = BuildConfig.APPLICATION_ID;
         private String mFolderName;
@@ -350,12 +350,12 @@ public class ConcealCrypto {
             return this;
         }
 
-        public CryptoBuilder setEnableCrypto(boolean enableCrypto) {
+        public CryptoBuilder setEnableValueEncryption(boolean enableCrypto) {
             this.mEnabledCrypto = enableCrypto;
             return this;
         }
 
-        public CryptoBuilder setEnableKeyCrypto(boolean enableKeyCrypt) {
+        public CryptoBuilder setEnableKeyEncryption(boolean enableKeyCrypt) {
             this.mEnableHashKey = enableKeyCrypt;
             return this;
         }

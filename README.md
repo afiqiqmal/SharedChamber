@@ -44,7 +44,7 @@ ConcealPrefRepository.applicationInit(this);
 ```
 
 
-Permission need to use in your project. Please Allow it first, or it will affect .putImage and .putFile method
+Permission need to use in your project. Please Allow it first, or it will affect `.putImage` and `.putFile` method
 ```xml
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
@@ -68,7 +68,6 @@ ConcealPrefRepository concealPrefRepository = new ConcealPrefRepository.Preferen
 
                - for images - in folder /images
                - for files - in folder /files
-
 ```
 
 <b>Save data</b>
@@ -79,9 +78,10 @@ concealPrefRepository.putInt(KEY,1000000);
 concealPrefRepository.putDouble(KEY,100.00);
 concealPrefRepository.putbyte(KEY,new byte[]);
 concealPrefRepository.putMap(KEY,new Map<String,String>());
+
 //using gson
-concealPrefRepository.putModel(KEY, Data.getUser(this));
-concealPrefRepository.putModel(KEY, Data.getTaskData(this));
+concealPrefRepository.putModel(KEY, new Gson().fromJson(loadJSONFromAsset(context, "users.json"), User.class));
+concealPrefRepository.putModel(KEY, new Gson().fromJson(loadJSONFromAsset(context, "users.json"), new TypeToken<ArrayList<Users>>(){}.getType()));
 
 // Files and Images will be encrypted
 // prefix of this encrypted images and files start with "conceal_enc_";
@@ -93,7 +93,6 @@ concealPrefRepository.putFile(KEY,getFile,boolean deleteOldFiles);
 concealPrefRepository.putImage(KEY, BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
 concealPrefRepository.putImage(KEY, File file);
 ...........
-
 ```
 
 OR
@@ -120,6 +119,11 @@ System.out.println(concealPrefRepository.getPrefsSize());
 <b>Get all sharedpreferences data</b>
 ```java
 Map<String,String> getAll = concealPrefRepository.getAllSharedPrefData();
+```
+
+<b>Get all sharedpreferences data in List String</b>
+```java
+List<String> getAll = concealPrefRepository.getAllSharedPrefDataToString();
 ```
 
 <b>Get all encrypted Files inside created folder</b>
@@ -157,7 +161,6 @@ concealPrefRepository.destroySharedPreferences(); // clear all
 
 concealPrefRepository.remove(KEY1,KEY2,KEY3,KEY4) //String... keys
 concealPrefRepository.removeFile(KEY); //delete assosiate file (images and files) return boolean
-
 ```
 
 <b>Check if key exists</b>
@@ -190,7 +193,6 @@ new ConcealPrefRepository.UserPref()
 .setEmail("hello@gmail.com")
 .....
 .apply(); // need to apply() or commit()
-
 ```
 
 or
@@ -200,21 +202,18 @@ ConcealPrefRepository.UserPref().applyFirstName("Firstname"); //directly apply
 ConcealPrefRepository.UserPref().applyLastName("Firstname"); //directly apply
 ```
 
-
+<b>Get User Detail</b>
 ```java
-//get user details
-Log.d("TAG",new ConcealPrefRepository.UserPref().getFirstName());
-Log.d("TAG",new ConcealPrefRepository.UserPref().getLastName());
-Log.d("TAG",new ConcealPrefRepository.UserPref().getEmail());
+new ConcealPrefRepository.UserPref().getFirstName()
+new ConcealPrefRepository.UserPref().getLastName()
+new ConcealPrefRepository.UserPref().getEmail()
 .....
-
 ```
 
-Key prefix - Apply key with prefix
+<b>Key prefix - Apply key with prefix</b>
 ```java
 new ConcealPrefRepository.UserPref("KEY PREFIX").setFirstName("Firstname").apply();
 new ConcealPrefRepository.UserPref("KEY PREFIX").setLastName("Firstname").apply();
-
 ```
 
 
@@ -222,52 +221,51 @@ new ConcealPrefRepository.UserPref("KEY PREFIX").setLastName("Firstname").apply(
 
 ```java
 ConcealCrypto concealCrypto = new ConcealCrypto(this,CryptoType.KEY_256); // CryptoType.KEY_256 or CryptoType.KEY_128
-concealCrypto.setEnableCrypto(true); //default true
+concealCrypto.setEnableValueEncryption(true); //default true
+concealCrypto.setEnableKeyEncryption(true); //default true
 concealCrypto.setmEntityPassword("Android");
 concealCrypto.setmEntityPassword(Entity.create("Android"));
-
-String test = "Hello World";
-String cipher =  concealCrypto.obscure(test); //encrypt
-String dec = concealCrypto.deObscure(cipher); //decrypt
-Log.d("Display", cipher+" ===== "+dec);
-
-String cipher =  concealCrypto.obscureWithIteration(test,4); //encrypt with 4 times iteration
-String dec = concealCrypto.deObscureWithIteration(cipher,4); //decrypt with 4 times iteration
-Log.d("Display", cipher+" ===== "+dec);    
-
 ```
 
 OR
 ```java
-ConcealCrypto concealCrypto1 = new ConcealCrypto.CryptoBuilder(this)
-                .setEnableCrypto(true) //default true
+ConcealCrypto concealCrypto = new ConcealCrypto.CryptoBuilder(this)
+                .setEnableValueEncryption(true) //default true
+                .setEnableKeyEncryption(true) // default true
                 .setKeyChain(CryptoType.KEY_256) // CryptoType.KEY_256 or CryptoType.KEY_128
-                .createPassword("Mac OSX") 
+                .createPassword("Mac OSX")
                 .create();
-                
-String test = "Hello World";
-String cipher =  concealCrypto.obscure(test); //encrypt
-String dec = concealCrypto.deObscure(cipher); //decrypt
-Log.d("Display", cipher+" ===== "+dec);  
+```
 
-String cipher =  concealCrypto.obscureWithIteration(test,4); //encrypt with 4 times iteration
-String dec = concealCrypto.deObscureWithIteration(cipher,4); //decrypt with 4 times iteration
-Log.d("Display", cipher+" ===== "+dec);    
-
-String cipher =  concealCrypto.aesEncrypt("Hello World is World Hello Aes Cryption");
-Log.d("AES E", cipher);
-String dec = concealCrypto.aesDecrypt(cipher);
-Log.d("AES D", dec);
-
-//special case for files and images
-concealCrypto.obscureFile(File file,boolean deleteOldFile);
-concealCrypto.deObscureFile(File file,boolean deleteOldFile);
-// 1-parameter is original location of file..it will move to other location set as in initialization
-
-//if want to use hashing
-concealCrypto.hashKey(plaintext); // SHA-256
+#### Hash
 
 ```
+concealCrypto.hashKey(plaintext); // SHA-256
+```
+
+#### Encrypt
+
+```
+concealCrypto.obscure(test); // encrypt using facebook conceal
+concealCrypto.obscureWithIteration(test,4); // encrypt using basic base64 with iteration
+concealCrypto.aesEncrypt("Hello World is World Hello Aes Cryption"); // encrypt using AES
+
+//1-parameter is original location of file..it will move to other location set as in initialization
+concealCrypto.obscureFile(File file,boolean deleteOldFile);
+
+```
+
+
+#### Decrypt
+
+```
+concealCrypto.deObscure(cipher); // decrypt using facebook conceal
+concealCrypto.deObscureWithIteration(cipher,4); // decrypt using basic base64 with iteration
+concealCrypto.aesDecrypt(cipher); // decrypt using AES
+
+concealCrypto.deObscureFile(File file,boolean deleteOldFile);
+```
+
 
 ## Proguard
 ```proguard
