@@ -16,6 +16,7 @@ public class Constant {
     public static final String DEFAULT_FILES_FOLDER = "files";
     public static final String DEFAULT_IMAGE_FOLDER = "images";
     public static final String DEFAULT_PREFIX_FILENAME = "conceal_enc_";
+    public static final String PREFIX = "conceal";
     public static final String DEFAULT_MAIN_FOLDER = "conceal_path";
 
 

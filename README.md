@@ -11,11 +11,11 @@ Conceal provides a set of Java APIs to perform cryptography on Android. It was d
 Gradle
 ```gradle
 dependencies {
-        compile 'com.github.afiqiqmal:ConcealSharedPreference-Android:1.5.0'
+        compile 'com.github.afiqiqmal:ConcealSharedPreference-Android:1.5.2'
 
         //or
 
-        compile 'com.github.afiqiqmal:ConcealSharedPreference-Android:1.5.0' {
+        compile 'com.github.afiqiqmal:ConcealSharedPreference-Android:1.5.2' {
             exclude group: 'com.google.code.gson', module: 'gson'
         }
 }
@@ -26,7 +26,7 @@ Maven
 <dependency>
 	<groupId>com.github.afiqiqmal</groupId>
 	<artifactId>ConcealSharedPreference-Android</artifactId>
-	<version>1.5.0</version>
+	<version>1.5.2</version>
 </dependency>
 ```
 
@@ -56,6 +56,7 @@ ConcealPrefRepository concealPrefRepository = new ConcealPrefRepository.Preferen
         //.useThisPrefStorage("Android_Prefs")
         .sharedPrefsBackedKeyChain(CryptoType.KEY_256)  //CryptoType.KEY_256 or CryptoType.KEY_128
         .enableCrypto(true,true) //param 1 - enable value encryption , param 2 - enable key encryption
+        .enableKeyPrefix(true, "walaoweh") 1- if false, prefix will be ignore
         .createPassword("Android") //default value - BuildConfig.APPLICATION_ID
         .setFolderName("testing") //create Folder for data stored: default is - "conceal_path"
         .setPrefListener(this) // listen to data changes 
@@ -97,7 +98,7 @@ concealPrefRepository.putImage(KEY, File file);
 
 OR
 ```java
-new ConcealPrefRepository.Editor()
+new ConcealPrefRepository.Editor("PREFIX") // optional - get default from global prefix
                 .putString(KEY,"Hello")
                 .putInt(KEY,1000000)
                 .putBoolean(KEY,true)

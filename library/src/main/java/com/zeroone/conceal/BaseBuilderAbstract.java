@@ -11,7 +11,7 @@ import android.support.annotation.Nullable;
 @SuppressLint("CommitPrefEdits")
 abstract class BaseBuilderAbstract {
 
-    private String PREFIX = "conceal";
+    private String defaultPrefix = "";
     private String DEFAULT_VALUE = null;
     private String SEPARATOR = "_";
     private SharedPreferences sharedPreferences;
@@ -19,7 +19,7 @@ abstract class BaseBuilderAbstract {
     private ConcealCrypto concealCrypto;
 
     BaseBuilderAbstract(SharedPreferences sharedPreferences) {
-        this.PREFIX = null;
+        this.defaultPrefix = null;
 
         if (sharedPreferences == null){
             throw new IllegalArgumentException("Need to initialize ConcealPrefRepository.PreferencesBuilder first");
@@ -31,7 +31,7 @@ abstract class BaseBuilderAbstract {
 
     BaseBuilderAbstract(@Nullable String keyPrefix, SharedPreferences sharedPreferences) {
         if (keyPrefix != null)
-            this.PREFIX = keyPrefix+this.SEPARATOR;
+            this.defaultPrefix = keyPrefix+this.SEPARATOR;
 
         if (sharedPreferences == null){
             throw new IllegalArgumentException("Need to initialize ConcealPrefRepository.PreferencesBuilder first");
@@ -48,7 +48,7 @@ abstract class BaseBuilderAbstract {
         }
 
         if (keyPrefix != null)
-            this.PREFIX = keyPrefix+this.SEPARATOR;
+            this.defaultPrefix = keyPrefix+this.SEPARATOR;
 
         if (sharedPreferences == null){
             throw new IllegalArgumentException("Need to initialize ConcealPrefRepository.PreferencesBuilder first");
@@ -63,6 +63,14 @@ abstract class BaseBuilderAbstract {
         this.concealCrypto = concealCrypto;
     }
 
+    public ConcealCrypto getConcealCrypto() {
+        return this.concealCrypto;
+    }
+
+    public void setDefaultPrefix(String defaultPrefix) {
+        this.defaultPrefix = defaultPrefix;
+    }
+
     void setDefaultValue(String defaultValue) {
         if (defaultValue != null) {
             this.DEFAULT_VALUE = defaultValue;
@@ -70,16 +78,19 @@ abstract class BaseBuilderAbstract {
     }
 
     SharedPreferences.Editor getEditor() {
-        if (editor == null){
+        if (this.editor == null){
             throw new IllegalArgumentException("Need to initialize ConcealPrefRepository.PreferencesBuilder first");
         }
 
-        return editor;
+        return this.editor;
     }
 
+    public void setEditor(SharedPreferences.Editor editor) {
+        this.editor = editor;
+    }
 
     String returnValue(String KEY){
-        String value = concealCrypto.deObscure(sharedPreferences.getString(setHashKey(KEY), null));
+        String value = this.concealCrypto.deObscure(this.sharedPreferences.getString(setHashKey(KEY), null));
         if (value == null)
             return this.DEFAULT_VALUE;
 
@@ -87,15 +98,15 @@ abstract class BaseBuilderAbstract {
     }
 
     String setHashKey(String key) {
-        return concealCrypto.hashKey(PREFIX+key);
+        return this.concealCrypto.hashKey(defaultPrefix +key);
     }
 
     String hideValue(String value) {
-        return concealCrypto.obscure(value);
+        return this.concealCrypto.obscure(value);
     }
 
-    protected abstract void apply();
 
+    protected abstract void apply();
     protected abstract void commit();
 
 }

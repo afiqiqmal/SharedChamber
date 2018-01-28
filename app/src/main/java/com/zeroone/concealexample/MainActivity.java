@@ -21,7 +21,7 @@ public class MainActivity extends BaseActivity {
     String TASK_DETAIL = "task_detail";
     String IMAGE_KEY = "user_image";
     String FILE_KEY = "user_file";
-    String PREFIX = "testing";
+    String PREFIX = null;
 
 
     @Override
@@ -62,12 +62,8 @@ public class MainActivity extends BaseActivity {
         getList();
 
 
-        concealPrefRepository.clearPrefs();
-
         //add user details preferences
         new ConcealPrefRepository.UserPref(PREFIX).setFirstName("Firstname").setLastName("Lasname").setEmail("hello@gmail.com").apply();
-
-        getList();
 
         //get user details
         Log.d("THIRD_TEST", new ConcealPrefRepository.UserPref(PREFIX).getFirstName());
@@ -75,9 +71,7 @@ public class MainActivity extends BaseActivity {
         Log.d("THIRD_TEST", new ConcealPrefRepository.UserPref(PREFIX).setDefault("No Data").getEmail());
         Log.d("THIRD_TEST TEST SIZE", ""+concealPrefRepository.getPrefsSize());
 
-
-
-        concealPrefRepository.clearPrefs();
+        getList();
 
 
         ConcealPrefRepository.UserPref userPref = new ConcealPrefRepository.UserPref(PREFIX, "No Data");
@@ -85,11 +79,11 @@ public class MainActivity extends BaseActivity {
         userPref.setEmail("afiqiqmal@example.com");
         userPref.apply();
 
-
         //get user details
         Log.d("FOURTH_TEST",userPref.getUserName());
         Log.d("FOURTH_TEST",userPref.getEmail());
 
+        getList();
 
 
         ConcealPrefRepository.DevicePref devicePref = new ConcealPrefRepository.DevicePref(PREFIX, "No Data");
@@ -97,25 +91,13 @@ public class MainActivity extends BaseActivity {
         devicePref.setDeviceOS("android");
         devicePref.apply();
 
-
         //get user details
         Log.d("FIFTH_TEST",devicePref.getDeviceId());
         Log.d("FIFTH_TEST",devicePref.getDeviceOs());
 
 
-
-        Map<String,String> map = concealPrefRepository.getAllSharedPrefData();
-        for(Map.Entry<String,?> entry : map.entrySet()){
-            try {
-                Log.d("VIEW_ALL",entry.getKey()+" :: "+entry.getValue().toString());
-            }
-            catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-
-
         getList();
+
 
 
         ConcealCrypto concealCrypto = new ConcealCrypto.CryptoBuilder(this)
