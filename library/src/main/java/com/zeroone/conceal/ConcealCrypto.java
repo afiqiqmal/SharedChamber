@@ -7,11 +7,11 @@ import android.support.annotation.RequiresPermission;
 import com.facebook.android.crypto.keychain.AndroidConceal;
 import com.facebook.android.crypto.keychain.SharedPrefsBackedKeyChain;
 import com.facebook.crypto.Crypto;
-import com.facebook.crypto.CryptoConfig;
 import com.facebook.crypto.Entity;
 import com.facebook.crypto.exception.CryptoInitializationException;
 import com.facebook.crypto.exception.KeyChainException;
 import com.facebook.crypto.keychain.KeyChain;
+import com.zeroone.conceal.model.CryptoType;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -57,8 +57,8 @@ public class ConcealCrypto {
         if (MAIN_DIRECTORY == null) MAIN_DIRECTORY = DEFAULT_MAIN_FOLDER;
     }
 
-    public ConcealCrypto(Context context,CryptoConfig config){
-        keyChain = new SharedPrefsBackedKeyChain(context,config==null?CryptoConfig.KEY_256:config);
+    public ConcealCrypto(Context context,CryptoType config){
+        keyChain = new SharedPrefsBackedKeyChain(context, config==null? CryptoType.KEY_256.getConfig():config.getConfig());
         crypto = AndroidConceal.get().createDefaultCrypto(keyChain);
     }
 
@@ -334,7 +334,7 @@ public class ConcealCrypto {
         private WeakReference<Context> context;
         private KeyChain makeKeyChain;
         private Crypto crypto;
-        private CryptoConfig mKeyChain = CryptoConfig.KEY_256;
+        private CryptoType mKeyChain = CryptoType.KEY_256;
         private boolean mEnabledCrypto = false;
         private boolean mEnableHashKey = false;
         private Entity mEntityPassword = null;
@@ -345,7 +345,7 @@ public class ConcealCrypto {
             this.context = new WeakReference<>(context.getApplicationContext());
         }
 
-        public CryptoBuilder setKeyChain(CryptoConfig config){
+        public CryptoBuilder setKeyChain(CryptoType config){
             this.mKeyChain = config;
             return this;
         }
@@ -381,11 +381,11 @@ public class ConcealCrypto {
             }
 
             mEntityPassword = Entity.create(CipherUtils.obscureEncodeSixFourString(mEntityPasswordRaw.getBytes()));
-            makeKeyChain = new SharedPrefsBackedKeyChain(this.context.get(),(mKeyChain==null)?CryptoConfig.KEY_256:mKeyChain);
+            makeKeyChain = new SharedPrefsBackedKeyChain(this.context.get(), (mKeyChain==null)? CryptoType.KEY_256.getConfig() : mKeyChain.getConfig());
 
             if (mKeyChain == null) {
                 crypto = AndroidConceal.get().createDefaultCrypto(makeKeyChain);
-            } else if (mKeyChain == CryptoConfig.KEY_128) {
+            } else if (mKeyChain == CryptoType.KEY_128) {
                 crypto = AndroidConceal.get().createCrypto128Bits(makeKeyChain);
             } else {
                 crypto = AndroidConceal.get().createCrypto256Bits(makeKeyChain);

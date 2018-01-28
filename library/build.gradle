@@ -4,7 +4,7 @@ group='com.github.afiqiqmal'
 
 android {
     compileSdkVersion 27
-    buildToolsVersion "27.0.1"
+    buildToolsVersion "27.0.3"
 
     defaultConfig {
         minSdkVersion 16
@@ -21,8 +21,8 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.facebook.conceal:conceal:2.0.1@aar'
-    compile 'com.android.support:support-annotations:27.0.2'
-    compile 'com.google.code.gson:gson:2.8.2'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.facebook.conceal:conceal:2.0.2@aar'
+    implementation 'com.android.support:support-annotations:27.0.2'
+    implementation 'com.google.code.gson:gson:2.8.2'
 }

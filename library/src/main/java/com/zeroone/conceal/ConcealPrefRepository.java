@@ -13,16 +13,18 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
 import android.support.annotation.StringRes;
+import android.util.Log;
 
-import com.facebook.crypto.CryptoConfig;
 import com.facebook.soloader.SoLoader;
 import com.google.gson.Gson;
 import com.zeroone.conceal.model.CryptoFile;
+import com.zeroone.conceal.model.CryptoType;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -32,14 +34,35 @@ import static android.content.Context.MODE_PRIVATE;
 import static com.zeroone.conceal.FileUtils.getDirectory;
 import static com.zeroone.conceal.FileUtils.getImageDirectory;
 import static com.zeroone.conceal.FileUtils.getListFiles;
+import static com.zeroone.conceal.model.Constant.ADDRESS;
+import static com.zeroone.conceal.model.Constant.AGE;
+import static com.zeroone.conceal.model.Constant.BIRTH_DATE;
 import static com.zeroone.conceal.model.Constant.DEFAULT_MAIN_FOLDER;
-import static com.zeroone.conceal.model.Constant.*;
+import static com.zeroone.conceal.model.Constant.DEVICE_DETAIL;
+import static com.zeroone.conceal.model.Constant.DEVICE_ID;
+import static com.zeroone.conceal.model.Constant.DEVICE_IS_UPDATE;
+import static com.zeroone.conceal.model.Constant.DEVICE_OS;
+import static com.zeroone.conceal.model.Constant.DEVICE_VERSION;
+import static com.zeroone.conceal.model.Constant.EMAIL;
+import static com.zeroone.conceal.model.Constant.FIRST_NAME;
+import static com.zeroone.conceal.model.Constant.FIRST_TIME_USER;
+import static com.zeroone.conceal.model.Constant.FULLNAME;
+import static com.zeroone.conceal.model.Constant.GENDER;
+import static com.zeroone.conceal.model.Constant.HAS_LOGIN;
+import static com.zeroone.conceal.model.Constant.LAST_NAME;
+import static com.zeroone.conceal.model.Constant.MOBILE_NO;
+import static com.zeroone.conceal.model.Constant.NAME;
+import static com.zeroone.conceal.model.Constant.PASSWORD;
+import static com.zeroone.conceal.model.Constant.PHONE_NO;
+import static com.zeroone.conceal.model.Constant.PUSH_TOKEN;
+import static com.zeroone.conceal.model.Constant.USER_ID;
+import static com.zeroone.conceal.model.Constant.USER_JSON;
 
 /**
  * @author : hafiq on 23/03/2017.
  */
 @SuppressWarnings("unused")
-public class ConcealPrefRepository<Object> {
+public class ConcealPrefRepository<T> {
 
     private Context mContext;
     private static String mFolderName;
@@ -50,15 +73,15 @@ public class ConcealPrefRepository<Object> {
 
     @SuppressLint("CommitPrefEdits")
     private ConcealPrefRepository(@NonNull PreferencesBuilder builder){
-        mContext = builder.mContext.get();
-        mFolderName = builder.mFolderName;
-        sharedPreferences = builder.sharedPreferences;
-        onDataChangeListener = builder.onDataChangeListener;
+        mContext = builder.getContext();
+        mFolderName = builder.getFolderName();
+        sharedPreferences = builder.getSharedPreferences();
+        onDataChangeListener = builder.getOnDataChangeListener();
 
-        CryptoConfig mKeyChain = builder.mKeyChain;
-        boolean mEnabledCrypto = builder.mEnabledCrypto;
-        boolean mEnableCryptKey = builder.mEnableCryptKey;
-        String mEntityPasswordRaw = builder.mEntityPasswordRaw;
+        CryptoType mKeyChain = builder.getKeyChain();
+        boolean mEnabledCrypto = builder.isEnabledCrypto();
+        boolean mEnableCryptKey = builder.isEnableCryptKey();
+        String mEntityPasswordRaw = builder.getEntityPasswordRaw();
 
         //init editor
         editor = sharedPreferences.edit();
@@ -179,6 +202,22 @@ public class ConcealPrefRepository<Object> {
         for(Map.Entry<String,?> entry : keys.entrySet()){
             try {
                 data.put(entry.getKey(), entry.getValue().toString());
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+
+        return data;
+    }
+
+    public List<String> getAllSharedPrefDataToString(){
+        Map<String,?> keys = getPreferences().getAll();
+        List<String> data = new ArrayList<>();
+
+        for(Map.Entry<String,?> entry : keys.entrySet()){
+            try {
+                data.add("["+entry.getKey()+"] : "+ entry.getValue().toString());
             }
             catch (Exception e){
                 e.printStackTrace();
@@ -567,104 +606,79 @@ public class ConcealPrefRepository<Object> {
         return null;
     }
 
-    public static class DevicePref<T>{
-
-        private String DEFAULT_VALUE = null;
-        private String PREFIX = "conceal";
-        private String SEPARATOR = "_";
+    public static class DevicePref extends DeviceAbstract<DevicePref>{
 
         public DevicePref() {
-            this.PREFIX = null;
-            if (editor == null){
-                throw new IllegalArgumentException("Need to initialize ConcealPrefRepository.PreferencesBuilder first");
-            }
+            super(sharedPreferences);
+            setConcealCrypto(concealCrypto);
         }
 
         public DevicePref(@Nullable String keyPrefix) {
-            if (keyPrefix == null)
-                this.PREFIX = null;
-            else
-                this.PREFIX = keyPrefix+this.SEPARATOR;
-            if (editor == null){
-                throw new IllegalArgumentException("Need to initialize ConcealPrefRepository.PreferencesBuilder first");
-            }
+            super(keyPrefix, sharedPreferences);
+            setConcealCrypto(concealCrypto);
         }
 
         public DevicePref(@Nullable String keyPrefix, @Nullable String defaultEmptyValue) {
-            if (defaultEmptyValue != null) {
-                this.DEFAULT_VALUE = defaultEmptyValue;
-            }
-
-            if (keyPrefix == null)
-                this.PREFIX = null;
-            else
-                this.PREFIX = keyPrefix+this.SEPARATOR;
-
-            if (editor == null){
-                throw new IllegalArgumentException("Need to initialize ConcealPrefRepository.PreferencesBuilder first");
-            }
+            super(keyPrefix, defaultEmptyValue, sharedPreferences);
+            setConcealCrypto(concealCrypto);
         }
 
+        @Override
         public DevicePref setDefault(@Nullable String defaultEmptyValue){
-            if (defaultEmptyValue != null) {
-                this.DEFAULT_VALUE = defaultEmptyValue;
-            }
+            setDefaultValue(defaultEmptyValue);
             return this;
         }
 
-        /**
-         * SET DATA
-         */
-
+        @Override
         public DevicePref setDeviceId(String deviceId){
-            editor.putString(setHashKey(DEVICE_ID),hideValue(deviceId));
+            getEditor().putString(setHashKey(DEVICE_ID),hideValue(deviceId));
             return this;
         }
-
+        @Override
         public void applyDeviceId(String deviceId){
-            editor.putString(setHashKey(DEVICE_ID),hideValue(deviceId)).apply();
+            getEditor().putString(setHashKey(DEVICE_ID),hideValue(deviceId)).apply();
         }
-
+        @Override
         public DevicePref setDeviceVersion(String version){
-            editor.putString(setHashKey(DEVICE_VERSION), hideValue(version));
+            getEditor().putString(setHashKey(DEVICE_VERSION), hideValue(version));
             return this;
         }
-
+        @Override
         public void applyDeviceVersion(String version){
-            editor.putString(setHashKey(DEVICE_VERSION), hideValue(version)).apply();
+            getEditor().putString(setHashKey(DEVICE_VERSION), hideValue(version)).apply();
         }
-
+        @Override
         public DevicePref setDeviceIsUpdated(boolean updated){
-            editor.putString(setHashKey(DEVICE_IS_UPDATE), hideValue(String.valueOf(updated)));
+            getEditor().putString(setHashKey(DEVICE_IS_UPDATE), hideValue(String.valueOf(updated)));
             return this;
         }
-
+        @Override
         public void applyDeviceIsUpdated(boolean updated){
-            editor.putString(setHashKey(DEVICE_IS_UPDATE), hideValue(String.valueOf(updated))).apply();
+            getEditor().putString(setHashKey(DEVICE_IS_UPDATE), hideValue(String.valueOf(updated))).apply();
         }
-
+        @Override
         public DevicePref setDeviceOS(String os){
-            editor.putString(setHashKey(DEVICE_OS), hideValue(String.valueOf(os)));
+            getEditor().putString(setHashKey(DEVICE_OS), hideValue(String.valueOf(os)));
             return this;
         }
-
+        @Override
         public void applyDeviceOS(String os){
-            editor.putString(setHashKey(DEVICE_OS), hideValue(String.valueOf(os))).apply();
+            getEditor().putString(setHashKey(DEVICE_OS), hideValue(String.valueOf(os))).apply();
         }
-
-        public DevicePref setDeviceDetail(T object) {
-            editor.putString(setHashKey(DEVICE_DETAIL), hideValue(new Gson().toJson(object)));
+        @Override
+        public DevicePref setDeviceDetail(Object object) {
+            getEditor().putString(setHashKey(DEVICE_DETAIL), hideValue(new Gson().toJson(object)));
             return this;
         }
-
-        public void applyDeviceDetail(T object) {
-            editor.putString(setHashKey(DEVICE_DETAIL), hideValue(new Gson().toJson(object))).apply();
+        @Override
+        public void applyDeviceDetail(Object object) {
+            getEditor().putString(setHashKey(DEVICE_DETAIL), hideValue(new Gson().toJson(object))).apply();
         }
 
         /**
          * GET DATA
          */
-
+        @Override
         public Boolean isDeviceUpdate(){
             try {
                 return Boolean.parseBoolean(returnValue(DEVICE_IS_UPDATE));
@@ -674,292 +688,303 @@ public class ConcealPrefRepository<Object> {
                 return null;
             }
         }
-
+        @Override
         public String getDeviceId(){
             return returnValue(DEVICE_ID);
         }
-
+        @Override
         public String getDeviceVersion(){
             return returnValue(DEVICE_VERSION);
         }
-
+        @Override
         public String getDeviceOs(){
             return returnValue(DEVICE_OS);
         }
-
-        public T getUserDetail(Type typeOfT) {
+        @Override
+        public Object getDeviceDetail(Type typeOfT) {
             String value = returnValue(DEVICE_DETAIL);
             return new Gson().fromJson(value, typeOfT);
         }
-
-        public T getUserDetail(Class<T> classOfT) {
+        @Override
+        public Object getDeviceDetail(Class<Object> classOfT) {
             String value = returnValue(DEVICE_DETAIL);
             return new Gson().fromJson(value, classOfT);
         }
 
-        /**
-         * UTIL DATA
-         */
-
-        private String returnValue(String KEY){
-            String value = concealCrypto.deObscure(sharedPreferences.getString(setHashKey(KEY), null));
-            if (value == null)
-                return this.DEFAULT_VALUE;
-
-            return value;
-        }
-
-        private String setHashKey(String key) {
-            if (PREFIX == null)
-                return hashKey(key);
-            else
-                return hashKey(PREFIX+key);
-        }
-
+        @Override
         public void apply() {
-            editor.apply();
+            getEditor().apply();
         }
+        @Override
         public void commit() {
-            editor.commit();
+            getEditor().commit();
         }
-
     }
 
-    public static class UserPref<T>{
-
-        private String PREFIX = "conceal";
-        private String DEFAULT_VALUE = null;
-        private String SEPARATOR = "_";
+    public static class UserPref extends UserAbstract<UserPref> {
 
         public UserPref() {
-            this.PREFIX = null;
-            if (editor == null){
-                throw new IllegalArgumentException("Need to initialize ConcealPrefRepository.PreferencesBuilder first");
-            }
+            super(sharedPreferences);
+            setConcealCrypto(concealCrypto);
         }
 
         public UserPref(@Nullable String keyPrefix) {
-            if (keyPrefix == null)
-                this.PREFIX = null;
-            else
-                this.PREFIX = keyPrefix+this.SEPARATOR;
-
-            if (editor == null){
-                throw new IllegalArgumentException("Need to initialize ConcealPrefRepository.PreferencesBuilder first");
-            }
+            super(keyPrefix, sharedPreferences);
+            setConcealCrypto(concealCrypto);
         }
 
         public UserPref(@Nullable String keyPrefix, @Nullable String defaultEmptyValue) {
-            if (defaultEmptyValue != null) {
-                this.DEFAULT_VALUE = defaultEmptyValue;
-            }
-
-            if (keyPrefix == null)
-                this.PREFIX = null;
-            else
-                this.PREFIX = keyPrefix+this.SEPARATOR;
-
-            if (editor == null){
-                throw new IllegalArgumentException("Need to initialize ConcealPrefRepository.PreferencesBuilder first");
-            }
+            super(keyPrefix, defaultEmptyValue, sharedPreferences);
+            setConcealCrypto(concealCrypto);
         }
 
+        @Override
         public UserPref setDefault(@Nullable String defaultEmptyValue){
-            if (defaultEmptyValue != null) {
-                this.DEFAULT_VALUE = defaultEmptyValue;
-            }
+            setDefaultValue(defaultEmptyValue);
             return this;
         }
 
+        @Override
         public UserPref setUserDetail(String user_detail){
-            editor.putString(setHashKey(USER_JSON),hideValue(user_detail));
+            getEditor().putString(setHashKey(USER_JSON),hideValue(user_detail));
             return this;
         }
 
+        @Override
         public void applyUserDetail(String user_detail){
-            editor.putString(setHashKey(USER_JSON),hideValue(user_detail)).apply();
+            getEditor().putString(setHashKey(USER_JSON),hideValue(user_detail)).apply();
         }
 
+        @Override
         public UserPref setUserId(String user_id){
-            editor.putString(setHashKey(USER_ID),hideValue(user_id));
+            getEditor().putString(setHashKey(USER_ID),hideValue(user_id));
             return this;
         }
 
+        @Override
         public void applyUserId(String user_id){
-            editor.putString(setHashKey(USER_ID),hideValue(user_id)).apply();
+            getEditor().putString(setHashKey(USER_ID),hideValue(user_id)).apply();
         }
 
+        @Override
         public UserPref setUserName(String name){
-            editor.putString(setHashKey(NAME),hideValue(name));
+            getEditor().putString(setHashKey(NAME),hideValue(name));
             return this;
         }
 
+        @Override
         public void applyUserName(String name){
-            editor.putString(setHashKey(NAME),hideValue(name)).apply();
+            getEditor().putString(setHashKey(NAME),hideValue(name)).apply();
         }
 
+        @Override
         public UserPref setFullName(String fullName){
-            editor.putString(setHashKey(FULLNAME),hideValue(fullName));
+            getEditor().putString(setHashKey(FULLNAME),hideValue(fullName));
             return this;
         }
 
+        @Override
         public void applyFullName(String fullName){
-            editor.putString(setHashKey(FULLNAME),hideValue(fullName)).apply();
+            getEditor().putString(setHashKey(FULLNAME),hideValue(fullName)).apply();
         }
 
+        @Override
         public UserPref setFirstName(String firstName){
-            editor.putString(setHashKey(FIRST_NAME),hideValue(firstName));
+            getEditor().putString(setHashKey(FIRST_NAME),hideValue(firstName));
             return this;
         }
 
+        @Override
         public void applyFirstName(String firstName){
-            editor.putString(setHashKey(FIRST_NAME),hideValue(firstName)).apply();
+            getEditor().putString(setHashKey(FIRST_NAME),hideValue(firstName)).apply();
         }
 
+        @Override
         public UserPref setLastName(String lastName){
-            editor.putString(setHashKey(LAST_NAME),hideValue(lastName));
+            getEditor().putString(setHashKey(LAST_NAME),hideValue(lastName));
             return this;
         }
 
+        @Override
         public void applyLastName(String lastName){
-            editor.putString(setHashKey(LAST_NAME),hideValue(lastName)).apply();
+            getEditor().putString(setHashKey(LAST_NAME),hideValue(lastName)).apply();
         }
 
+        @Override
         public UserPref setAge(int age){
-            editor.putString(setHashKey(AGE),hideValue(String.valueOf(age)));
+            getEditor().putString(setHashKey(AGE),hideValue(String.valueOf(age)));
             return this;
         }
 
+        @Override
         public void applyAge(int age){
-            editor.putString(setHashKey(AGE),hideValue(String.valueOf(age))).apply();
+            getEditor().putString(setHashKey(AGE),hideValue(String.valueOf(age))).apply();
         }
 
+        @Override
         public UserPref setGender(String gender){
-            editor.putString(setHashKey(GENDER),hideValue(gender));
+            getEditor().putString(setHashKey(GENDER),hideValue(gender));
             return this;
         }
 
+        @Override
         public void applyGender(String gender){
-            editor.putString(setHashKey(GENDER),hideValue(gender)).apply();
+            getEditor().putString(setHashKey(GENDER),hideValue(gender)).apply();
         }
 
+        @Override
         public UserPref setBirthDate(String birthDate){
-            editor.putString(setHashKey(BIRTH_DATE),hideValue(birthDate));
+            getEditor().putString(setHashKey(BIRTH_DATE),hideValue(birthDate));
             return this;
         }
 
+        @Override
         public void applyBirthDate(String birthDate){
-            editor.putString(setHashKey(BIRTH_DATE),hideValue(birthDate)).apply();
+            getEditor().putString(setHashKey(BIRTH_DATE),hideValue(birthDate)).apply();
         }
 
+        @Override
         public UserPref setAddress(String address){
-            editor.putString(setHashKey(ADDRESS),hideValue(address));
+            getEditor().putString(setHashKey(ADDRESS),hideValue(address));
             return this;
         }
 
+        @Override
         public void applyAddress(String address){
-            editor.putString(setHashKey(ADDRESS),hideValue(address)).apply();
+            getEditor().putString(setHashKey(ADDRESS),hideValue(address)).apply();
         }
 
+        @Override
         public UserPref setEmail(String email){
-            editor.putString(setHashKey(EMAIL),hideValue(email));
+            getEditor().putString(setHashKey(EMAIL),hideValue(email));
             return this;
         }
 
+        @Override
         public void applyEmail(String email){
-            editor.putString(setHashKey(EMAIL),hideValue(email)).apply();
+            getEditor().putString(setHashKey(EMAIL),hideValue(email)).apply();
         }
 
+        @Override
         public UserPref setPushToken(String token){
-            editor.putString(setHashKey(PUSH_TOKEN),hideValue(token));
+            getEditor().putString(setHashKey(PUSH_TOKEN),hideValue(token));
             return this;
         }
 
+        @Override
         public void applyPushToken(String token){
-            editor.putString(setHashKey(PUSH_TOKEN),hideValue(token)).apply();
+            getEditor().putString(setHashKey(PUSH_TOKEN),hideValue(token)).apply();
         }
 
+        @Override
         public UserPref setPhoneNumber(String phoneNumber){
-            editor.putString(setHashKey(PHONE_NO),hideValue(phoneNumber));
+            getEditor().putString(setHashKey(PHONE_NO),hideValue(phoneNumber));
             return this;
         }
 
+        @Override
         public void applyPhoneNumber(String phoneNumber){
-            editor.putString(setHashKey(PHONE_NO),hideValue(phoneNumber)).apply();
+            getEditor().putString(setHashKey(PHONE_NO),hideValue(phoneNumber)).apply();
         }
 
+        @Override
         public UserPref setMobileNumber(String mobileNumber){
-            editor.putString(setHashKey(MOBILE_NO),hideValue(mobileNumber));
+            getEditor().putString(setHashKey(MOBILE_NO),hideValue(mobileNumber));
             return this;
         }
 
+        @Override
         public void applyMobileNumber(String mobileNumber){
-            editor.putString(setHashKey(MOBILE_NO),hideValue(mobileNumber)).apply();
+            getEditor().putString(setHashKey(MOBILE_NO),hideValue(mobileNumber)).apply();
         }
 
+        @Override
         public UserPref setLogin(boolean login){
-            editor.putString(setHashKey(HAS_LOGIN),hideValue(String.valueOf(login)));
+            getEditor().putString(setHashKey(HAS_LOGIN),hideValue(String.valueOf(login)));
             return this;
         }
 
+        @Override
         public void applyLogin(boolean login){
-            editor.putString(setHashKey(HAS_LOGIN),hideValue(String.valueOf(login))).apply();
+            getEditor().putString(setHashKey(HAS_LOGIN),hideValue(String.valueOf(login))).apply();
         }
 
+        @Override
         public UserPref setPassword(String password){
-            editor.putString(setHashKey(PASSWORD),hideValue(password));
+            getEditor().putString(setHashKey(PASSWORD),hideValue(password));
             return this;
         }
 
+        @Override
         public void applyPassword(String password){
-            editor.putString(setHashKey(PASSWORD),hideValue(password)).apply();
+            getEditor().putString(setHashKey(PASSWORD),hideValue(password)).apply();
         }
 
+        @Override
         public UserPref setFirstTimeUser(boolean firstTime){
-            editor.putString(setHashKey(FIRST_TIME_USER),hideValue(String.valueOf(firstTime)));
+            getEditor().putString(setHashKey(FIRST_TIME_USER),hideValue(String.valueOf(firstTime)));
             return this;
         }
 
+        @Override
         public void applyFirstTimeUser(boolean firstTime){
-            editor.putString(setHashKey(FIRST_TIME_USER),hideValue(String.valueOf(firstTime))).apply();
+            getEditor().putString(setHashKey(FIRST_TIME_USER),hideValue(String.valueOf(firstTime))).apply();
         }
 
-        public UserPref setUserDetail(T object) {
-            editor.putString(setHashKey(USER_JSON), hideValue(new Gson().toJson(object)));
+        @Override
+        public UserPref setUserDetail(Object object) {
+            getEditor().putString(setHashKey(USER_JSON), hideValue(new Gson().toJson(object)));
             return this;
         }
 
-        public void applyModel(T object) {
-            editor.putString(setHashKey(USER_JSON), hideValue(new Gson().toJson(object))).apply();
+        @Override
+        public void applyUserDetail(Object object) {
+            getEditor().putString(setHashKey(USER_JSON), hideValue(new Gson().toJson(object))).apply();
         }
 
+        @Override
         public String getUserId(){
             return returnValue(USER_ID);
         }
+
+        @Override
         public String getUserDetail(){
             return returnValue(USER_JSON);
         }
-        public T getUserDetail(Type typeOfT) {
+
+        @Override
+        public Object getUserDetail(Type typeOfT) {
             String value = returnValue(USER_JSON);
             return new Gson().fromJson(value, typeOfT);
         }
 
-        public T getUserDetail(Class<T> classOfT) {
+        @Override
+        public Object getUserDetail(Class<Object> classOfT) {
             String value = returnValue(USER_JSON);
             return new Gson().fromJson(value, classOfT);
         }
+
+        @Override
         public String getUserName(){
             return returnValue(NAME);
         }
+
+        @Override
         public String getFullName(){
             return returnValue(FULLNAME);
         }
+
+        @Override
         public String getFirstName(){
             return returnValue(FIRST_NAME);
         }
+
+        @Override
         public String getLastName(){
             return returnValue(LAST_NAME);
         }
+
+        @Override
         public Integer getAge(){
             try {
                 return Integer.parseInt(returnValue(AGE));
@@ -969,27 +994,43 @@ public class ConcealPrefRepository<Object> {
                 return null;
             }
         }
+
+        @Override
         public String getGender(){
             return returnValue(GENDER);
         }
+
+        @Override
         public String getBirthDate(){
             return returnValue(BIRTH_DATE);
         }
+
+        @Override
         public String getAddress(){
             return returnValue(ADDRESS);
         }
+
+        @Override
         public String getEmail(){
             return returnValue(EMAIL);
         }
+
+        @Override
         public String getPushToken(){
             return returnValue(PUSH_TOKEN);
         }
+
+        @Override
         public String getPhoneNumber(){
             return returnValue(PHONE_NO);
         }
+
+        @Override
         public String getMobileNumber(){
             return returnValue(MOBILE_NO);
         }
+
+        @Override
         public Boolean hasLogin(){
             try {
                 return Boolean.parseBoolean(returnValue(HAS_LOGIN));
@@ -999,10 +1040,13 @@ public class ConcealPrefRepository<Object> {
                 return null;
             }
         }
+
+        @Override
         public String getPassword(){
             return returnValue(PASSWORD);
         }
 
+        @Override
         public Boolean isFirstTimeUser(){
             try {
                 return Boolean.parseBoolean(returnValue(FIRST_TIME_USER));
@@ -1013,26 +1057,14 @@ public class ConcealPrefRepository<Object> {
             }
         }
 
-        private String returnValue(String KEY){
-            String value = concealCrypto.deObscure(sharedPreferences.getString(setHashKey(KEY), null));
-            if (value == null)
-                return this.DEFAULT_VALUE;
-
-            return value;
-        }
-
-        private String setHashKey(String key) {
-            if (PREFIX == null)
-                return hashKey(key);
-            else
-                return hashKey(PREFIX+key);
-        }
-
+        @Override
         public void apply() {
-            editor.apply();
+            getEditor().apply();
+
         }
+        @Override
         public void commit() {
-            editor.commit();
+            getEditor().commit();
         }
     }
 
@@ -1262,28 +1294,15 @@ public class ConcealPrefRepository<Object> {
     /************************v***************************************************************
      * Preferences builder,  ConcealPrefRepository.PreferencesBuilder
      ****************************************************************************************/
-    public static class PreferencesBuilder{
-
-        private WeakReference<Context> mContext;
-        private CryptoConfig mKeyChain = CryptoConfig.KEY_256;
-        private String mPrefname = null;
-        private String mFolderName = null;
-        private boolean mEnabledCrypto = false;
-        private boolean mEnableCryptKey = false;
-        private String mEntityPasswordRaw = null;
-        private SharedPreferences sharedPreferences;
-        private OnDataChangeListener onDataChangeListener;
+    public static class PreferencesBuilder extends BasePreferencesBuilder<PreferencesBuilder> {
 
         public PreferencesBuilder(Context context) {
-            mContext = new WeakReference<>(context.getApplicationContext());
+            super(context);
         }
 
-        public PreferencesBuilder useDefaultPrefStorage(){
-            return this;
-        }
-
+        @Override
         public PreferencesBuilder useThisPrefStorage(String prefName){
-            mPrefname = prefName;
+            setPrefName(prefName);
             return this;
         }
 
@@ -1293,9 +1312,10 @@ public class ConcealPrefRepository<Object> {
          * @param encryptValue true/false to enable encryption for values
          * @return PreferencesBuilder
          */
+        @Override
         public PreferencesBuilder enableCrypto(boolean encryptKey,boolean encryptValue){
-            mEnabledCrypto = encryptValue;
-            mEnableCryptKey = encryptKey;
+            setEnabledCrypto(encryptValue);
+            setEnableCryptKey(encryptKey);
             return this;
         }
 
@@ -1304,8 +1324,9 @@ public class ConcealPrefRepository<Object> {
          * @param keyChain Cryptography type
          * @return PreferencesBuilder
          */
-        public PreferencesBuilder sharedPrefsBackedKeyChain(CryptoConfig keyChain){
-            mKeyChain = keyChain;
+        @Override
+        public PreferencesBuilder sharedPrefsBackedKeyChain(CryptoType keyChain){
+            setKeyChain(keyChain);
             return this;
         }
 
@@ -1314,8 +1335,9 @@ public class ConcealPrefRepository<Object> {
          * @param password string password
          * @return PreferencesBuilder
          */
+        @Override
         public PreferencesBuilder createPassword(String password){
-            mEntityPasswordRaw = password;
+            setEntityPasswordRaw(password);
             return this;
         }
 
@@ -1324,8 +1346,9 @@ public class ConcealPrefRepository<Object> {
          * @param folderName folder path
          * @return PreferencesBuilder
          */
+        @Override
         public PreferencesBuilder setFolderName(String folderName){
-            mFolderName = folderName;
+            setmFolderName(folderName);
             return this;
         }
 
@@ -1334,8 +1357,9 @@ public class ConcealPrefRepository<Object> {
          * @param listener OnDataChangeListener listener
          * @return PreferencesBuilder
          */
+        @Override
         public PreferencesBuilder setPrefListener(OnDataChangeListener listener){
-            onDataChangeListener = listener;
+            setOnDataChangeListener(listener);
             return this;
         }
 
@@ -1343,35 +1367,36 @@ public class ConcealPrefRepository<Object> {
          * Create Preferences
          * @return ConcealPrefRepository
          */
+
         public ConcealPrefRepository create(){
 
-            if (this.mContext == null){
+            if (getContext() == null){
                 throw new RuntimeException("Context cannot be null");
             }
 
-            if(mFolderName !=null){
-                File file = new File(mFolderName);
+            if(getFolderName() !=null){
+                File file = new File(getFolderName());
                 try {
                     file.getCanonicalPath();
-                    mFolderName = (mFolderName.startsWith("."))? mFolderName.substring(1):mFolderName;
+                    String newFolder = (getFolderName().startsWith("."))? getFolderName().substring(1): getFolderName();
+                    setmFolderName(newFolder);
                 } catch (IOException e) {
                     e.printStackTrace();
                     throw new RuntimeException("Folder Name is not Valid",e);
                 }
             }
             else{
-                mFolderName = DEFAULT_MAIN_FOLDER;
+                setmFolderName(DEFAULT_MAIN_FOLDER);
             }
 
-            if (mPrefname!=null){
-                sharedPreferences = this.mContext.get().getSharedPreferences(CipherUtils.obscureEncodeSixFourString(mPrefname.getBytes()), MODE_PRIVATE);
+            if (getPrefName()!=null){
+                setSharedPreferences(getContext().getSharedPreferences(CipherUtils.obscureEncodeSixFourString(getPrefName().getBytes()), MODE_PRIVATE));
             }
             else {
-                sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.mContext.get());
+                setSharedPreferences(PreferenceManager.getDefaultSharedPreferences(getContext()));
             }
 
             return new ConcealPrefRepository(this);
-
         }
     }
 
@@ -1382,9 +1407,6 @@ public class ConcealPrefRepository<Object> {
     }
 
     private static String hashKey(String key){
-        if (key == null || key.isEmpty())
-            throw new NullPointerException("Key cannot be null or empty");
-
         return concealCrypto.hashKey(key);
     }
 

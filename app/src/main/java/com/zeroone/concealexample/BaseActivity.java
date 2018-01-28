@@ -4,9 +4,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
-import com.facebook.crypto.CryptoConfig;
 import com.zeroone.conceal.ConcealPrefRepository;
 import com.zeroone.conceal.OnDataChangeListener;
+import com.zeroone.conceal.model.CryptoType;
 
 /**
  * @author : hafiq on 27/03/2017.
@@ -21,13 +21,11 @@ public class BaseActivity extends AppCompatActivity implements OnDataChangeListe
         super.onCreate(savedInstanceState);
 
         concealPrefRepository = new ConcealPrefRepository.PreferencesBuilder(this)
-                .useDefaultPrefStorage()
-                .sharedPrefsBackedKeyChain(CryptoConfig.KEY_256)
+                .sharedPrefsBackedKeyChain(CryptoType.KEY_256)
                 .enableCrypto(false,true)
                 .createPassword("Password@123")
                 .setPrefListener(this)
                 .create();
-
     }
 
     @Override

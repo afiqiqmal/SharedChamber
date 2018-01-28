@@ -3,12 +3,13 @@ package com.zeroone.concealexample;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.facebook.crypto.CryptoConfig;
 import com.google.gson.reflect.TypeToken;
 import com.zeroone.conceal.ConcealCrypto;
 import com.zeroone.conceal.ConcealPrefRepository;
+import com.zeroone.conceal.model.CryptoType;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends BaseActivity {
@@ -20,6 +21,8 @@ public class MainActivity extends BaseActivity {
     String TASK_DETAIL = "task_detail";
     String IMAGE_KEY = "user_image";
     String FILE_KEY = "user_file";
+    String PREFIX = "testing";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +32,7 @@ public class MainActivity extends BaseActivity {
         ConcealPrefRepository.applicationInit(getApplication());
 
         concealPrefRepository.clearPrefs();
-
+        
 
         //FIRST TEST
         concealPrefRepository.putString(NAME_KEY, "HAFIQ IQMAL");
@@ -56,17 +59,20 @@ public class MainActivity extends BaseActivity {
         Log.d("SECOND TEST",concealPrefRepository.getString(AGE_KEY));
         Log.d("SECOND TEST SIZE", ""+concealPrefRepository.getPrefsSize());
 
+        getList();
 
 
         concealPrefRepository.clearPrefs();
 
         //add user details preferences
-        new ConcealPrefRepository.UserPref("PREFIX").setFirstName("Firstname").setLastName("Lasname").setEmail("hello@gmail.com").apply();
+        new ConcealPrefRepository.UserPref(PREFIX).setFirstName("Firstname").setLastName("Lasname").setEmail("hello@gmail.com").apply();
+
+        getList();
 
         //get user details
-        Log.d("THIRD_TEST",new ConcealPrefRepository.UserPref("PREFIX").getFirstName());
-        Log.d("THIRD_TEST",new ConcealPrefRepository.UserPref().setDefault("No Data").getLastName());
-        Log.d("THIRD_TEST",new ConcealPrefRepository.UserPref("PREFIX").setDefault("No Data").getEmail());
+        Log.d("THIRD_TEST", new ConcealPrefRepository.UserPref(PREFIX).getFirstName());
+        Log.d("THIRD_TEST", new ConcealPrefRepository.UserPref().setDefault("No Data").getLastName());
+        Log.d("THIRD_TEST", new ConcealPrefRepository.UserPref(PREFIX).setDefault("No Data").getEmail());
         Log.d("THIRD_TEST TEST SIZE", ""+concealPrefRepository.getPrefsSize());
 
 
@@ -74,7 +80,7 @@ public class MainActivity extends BaseActivity {
         concealPrefRepository.clearPrefs();
 
 
-        ConcealPrefRepository.UserPref userPref = new ConcealPrefRepository.UserPref("PREFIX", "No Data");
+        ConcealPrefRepository.UserPref userPref = new ConcealPrefRepository.UserPref(PREFIX, "No Data");
         userPref.setUserName("afiqiqmal");
         userPref.setEmail("afiqiqmal@example.com");
         userPref.apply();
@@ -86,7 +92,7 @@ public class MainActivity extends BaseActivity {
 
 
 
-        ConcealPrefRepository.DevicePref devicePref = new ConcealPrefRepository.DevicePref("PREFIX", "No Data");
+        ConcealPrefRepository.DevicePref devicePref = new ConcealPrefRepository.DevicePref(PREFIX, "No Data");
         devicePref.setDeviceId("ABC123123123");
         devicePref.setDeviceOS("android");
         devicePref.apply();
@@ -107,12 +113,14 @@ public class MainActivity extends BaseActivity {
                 e.printStackTrace();
             }
         }
-        Log.d("VIEW ALL SIZE", ""+concealPrefRepository.getPrefsSize());
+
+
+        getList();
 
 
         ConcealCrypto concealCrypto = new ConcealCrypto.CryptoBuilder(this)
                 .setEnableCrypto(true) //default true
-                .setKeyChain(CryptoConfig.KEY_256) // CryptoConfig.KEY_256 or CryptoConfig.KEY_128
+                .setKeyChain(CryptoType.KEY_256) // CryptoType.KEY_256 or CryptoType.KEY_128
                 .createPassword("Mac OSX")
                 .create();
 
@@ -136,5 +144,20 @@ public class MainActivity extends BaseActivity {
         Log.d("AES D", dec);
 
 
+    }
+
+
+    private void getList() {
+        List<String> mapList = concealPrefRepository.getAllSharedPrefDataToString();
+        for(String s: mapList){
+            try {
+                Log.d("VIEW_LIST", s);
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+
+        Log.d("VIEW ALL SIZE", ""+concealPrefRepository.getPrefsSize());
     }
 }

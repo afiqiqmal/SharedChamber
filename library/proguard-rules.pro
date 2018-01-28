@@ -24,19 +24,19 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--renamesourcefileattribute SourceFile
--repackageclasses ''
--flattenpackagehierarchy
--dontskipnonpubliclibraryclasses
--forceprocessing
-
-#########--------Android Support--------#########
--keep class android.support.v4.app.** { *; }
--keep interface android.support.v4.app.** { *; }
--dontwarn android.support.**
-
-#########--------Remove Log--------#########
--assumenosideeffects class android.util.Log { *; }
-
-
--keep class com.zeroone.conceal.model.Constant { *; }
+#-renamesourcefileattribute SourceFile
+#-repackageclasses ''
+#-flattenpackagehierarchy
+#-dontskipnonpubliclibraryclasses
+#-forceprocessing
+#
+##########--------Android Support--------#########
+#-keep class android.support.v4.app.** { *; }
+#-keep interface android.support.v4.app.** { *; }
+#-dontwarn android.support.**
+#
+##########--------Remove Log--------#########
+#-assumenosideeffects class android.util.Log { *; }
+#
+#
+#-keep class com.zeroone.conceal.model.Constant { *; }

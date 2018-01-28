@@ -51,9 +51,8 @@ Permission need to use in your project. Please Allow it first, or it will affect
 SharedPreferences initialize
 ```java
 ConcealPrefRepository concealPrefRepository = new ConcealPrefRepository.PreferencesBuilder(this)
-        .useDefaultPrefStorage()
         //.useThisPrefStorage("Android_Prefs")
-        .sharedPrefsBackedKeyChain(CryptoConfig.KEY_256)  //CryptoConfig.KEY_256 or CryptoConfig.KEY_128
+        .sharedPrefsBackedKeyChain(CryptoType.KEY_256)  //CryptoType.KEY_256 or CryptoType.KEY_128
         .enableCrypto(true,true) //param 1 - enable value encryption , param 2 - enable key encryption
         .createPassword("Android") //default value - BuildConfig.APPLICATION_ID
         .setFolderName("testing") //create Folder for data stored: default is - "conceal_path"
@@ -220,7 +219,7 @@ new ConcealPrefRepository.UserPref("KEY PREFIX").setLastName("Firstname").apply(
 ### Extra Usage for Conceal Encryption and Decryption
 
 ```java
-ConcealCrypto concealCrypto = new ConcealCrypto(this,CryptoConfig.KEY_256); // CryptoConfig.KEY_256 or CryptoConfig.KEY_128
+ConcealCrypto concealCrypto = new ConcealCrypto(this,CryptoType.KEY_256); // CryptoType.KEY_256 or CryptoType.KEY_128
 concealCrypto.setEnableCrypto(true); //default true
 concealCrypto.setmEntityPassword("Android");
 concealCrypto.setmEntityPassword(Entity.create("Android"));
@@ -240,7 +239,7 @@ OR
 ```java
 ConcealCrypto concealCrypto1 = new ConcealCrypto.CryptoBuilder(this)
                 .setEnableCrypto(true) //default true
-                .setKeyChain(CryptoConfig.KEY_256) // CryptoConfig.KEY_256 or CryptoConfig.KEY_128
+                .setKeyChain(CryptoType.KEY_256) // CryptoType.KEY_256 or CryptoType.KEY_128
                 .createPassword("Mac OSX") 
                 .create();
                 
