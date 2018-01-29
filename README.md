@@ -294,6 +294,10 @@ Or more simpler proguard
 ```
 
 
+# TODO
+1. Set Preferences for specific user
+2. Able to switch Preferences between user
+
 
 ## Credit<br>
 [Facebook Conceal](http://facebook.github.io/conceal/) - Conceal provides easy Android APIs for performing fast encryption and authentication of data.<br>
