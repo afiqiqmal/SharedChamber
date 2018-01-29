@@ -63,11 +63,11 @@ abstract class BaseBuilderAbstract {
         this.concealCrypto = concealCrypto;
     }
 
-    public ConcealCrypto getConcealCrypto() {
+    ConcealCrypto getConcealCrypto() {
         return this.concealCrypto;
     }
 
-    public void setDefaultPrefix(String defaultPrefix) {
+    void setDefaultPrefix(String defaultPrefix) {
         this.defaultPrefix = defaultPrefix;
     }
 

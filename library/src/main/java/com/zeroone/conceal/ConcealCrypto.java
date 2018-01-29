@@ -26,11 +26,7 @@ import java.lang.ref.WeakReference;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import static com.zeroone.conceal.model.Constant.DEFAULT_DIRECTORY;
-import static com.zeroone.conceal.model.Constant.DEFAULT_FILES_FOLDER;
-import static com.zeroone.conceal.model.Constant.DEFAULT_IMAGE_FOLDER;
-import static com.zeroone.conceal.model.Constant.DEFAULT_MAIN_FOLDER;
-import static com.zeroone.conceal.model.Constant.DEFAULT_PREFIX_FILENAME;
+import static com.zeroone.conceal.model.Constant.*;
 
 /**
  * @author : hafiq on 23/03/2017.
@@ -46,7 +42,7 @@ public class ConcealCrypto {
     private boolean enableHashKey =true;
     private String MAIN_DIRECTORY;
 
-    private ConcealCrypto(CryptoBuilder builder){
+    private ConcealCrypto(CryptoBuilder builder) {
         crypto = builder.crypto;
         mEntityPassword = builder.mEntityPassword;
         mEntityPasswordRaw = builder.mEntityPasswordRaw;

@@ -62,8 +62,6 @@ abstract class UserAbstract<T extends UserAbstract<T>> extends BaseBuilderAbstra
     protected abstract void applyFirstTimeUser(boolean firstTimeUser);
     protected abstract void applyUserDetail(Object object);
 
-
-
     protected abstract String getUserId();
     protected abstract String getUserDetail();
     protected abstract Object getUserDetail(Type typeOfT);

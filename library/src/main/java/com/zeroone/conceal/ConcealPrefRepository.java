@@ -33,29 +33,7 @@ import static android.content.Context.MODE_PRIVATE;
 import static com.zeroone.conceal.FileUtils.getDirectory;
 import static com.zeroone.conceal.FileUtils.getImageDirectory;
 import static com.zeroone.conceal.FileUtils.getListFiles;
-import static com.zeroone.conceal.model.Constant.ADDRESS;
-import static com.zeroone.conceal.model.Constant.AGE;
-import static com.zeroone.conceal.model.Constant.BIRTH_DATE;
-import static com.zeroone.conceal.model.Constant.DEFAULT_MAIN_FOLDER;
-import static com.zeroone.conceal.model.Constant.DEVICE_DETAIL;
-import static com.zeroone.conceal.model.Constant.DEVICE_ID;
-import static com.zeroone.conceal.model.Constant.DEVICE_IS_UPDATE;
-import static com.zeroone.conceal.model.Constant.DEVICE_OS;
-import static com.zeroone.conceal.model.Constant.DEVICE_VERSION;
-import static com.zeroone.conceal.model.Constant.EMAIL;
-import static com.zeroone.conceal.model.Constant.FIRST_NAME;
-import static com.zeroone.conceal.model.Constant.FIRST_TIME_USER;
-import static com.zeroone.conceal.model.Constant.FULLNAME;
-import static com.zeroone.conceal.model.Constant.GENDER;
-import static com.zeroone.conceal.model.Constant.HAS_LOGIN;
-import static com.zeroone.conceal.model.Constant.LAST_NAME;
-import static com.zeroone.conceal.model.Constant.MOBILE_NO;
-import static com.zeroone.conceal.model.Constant.NAME;
-import static com.zeroone.conceal.model.Constant.PASSWORD;
-import static com.zeroone.conceal.model.Constant.PHONE_NO;
-import static com.zeroone.conceal.model.Constant.PUSH_TOKEN;
-import static com.zeroone.conceal.model.Constant.USER_ID;
-import static com.zeroone.conceal.model.Constant.USER_JSON;
+import static com.zeroone.conceal.model.Constant.*;
 
 /**
  * @author : hafiq on 23/03/2017.
