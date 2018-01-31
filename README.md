@@ -118,6 +118,7 @@ new ConcealPrefRepository.Editor("PREFIX") // optional - get default from global
                 .put(KEY, imageFile)
                 .put(KEY,STRING_LIST)
                 .put(KEY,FLOAT_LIST)
+		.putModel(KEY, new Gson().fromJson(loadJSONFromAsset(context, "users.json"), User.class));
                 ...
                 ...
                 .apply(); //.commit();
