@@ -10,7 +10,6 @@ import com.zeroone.conceal.model.CryptoType;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class MainActivity extends BaseActivity {
 
@@ -32,16 +31,20 @@ public class MainActivity extends BaseActivity {
         ConcealPrefRepository.applicationInit(getApplication());
 
         concealPrefRepository.clearPrefs();
-        
+
+        List<Float> floats = new ArrayList<>();
+        floats.add(10f);
+        floats.add(10f);
+        floats.add(10f);
 
         //FIRST TEST
-        concealPrefRepository.putString(NAME_KEY, "HAFIQ IQMAL");
-        concealPrefRepository.putInt(AGE_KEY, 24);
+        concealPrefRepository.put(NAME_KEY, "HAFIQ IQMAL");
+        concealPrefRepository.put(AGE_KEY, floats);
         concealPrefRepository.putModel(USER_DETAIL, Data.getUser(this));
         concealPrefRepository.putModel(TASK_DETAIL, Data.getTaskData(this));
 
         Log.d("FIRST TEST", concealPrefRepository.getString(NAME_KEY));
-        Log.d("FIRST TEST", concealPrefRepository.getString(AGE_KEY));
+        Log.d("FIRST TEST", concealPrefRepository.getListFloat(AGE_KEY).toString());
         Log.d("FIRST TEST", concealPrefRepository.getModel(USER_DETAIL, User.class).toString());
         Log.d("FIRST TEST", concealPrefRepository.getModel(TASK_DETAIL, new TypeToken<ArrayList<Task>>(){}.getType()).toString());
         Log.d("FIRST TEST SIZE", ""+concealPrefRepository.getPrefsSize());
@@ -50,9 +53,9 @@ public class MainActivity extends BaseActivity {
 
         //SECOND TEST
         new ConcealPrefRepository.Editor()
-                .putString(NAME_KEY, "Hafiq Iqmal")
-                .putInt(AGE_KEY, 24)
-                .putString(EMAIL_KEY, "hafiqiqmal93@gmail.com")
+                .put(NAME_KEY, "Hafiq Iqmal")
+                .put(AGE_KEY, 24)
+                .put(EMAIL_KEY, "hafiqiqmal93@gmail.com")
                 .apply();
 
         Log.d("SECOND TEST", concealPrefRepository.getString(NAME_KEY));
@@ -99,7 +102,6 @@ public class MainActivity extends BaseActivity {
         getList();
 
 
-
         ConcealCrypto concealCrypto = new ConcealCrypto.CryptoBuilder(this)
                 .setEnableValueEncryption(true) //default true
                 .setEnableKeyEncryption(true) // default true
@@ -125,8 +127,6 @@ public class MainActivity extends BaseActivity {
         Log.d("AES E", cipher);
         dec = concealCrypto.aesDecrypt(cipher);
         Log.d("AES D", dec);
-
-
     }
 
 

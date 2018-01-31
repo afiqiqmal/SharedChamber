@@ -92,7 +92,7 @@ class ConverterListUtils {
         return Arrays.asList(getArray(string));
     }
 
-    static String[] getArray(String string) {
+    private static String[] getArray(String string) {
         return string.replace("[", "").replace("]", "").split(", ");
     }
 

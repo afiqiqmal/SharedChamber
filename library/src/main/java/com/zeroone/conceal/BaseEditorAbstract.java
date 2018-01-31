@@ -31,39 +31,36 @@ public abstract class BaseEditorAbstract<T extends BaseEditorAbstract<T>> extend
         super(keyPrefix, defaultEmptyValue, sharedPreferences);
     }
 
-    abstract T putString(@NonNull String key, String value);
-    abstract void applyString(@NonNull String key, String value);
-    abstract T putInt(@NonNull String key, int value);
-    abstract void applyInt(@NonNull String key, int value);
-    abstract T putLong(@NonNull String key, long value);
-    abstract void applyLong(@NonNull String key, long value);
-    abstract T putDouble(@NonNull String key, double value);
-    abstract void applyDouble(@NonNull String key, double value);
-    abstract T putFloat(@NonNull String key, float value);
-    abstract void applyFloat(@NonNull String key, float value);
-    abstract T putBoolean(@NonNull String key, boolean value);
-    abstract void applyBoolean(@NonNull String key, boolean value);
-    abstract T putListString(@NonNull String key, List<String> value);
-    abstract void applyListString(@NonNull String key, List<String> value);
-    abstract T putListFloat(@NonNull String key, List<Float> value);
-    abstract void applyListFloat(@NonNull String key, List<Float> value);
-    abstract T putListInteger(@NonNull String key, List<Integer> value);
-    abstract void applyListInteger(@NonNull String key, List<Integer> value);
-    abstract T putListDouble(@NonNull String key, List<Double> value);
-    abstract void applyListDouble(@NonNull String key, List<Double> value);
-    abstract T putListLong(@NonNull String key, List<Long> value);
-    abstract void applyListLong(@NonNull String key, List<Long> value);
-    abstract T putListBoolean(@NonNull String key, List<Boolean> value);
-    abstract void applyListBoolean(@NonNull String key, List<Boolean> value);
-    abstract T putByte(@NonNull String key, byte[] bytes);
-    abstract void applyByte(@NonNull String key, byte[] bytes);
+    abstract T put(@NonNull String key, String value);
+    abstract void apply(@NonNull String key, String value);
+    abstract T put(@NonNull String key, int value);
+    abstract void apply(@NonNull String key, int value);
+    abstract T put(@NonNull String key, long value);
+    abstract void apply(@NonNull String key, long value);
+    abstract T put(@NonNull String key, double value);
+    abstract void apply(@NonNull String key, double value);
+    abstract T put(@NonNull String key, float value);
+    abstract void apply(@NonNull String key, float value);
+    abstract T put(@NonNull String key, boolean value);
+    abstract void apply(@NonNull String key, boolean value);
+    abstract T put(@NonNull String key, List<?> value);
+    abstract void apply(@NonNull String key, List<?> value);
+    abstract T put(@NonNull String key, byte[] bytes);
+    abstract void apply(@NonNull String key, byte[] bytes);
+    abstract T putModel(@NonNull String key, Object object);
+    abstract void applyModel(@NonNull String key, Object object);
 
-    abstract T putImage(@NonNull String key, @DrawableRes int resId, Context context);
-    abstract T putImage(@NonNull String key, Bitmap bitmap);
-    abstract T putImage(@NonNull String key, File file);
-    abstract T putFile(@NonNull String key,File file,boolean deleteOldFile);
+    abstract T putDrawable(@NonNull String key, @DrawableRes int resId, Context context);
+    abstract void applyDrawable(@NonNull String key, @DrawableRes int resId, Context context);
+    abstract T put(@NonNull String key, Bitmap bitmap);
+    abstract void apply(@NonNull String key, Bitmap bitmap);
+    abstract T put(@NonNull String key, File file);
+    abstract void apply(@NonNull String key, File file);
+    abstract T put(@NonNull String key,File file,boolean deleteOldFile);
+    abstract void apply(@NonNull String key,File file,boolean deleteOldFile);
 
-    abstract T putMap(@NonNull String key,Map<String,String> values);
+    abstract T put(@NonNull String key,Map<String,String> values);
+    abstract void apply(@NonNull String key,Map<String,String> values);
 
     abstract T remove(@NonNull String key);
     abstract T clear();

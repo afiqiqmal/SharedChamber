@@ -105,8 +105,11 @@ abstract class BaseBuilderAbstract {
         return this.concealCrypto.obscure(value);
     }
 
+    public void apply() {
+        getEditor().apply();
+    }
 
-    protected abstract void apply();
-    protected abstract void commit();
-
+    public void commit() {
+        getEditor().commit();
+    }
 }

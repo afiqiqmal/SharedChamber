@@ -11,11 +11,11 @@ Conceal provides a set of Java APIs to perform cryptography on Android. It was d
 Gradle
 ```gradle
 dependencies {
-        compile 'com.github.afiqiqmal:ConcealSharedPreference-Android:1.5.2'
+        compile 'com.github.afiqiqmal:ConcealSharedPreference-Android:1.5.5'
 
         //or
 
-        compile 'com.github.afiqiqmal:ConcealSharedPreference-Android:1.5.2' {
+        compile 'com.github.afiqiqmal:ConcealSharedPreference-Android:1.5.5' {
             exclude group: 'com.google.code.gson', module: 'gson'
         }
 }
@@ -50,7 +50,7 @@ Permission need to use in your project. Please Allow it first, or it will affect
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 ```
 
-SharedPreferences initialize
+##### Initialize
 ```java
 ConcealPrefRepository concealPrefRepository = new ConcealPrefRepository.PreferencesBuilder(this)
         //.useThisPrefStorage("Android_Prefs")
@@ -71,19 +71,27 @@ ConcealPrefRepository concealPrefRepository = new ConcealPrefRepository.Preferen
                - for files - in folder /files
 ```
 
-<b>Save data</b>
+##### Save data
 
 ```java
-concealPrefRepository.putString(KEY,"Hello");
-concealPrefRepository.putInt(KEY,1000000);
-concealPrefRepository.putDouble(KEY,100.00);
-concealPrefRepository.putbyte(KEY,new byte[]);
-concealPrefRepository.putMap(KEY,new Map<String,String>());
+concealPrefRepository.put(KEY,"Hello");
+concealPrefRepository.put(KEY,1000000);
+concealPrefRepository.put(KEY,100.00);
+concealPrefRepository.put(KEY,new byte[]);
+concealPrefRepository.put(KEY,new Map<String,String>());
+...
+...
+```
 
-//using gson
+for complex object might need use `putModel` which use gson
+```
 concealPrefRepository.putModel(KEY, new Gson().fromJson(loadJSONFromAsset(context, "users.json"), User.class));
 concealPrefRepository.putModel(KEY, new Gson().fromJson(loadJSONFromAsset(context, "users.json"), new TypeToken<ArrayList<Users>>(){}.getType()));
+```
 
+
+Files and Images
+```
 // Files and Images will be encrypted
 // prefix of this encrypted images and files start with "conceal_enc_";
 File getFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/testing.pdf");
@@ -91,48 +99,51 @@ concealPrefRepository.putFile(KEY,getFile,boolean deleteOldFiles);
 // deleteOldFiles - true or false.. true - will delete choosen file and move to new path
 
 //put images
-concealPrefRepository.putImage(KEY, BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
-concealPrefRepository.putImage(KEY, File file);
-...........
+concealPrefRepository.put(KEY, BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
+concealPrefRepository.put(KEY, File file);
+concealPrefRepository.putDrawable(KEY, Drawable ID);
+...
+...
 ```
 
-OR
+##### <b>For Method Chaining</b>
 ```java
 new ConcealPrefRepository.Editor("PREFIX") // optional - get default from global prefix
-                .putString(KEY,"Hello")
-                .putInt(KEY,1000000)
-                .putBoolean(KEY,true)
-                .putByte(KEY,new byte[])
-                .putFile(KEY,getFile,boolean deleteOldFiles);
-                .putImage(KEY, BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
-                .putImage(KEY, imageFile)
-                .putListString(KEY,STRING_LIST)
-                .putListFloat(KEY,FLOAT_LIST)
-                .........
+                .put(KEY,"Hello")
+                .put(KEY,1000000)
+                .put(KEY,true)
+                .put(KEY,new byte[])
+                .put(KEY,getFile,boolean deleteOldFiles);
+                .put(KEY, BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
+                .put(KEY, imageFile)
+                .put(KEY,STRING_LIST)
+                .put(KEY,FLOAT_LIST)
+                ...
+                ...
                 .apply(); //.commit();
 ```
 
-<b>Get total data</b>
+##### <b>Get total data</b>
 ```java
 System.out.println(concealPrefRepository.getPrefsSize());
 ```
 
-<b>Get all sharedpreferences data</b>
+##### <b>Get all sharedpreferences data</b>
 ```java
 Map<String,String> getAll = concealPrefRepository.getAllSharedPrefData();
 ```
 
-<b>Get all sharedpreferences data in List String</b>
+##### <b>Get all sharedpreferences data in List String</b>
 ```java
 List<String> getAll = concealPrefRepository.getAllSharedPrefDataToString();
 ```
 
-<b>Get all encrypted Files inside created folder</b>
+##### <b>Get all encrypted Files inside created folder</b>
 ```java
 List<CryptoFile> getFiles = concealPrefRepository.getAllConcealEncryptedFiles();
 ```
 
-<b>Fetching data</b>
+##### <b>Fetching data</b>
 
 ```java
 concealPrefRepository.getString(KEY);
@@ -154,7 +165,7 @@ File enc_file = concealPrefRepository.getFile(KEY,true);    //return File
 ........
 ```
 
-<b>Clear key and SharedPreferences</b>
+##### <b>Clear key and SharedPreferences</b>
 
 ```java
 concealPrefRepository.destroyCrypto(); //clear key
@@ -164,17 +175,17 @@ concealPrefRepository.remove(KEY1,KEY2,KEY3,KEY4) //String... keys
 concealPrefRepository.removeFile(KEY); //delete assosiate file (images and files) return boolean
 ```
 
-<b>Check if key exists</b>
+##### <b>Check if key exists</b>
 ```java
 concealPrefRepository.contains(KEY); // return boolean
 ```
 
-<b>Get SharedPreferences</b>
+##### <b>Get SharedPreferences</b>
 ```java
 concealPrefRepository.getPreferences();
 ```
 
-<b>Listener Data Changes</b>
+##### <b>Listener Data Changes</b>
 ```java
 public class BaseActivity extends AppCompatActivity implements OnDataChangeListener{
     ....
@@ -185,8 +196,7 @@ public class BaseActivity extends AppCompatActivity implements OnDataChangeListe
 }
 ```
 
-<b>Easier Save User Detail Preferences</b>
-
+##### <b>Easier Save User Detail Preferences</b>
 ```java
 new ConcealPrefRepository.UserPref()
 .setFirstName("Firstname")
@@ -203,7 +213,7 @@ ConcealPrefRepository.UserPref().applyFirstName("Firstname"); //directly apply
 ConcealPrefRepository.UserPref().applyLastName("Firstname"); //directly apply
 ```
 
-<b>Get User Detail</b>
+##### <b>Get User Detail</b>
 ```java
 new ConcealPrefRepository.UserPref().getFirstName()
 new ConcealPrefRepository.UserPref().getLastName()
@@ -211,7 +221,7 @@ new ConcealPrefRepository.UserPref().getEmail()
 .....
 ```
 
-<b>Key prefix - Apply key with prefix</b>
+##### <b>Key prefix - Apply key with prefix</b>
 ```java
 new ConcealPrefRepository.UserPref("KEY PREFIX").setFirstName("Firstname").apply();
 new ConcealPrefRepository.UserPref("KEY PREFIX").setLastName("Firstname").apply();
@@ -238,13 +248,13 @@ ConcealCrypto concealCrypto = new ConcealCrypto.CryptoBuilder(this)
                 .create();
 ```
 
-#### Hash
+##### Hash
 
 ```
 concealCrypto.hashKey(plaintext); // SHA-256
 ```
 
-#### Encrypt
+##### Encrypt
 
 ```
 concealCrypto.obscure(test); // encrypt using facebook conceal
@@ -257,7 +267,7 @@ concealCrypto.obscureFile(File file,boolean deleteOldFile);
 ```
 
 
-#### Decrypt
+##### Decrypt
 
 ```
 concealCrypto.deObscure(cipher); // decrypt using facebook conceal

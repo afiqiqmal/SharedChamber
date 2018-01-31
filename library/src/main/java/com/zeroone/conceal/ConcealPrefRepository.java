@@ -8,14 +8,15 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
+import android.support.annotation.CheckResult;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
-import android.support.annotation.StringRes;
 
 import com.facebook.soloader.SoLoader;
 import com.google.gson.Gson;
+import com.zeroone.conceal.listener.OnDataChangeListener;
 import com.zeroone.conceal.model.Constant;
 import com.zeroone.conceal.model.CryptoFile;
 import com.zeroone.conceal.model.CryptoType;
@@ -38,7 +39,7 @@ import static com.zeroone.conceal.model.Constant.*;
 /**
  * @author : hafiq on 23/03/2017.
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "unchecked"})
 public class ConcealPrefRepository<T> extends BaseRepository {
 
     @SuppressLint("CommitPrefEdits")
@@ -217,71 +218,46 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         return sharedPreferences.contains(hashKey(key));
     }
 
-
     /* Save Data */
 
-    public void putString(@NonNull String key, String value) {
+    public void put(@NonNull String key, String value) {
         editor.putString(hashKey(key), hideValue(value)).apply();
     }
 
-    public void putString(@NonNull String key, @StringRes int value) {
-        putString(key, mContext.getResources().getString(value));
+    public void put(@NonNull String key, int value) {
+        put(key, Integer.toString(value));
     }
 
-    public void putInt(@NonNull String key, int value) {
-        putString(key, Integer.toString(value));
+    public void put(@NonNull String key, long value) {
+        put(key, Long.toString(value));
     }
 
-    public void putLong(@NonNull String key, long value) {
-        putString(key, Long.toString(value));
+    public void put(@NonNull String key, double value) {
+        put(key, Double.toString(value));
     }
 
-    public void putDouble(@NonNull String key, double value) {
-        putString(key, Double.toString(value));
+    public void put(@NonNull String key, float value) {
+        put(key, Float.toString(value));
     }
 
-    public void putFloat(@NonNull String key, float value) {
-        putString(key, Float.toString(value));
+    public void put(@NonNull String key, boolean value) {
+        put(key, Boolean.toString(value));
     }
 
-    public void putBoolean(@NonNull String key, boolean value) {
-        putString(key, Boolean.toString(value));
+    public void put(@NonNull String key, @NonNull List<?> value){
+        put(key, value.toString());
     }
 
-    public void putListString(@NonNull String key, List<String> value){
-        putString(key, value.toString());
+    public void put(@NonNull String key, Map<String,String> values){
+        put(key, ConverterListUtils.convertMapToString(values));
     }
 
-    public void putListFloat(@NonNull String key, List<Float> value){
-        putString(key,value.toString());
-    }
-
-    public void putListInteger(@NonNull String key, List<Integer> value){
-        putString(key,value.toString());
-    }
-
-    public void putListDouble(@NonNull String key, List<Double> value){
-        putString(key,value.toString());
-    }
-
-    public void putListLong(@NonNull String key, List<Long> value){
-        putString(key,value.toString());
-    }
-
-    public void putListBoolean(@NonNull String key, List<Boolean> value){
-        putString(key,value.toString());
-    }
-
-    public void putMap(@NonNull String key,Map<String,String> values){
-        putString(key,ConverterListUtils.convertMapToString(values));
-    }
-
-    public void putByte(@NonNull String key,byte[] bytes){
-        putString(key,new String(bytes));
+    public void put(@NonNull String key,byte[] bytes){
+        put(key,new String(bytes));
     }
 
     @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
-    public String putImage(@NonNull String key, Bitmap bitmap){
+    public String put(@NonNull String key, Bitmap bitmap){
         File imageFile = new File(getImageDirectory(mFolderName),"images_"+System.currentTimeMillis()+".png");
         if(FileUtils.saveBitmap(imageFile, bitmap)){
             concealCrypto.obscureFile(imageFile,true);
@@ -292,30 +268,12 @@ public class ConcealPrefRepository<T> extends BaseRepository {
     }
 
     @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
-    public String putImage(@NonNull String key, @DrawableRes int resId){
-        Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), resId);
-        if (bitmap!=null) {
-            File imageFile = new File(getImageDirectory(mFolderName), "images_" + System.currentTimeMillis() + ".png");
-            if (FileUtils.saveBitmap(imageFile, bitmap)) {
-                concealCrypto.obscureFile(imageFile, true);
-                putString(key, imageFile.getAbsolutePath());
-                return imageFile.getAbsolutePath();
-            }
-        }
-        else{
-            throw new IllegalArgumentException(resId+" : Drawable not found!");
-        }
-
-        return null;
-    }
-
-    @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
-    public String putImage(@NonNull String key, @Nullable File file){
+    public String put(@NonNull String key, @Nullable File file){
         if (FileUtils.isFileForImage(file)) {
             File imageFile = FileUtils.moveFile(file,getImageDirectory(mFolderName));
             if (imageFile!=null && imageFile.exists()) {
                 concealCrypto.obscureFile(imageFile,true);
-                putString(key, imageFile.getAbsolutePath());
+                put(key, imageFile.getAbsolutePath());
                 return imageFile.getAbsolutePath();
             }
         }
@@ -323,7 +281,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
     }
 
     @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
-    public File putFile(@NonNull String key, @Nullable File file,boolean deleteOldFile){
+    public File put(@NonNull String key, @Nullable File file, boolean deleteOldFile){
 
         if (file == null)
             return null;
@@ -331,7 +289,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         try {
             if (file.exists() && !FileUtils.isFileForImage(file)) {
                 File enc = concealCrypto.obscureFile(file,deleteOldFile);
-                putString(key, enc.getAbsolutePath());
+                put(key, enc.getAbsolutePath());
                 return enc;
             }
         }
@@ -342,32 +300,56 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         return null;
     }
 
+    @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
+    public String putDrawable(@NonNull String key, @DrawableRes int resId){
+        Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), resId);
+        if (bitmap!=null) {
+            File imageFile = new File(getImageDirectory(mFolderName), "images_" + System.currentTimeMillis() + ".png");
+            if (FileUtils.saveBitmap(imageFile, bitmap)) {
+                concealCrypto.obscureFile(imageFile, true);
+                put(key, imageFile.getAbsolutePath());
+                return imageFile.getAbsolutePath();
+            }
+        }
+        else{
+            throw new IllegalArgumentException(resId+" : Drawable not found!");
+        }
+
+        return null;
+    }
+
+    // use for objects with GSON
     public void putModel(@NonNull String key, Object object) {
-        putString(key, new Gson().toJson(object));
+        put(key, new Gson().toJson(object));
     }
 
 
     /************************************
      * FETCHING DATA FROM SHAREDPREFS
      ************************************/
+    @CheckResult
     public String getString(@NonNull String key){
         return concealCrypto.deObscure(sharedPreferences.getString(hashKey(key),null));
     }
 
+    @CheckResult
     public String getString(@NonNull String key,String defaultValue){
         return concealCrypto.deObscure(sharedPreferences.getString(hashKey(key),defaultValue));
     }
 
+    @CheckResult
     public Object getModel(@NonNull String key, Type typeOfT) {
         String value = getString(key);
         return new Gson().fromJson(value, typeOfT);
     }
 
+    @CheckResult
     public Object getModel(@NonNull String key, Class<Object> classOfT) {
         String value = getString(key);
         return new Gson().fromJson(value, classOfT);
     }
 
+    @CheckResult
     public Integer getInt(@NonNull String key){
         try {
             String value = getString(key);
@@ -382,6 +364,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         }
     }
 
+    @CheckResult
     public Integer getInt(@NonNull String key,int defaultValue){
         try {
             String value = getString(key);
@@ -397,6 +380,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         }
     }
 
+    @CheckResult
     public Float getFloat(@NonNull String key){
         try {
             String value = getString(key);
@@ -411,6 +395,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         }
     }
 
+    @CheckResult
     public Float getFloat(@NonNull String key,float defaultValue){
         try {
             String value = getString(key);
@@ -426,6 +411,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         }
     }
 
+    @CheckResult
     public Double getDouble(@NonNull String key){
         try {
             String value = getString(key);
@@ -440,6 +426,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         }
     }
 
+    @CheckResult
     public Double getDouble(@NonNull String key,double defaultValue){
         try {
             String value = getString(key);
@@ -455,7 +442,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         }
     }
 
-
+    @CheckResult
     public Long getLong(@NonNull String key){
         try {
             String value = getString(key);
@@ -470,6 +457,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         }
     }
 
+    @CheckResult
     public Long getLong(@NonNull String key,long defaultValue){
         try {
             String value = getString(key);
@@ -485,6 +473,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         }
     }
 
+    @CheckResult
     public Boolean getBoolean(@NonNull String key){
         try {
             String value = getString(key);
@@ -496,6 +485,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         }
     }
 
+    @CheckResult
     public Boolean getBoolean(@NonNull String key,boolean defaultValue){
         try {
             String value = getString(key);
@@ -510,39 +500,48 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         }
     }
 
+    @CheckResult
     public List<String> getListString(@NonNull String key){
         return ConverterListUtils.toStringArray(getString(key));
     }
 
+    @CheckResult
     public List<Float> getListFloat(@NonNull String key){
         return ConverterListUtils.toFloatArray(getString(key));
     }
 
+    @CheckResult
     public List<Double> getListDouble(@NonNull String key){
         return ConverterListUtils.toDoubleArray(getString(key));
     }
 
+    @CheckResult
     public List<Boolean> getListBoolean(@NonNull String key){
         return ConverterListUtils.toBooleanArray(getString(key));
     }
 
+    @CheckResult
     public List<Integer> getListInteger(@NonNull String key){
         return ConverterListUtils.toIntArray(getString(key));
     }
 
+    @CheckResult
     public List<Long> getListLong(@NonNull String key){
         return ConverterListUtils.toLongArray(getString(key));
     }
 
-    public LinkedHashMap<String,String> getMaps(@NonNull String key){
+    @CheckResult
+    public LinkedHashMap<String,String> getMap(@NonNull String key){
         return ConverterListUtils.convertStringToMap(getString(key));
     }
 
+    @CheckResult
     public byte[] getArrayBytes(@NonNull String key){
         return getString(key).getBytes();
     }
 
     @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
+    @CheckResult
     public Bitmap getImage(@NonNull String key){
         String path = getString(key);
         if (path !=null) {
@@ -557,6 +556,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
     }
 
     @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
+    @CheckResult
     public File getFile(@NonNull String key,boolean deleteOldFile){
         try {
             String path = getString(key);
@@ -652,9 +652,6 @@ public class ConcealPrefRepository<T> extends BaseRepository {
             getEditor().putString(setHashKey(DEVICE_DETAIL), hideValue(new Gson().toJson(object))).apply();
         }
 
-        /**
-         * GET DATA
-         */
         @Override
         public Boolean isDeviceUpdate(){
             try {
@@ -686,15 +683,6 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         public Object getDeviceDetail(Class<Object> classOfT) {
             String value = returnValue(DEVICE_DETAIL);
             return new Gson().fromJson(value, classOfT);
-        }
-
-        @Override
-        public void apply() {
-            getEditor().apply();
-        }
-        @Override
-        public void commit() {
-            getEditor().commit();
         }
     }
 
@@ -925,48 +913,57 @@ public class ConcealPrefRepository<T> extends BaseRepository {
             getEditor().putString(setHashKey(USER_JSON), hideValue(new Gson().toJson(object))).apply();
         }
 
+        @CheckResult
         @Override
         public String getUserId(){
             return returnValue(USER_ID);
         }
 
+        @CheckResult
         @Override
         public String getUserDetail(){
             return returnValue(USER_JSON);
         }
 
+        @CheckResult
         @Override
         public Object getUserDetail(Type typeOfT) {
             String value = returnValue(USER_JSON);
             return new Gson().fromJson(value, typeOfT);
         }
 
+        @CheckResult
         @Override
         public Object getUserDetail(Class<Object> classOfT) {
             String value = returnValue(USER_JSON);
             return new Gson().fromJson(value, classOfT);
         }
 
+        @CheckResult
         @Override
         public String getUserName(){
             return returnValue(NAME);
         }
 
+        @CheckResult
         @Override
         public String getFullName(){
             return returnValue(FULLNAME);
         }
 
+        @CheckResult
         @Override
         public String getFirstName(){
             return returnValue(FIRST_NAME);
         }
 
+        @CheckResult
         @Override
         public String getLastName(){
             return returnValue(LAST_NAME);
         }
 
+        @CheckResult
         @Override
         public Integer getAge(){
             try {
@@ -978,41 +975,49 @@ public class ConcealPrefRepository<T> extends BaseRepository {
             }
         }
 
+        @CheckResult
         @Override
         public String getGender(){
             return returnValue(GENDER);
         }
 
+        @CheckResult
         @Override
         public String getBirthDate(){
             return returnValue(BIRTH_DATE);
         }
 
+        @CheckResult
         @Override
         public String getAddress(){
             return returnValue(ADDRESS);
         }
 
+        @CheckResult
         @Override
         public String getEmail(){
             return returnValue(EMAIL);
         }
 
+        @CheckResult
         @Override
         public String getPushToken(){
             return returnValue(PUSH_TOKEN);
         }
 
+        @CheckResult
         @Override
         public String getPhoneNumber(){
             return returnValue(PHONE_NO);
         }
 
+        @CheckResult
         @Override
         public String getMobileNumber(){
             return returnValue(MOBILE_NO);
         }
 
+        @CheckResult
         @Override
         public Boolean hasLogin(){
             try {
@@ -1024,11 +1029,13 @@ public class ConcealPrefRepository<T> extends BaseRepository {
             }
         }
 
+        @CheckResult
         @Override
         public String getPassword(){
             return returnValue(PASSWORD);
         }
 
+        @CheckResult
         @Override
         public Boolean isFirstTimeUser(){
             try {
@@ -1038,16 +1045,6 @@ public class ConcealPrefRepository<T> extends BaseRepository {
                 e.printStackTrace();
                 return null;
             }
-        }
-
-        @Override
-        public void apply() {
-            getEditor().apply();
-
-        }
-        @Override
-        public void commit() {
-            getEditor().commit();
         }
     }
 
@@ -1073,151 +1070,96 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         }
 
         @Override
-        public Editor putString(@NonNull String key, String value) {
+        public Editor put(@NonNull String key, String value) {
             getEditor().putString(setHashKey(key), hideValue(value));
             return this;
         }
 
         @Override
-        public void applyString(@NonNull String key, String value) {
+        public void apply(@NonNull String key, String value) {
             getEditor().putString(setHashKey(key), hideValue(value)).apply();
         }
 
         @Override
-        public Editor putInt(@NonNull String key, int value) {
+        public Editor put(@NonNull String key, int value) {
             getEditor().putString(setHashKey(key), hideValue(Integer.toString(value)));
             return this;
         }
 
         @Override
-        public void applyInt(@NonNull String key, int value) {
+        public void apply(@NonNull String key, int value) {
             getEditor().putString(setHashKey(key), hideValue(Integer.toString(value))).apply();
         }
 
         @Override
-        public Editor putLong(@NonNull String key, long value) {
+        public Editor put(@NonNull String key, long value) {
             getEditor().putString(setHashKey(key), hideValue(Long.toString(value)));
             return this;
         }
 
         @Override
-        public void applyLong(@NonNull String key, long value) {
+        public void apply(@NonNull String key, long value) {
             getEditor().putString(setHashKey(key), hideValue(Long.toString(value))).apply();
         }
 
         @Override
-        public Editor putDouble(@NonNull String key, double value) {
+        public Editor put(@NonNull String key, double value) {
             getEditor().putString(setHashKey(key), hideValue(Double.toString(value)));
             return this;
         }
 
         @Override
-        public void applyDouble(@NonNull String key, double value) {
+        public void apply(@NonNull String key, double value) {
             getEditor().putString(setHashKey(key), hideValue(Double.toString(value))).apply();
         }
 
         @Override
-        public Editor putFloat(@NonNull String key, float value) {
+        public Editor put(@NonNull String key, float value) {
             getEditor().putString(setHashKey(key), hideValue(Float.toString(value)));
             return this;
         }
 
         @Override
-        public void applyFloat(@NonNull String key, float value) {
+        public void apply(@NonNull String key, float value) {
             getEditor().putString(setHashKey(key), hideValue(Float.toString(value))).apply();
         }
 
         @Override
-        public Editor putBoolean(@NonNull String key, boolean value) {
+        public Editor put(@NonNull String key, boolean value) {
             getEditor().putString(setHashKey(key), hideValue(Boolean.toString(value)));
             return this;
         }
 
         @Override
-        public void applyBoolean(@NonNull String key, boolean value) {
+        public void apply(@NonNull String key, boolean value) {
             getEditor().putString(setHashKey(key), hideValue(Boolean.toString(value))).apply();
         }
 
         @Override
-        public Editor putListString(@NonNull String key, List<String> value){
+        public Editor put(@NonNull String key, List<?> value){
             getEditor().putString(setHashKey(key),hideValue(value.toString()));
             return this;
         }
 
         @Override
-        public void applyListString(@NonNull String key, List<String> value){
+        public void apply(@NonNull String key, List<?> value){
             getEditor().putString(setHashKey(key),hideValue(value.toString())).apply();
         }
 
         @Override
-        public Editor putListFloat(@NonNull String key, List<Float> value){
-            getEditor().putString(setHashKey(key),hideValue(value.toString()));
-            return this;
-        }
-
-        @Override
-        public void applyListFloat(@NonNull String key, List<Float> value){
-            getEditor().putString(setHashKey(key),hideValue(value.toString())).apply();
-        }
-
-        @Override
-        public Editor putListInteger(@NonNull String key, List<Integer> value){
-            getEditor().putString(setHashKey(key),hideValue(value.toString()));
-            return this;
-        }
-
-        @Override
-        public void applyListInteger(@NonNull String key, List<Integer> value){
-            getEditor().putString(setHashKey(key),hideValue(value.toString())).apply();
-        }
-
-        @Override
-        public Editor putListDouble(@NonNull String key, List<Double> value){
-            getEditor().putString(setHashKey(key),hideValue(value.toString()));
-            return this;
-        }
-
-        @Override
-        public void applyListDouble(@NonNull String key, List<Double> value){
-            getEditor().putString(setHashKey(key),hideValue(value.toString())).apply();
-        }
-
-        @Override
-        public Editor putListLong(@NonNull String key, List<Long> value){
-            getEditor().putString(setHashKey(key),hideValue(value.toString()));
-            return this;
-        }
-
-        @Override
-        public void applyListLong(@NonNull String key, List<Long> value){
-            getEditor().putString(setHashKey(key),hideValue(value.toString())).apply();
-        }
-
-        @Override
-        public Editor putListBoolean(@NonNull String key, List<Boolean> value){
-            getEditor().putString(setHashKey(key),hideValue(value.toString()));
-            return this;
-        }
-
-        @Override
-        public void applyListBoolean(@NonNull String key, List<Boolean> value){
-            getEditor().putString(setHashKey(key),hideValue(value.toString())).apply();
-        }
-
-        @Override
-        public Editor putByte(@NonNull String key,byte[] bytes){
+        public Editor put(@NonNull String key, byte[] bytes){
             getEditor().putString(setHashKey(key),hideValue(new String(bytes)));
             return this;
         }
 
         @Override
-        public void applyByte(@NonNull String key,byte[] bytes){
+        public void apply(@NonNull String key, byte[] bytes){
             getEditor().putString(setHashKey(key),hideValue(new String(bytes))).apply();
         }
 
         @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
         @Override
-        public Editor putImage(@NonNull String key, @DrawableRes int resId, Context context){
+        public Editor putDrawable(@NonNull String key, @DrawableRes int resId, Context context){
             Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resId);
             if (bitmap!=null) {
                 File imageFile = new File(getImageDirectory(getFolderPath()), "images_" + System.currentTimeMillis() + ".png");
@@ -1233,7 +1175,22 @@ public class ConcealPrefRepository<T> extends BaseRepository {
 
         @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
         @Override
-        public Editor putImage(@NonNull String key, Bitmap bitmap){
+        public void applyDrawable(@NonNull String key, @DrawableRes int resId, Context context){
+            Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resId);
+            if (bitmap!=null) {
+                File imageFile = new File(getImageDirectory(getFolderPath()), "images_" + System.currentTimeMillis() + ".png");
+                if (FileUtils.saveBitmap(imageFile, bitmap)) {
+                    getEditor().putString(setHashKey(key), hideValue(getConcealCrypto().obscureFile(imageFile, true).getAbsolutePath())).apply();
+                }
+            }
+            else{
+                throw new RuntimeException(resId+" : Drawable not found!");
+            }
+        }
+
+        @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
+        @Override
+        public Editor put(@NonNull String key, Bitmap bitmap){
             File imageFile = new File(getImageDirectory(getFolderPath()),"images_"+System.currentTimeMillis()+".png");
             if(FileUtils.saveBitmap(imageFile, bitmap)){
                 getEditor().putString(setHashKey(key), hideValue(getConcealCrypto().obscureFile(imageFile,true).getAbsolutePath()));
@@ -1243,7 +1200,16 @@ public class ConcealPrefRepository<T> extends BaseRepository {
 
         @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
         @Override
-        public Editor putImage(@NonNull String key, File file){
+        public void apply(@NonNull String key, Bitmap bitmap){
+            File imageFile = new File(getImageDirectory(getFolderPath()),"images_"+System.currentTimeMillis()+".png");
+            if(FileUtils.saveBitmap(imageFile, bitmap)){
+                getEditor().putString(setHashKey(key), hideValue(getConcealCrypto().obscureFile(imageFile,true).getAbsolutePath())).apply();
+            }
+        }
+
+        @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
+        @Override
+        public Editor put(@NonNull String key, File file){
             if (FileUtils.isFileForImage(file)) {
                 File imageFile = FileUtils.moveFile(file,getImageDirectory(getFolderPath()));
                 if (imageFile!=null && imageFile.exists()) {
@@ -1256,7 +1222,19 @@ public class ConcealPrefRepository<T> extends BaseRepository {
 
         @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
         @Override
-        public Editor putFile(@NonNull String key,File file,boolean deleteOldFile){
+        public void apply(@NonNull String key, File file){
+            if (FileUtils.isFileForImage(file)) {
+                File imageFile = FileUtils.moveFile(file,getImageDirectory(getFolderPath()));
+                if (imageFile!=null && imageFile.exists()) {
+                    getConcealCrypto().obscureFile(imageFile,true);
+                    getEditor().putString(setHashKey(key), hideValue(imageFile.getAbsolutePath())).apply();
+                }
+            }
+        }
+
+        @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
+        @Override
+        public Editor put(@NonNull String key, File file, boolean deleteOldFile){
             try {
                 if (file.exists() && !FileUtils.isFileForImage(file)) {
                     File enc = getConcealCrypto().obscureFile(file,deleteOldFile);
@@ -1269,6 +1247,44 @@ public class ConcealPrefRepository<T> extends BaseRepository {
 
             return this;
         }
+
+        @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
+        @Override
+        public void apply(@NonNull String key, File file, boolean deleteOldFile){
+            try {
+                if (file.exists() && !FileUtils.isFileForImage(file)) {
+                    File enc = getConcealCrypto().obscureFile(file,deleteOldFile);
+                    getEditor().putString(setHashKey(key), hideValue(enc.getAbsolutePath())).apply();
+                }
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public Editor put(@NonNull String key,Map<String,String> values){
+            getEditor().putString(setHashKey(key),hideValue(ConverterListUtils.convertMapToString(values)));
+            return this;
+        }
+
+        @Override
+        public void apply(@NonNull String key,Map<String,String> values){
+            getEditor().putString(setHashKey(key),hideValue(ConverterListUtils.convertMapToString(values))).apply();
+        }
+
+        @Override
+        public Editor putModel(@NonNull String key, Object object) {
+            put(key, new Gson().toJson(object));
+            return this;
+        }
+
+        @Override
+        public void applyModel(@NonNull String key, Object object) {
+            put(key, new Gson().toJson(object)).apply();
+        }
+
+
         @Override
         public Editor remove(@NonNull String key) {
             getEditor().remove(setHashKey(key));
@@ -1276,25 +1292,9 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         }
 
         @Override
-        public Editor putMap(@NonNull String key,Map<String,String> values){
-            getEditor().putString(setHashKey(key),hideValue(ConverterListUtils.convertMapToString(values)));
-            return this;
-        }
-
-        @Override
         public Editor clear() {
             getEditor().clear();
             return this;
-        }
-
-        @Override
-        public void commit() {
-            getEditor().commit();
-        }
-
-        @Override
-        public void apply() {
-            getEditor().apply();
         }
     }
 

@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.zeroone.conceal.ConcealPrefRepository;
-import com.zeroone.conceal.OnDataChangeListener;
+import com.zeroone.conceal.listener.OnDataChangeListener;
 import com.zeroone.conceal.model.CryptoType;
 
 /**

@@ -3,7 +3,7 @@ package com.zeroone.conceal;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.zeroone.conceal.model.Constant;
+import com.zeroone.conceal.listener.OnDataChangeListener;
 
 /**
  * Created by hafiq on 28/01/2018.

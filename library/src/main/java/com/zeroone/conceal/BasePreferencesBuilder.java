@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
 
+import com.zeroone.conceal.listener.OnDataChangeListener;
 import com.zeroone.conceal.model.CryptoType;
 
 /**
