@@ -1,7 +1,7 @@
-# Conceal SharedPreferences Android
+# SharedChamber Android
 [![](https://jitpack.io/v/afiqiqmal/ConcealSharedPreference-Android.svg)](https://jitpack.io/#afiqiqmal/ConcealSharedPreference-Android) [![API](https://img.shields.io/badge/API-16%2B-blue.svg?style=flat)](https://android-arsenal.com/api?level=16) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-ConcealSharedPreference--Android-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/5448)
 
-<b>Project :</b> Secure Android SharedPreferences Using Conceal Crypto by Facebook<br>
+<b>Project :</b> SharedChamber on top of SharedPreferences using [Facebook Conceal](http://facebook.github.io/conceal/)<br>
 <b>Description </b>
 <br>
 Conceal provides a set of Java APIs to perform cryptography on Android. It was designed to be able to encrypt large files on disk in a fast and memory efficient manner. Implementation on SharedPreferences of Android would be great data Encryption and Decryption. Currently supported Facebook Conceal V2.0 
@@ -11,11 +11,11 @@ Conceal provides a set of Java APIs to perform cryptography on Android. It was d
 Gradle
 ```gradle
 dependencies {
-        compile 'com.github.afiqiqmal:ConcealSharedPreference-Android:1.5.5'
+        compile 'com.github.afiqiqmal:SharedChamber:2.0.0'
 
         //or
 
-        compile 'com.github.afiqiqmal:ConcealSharedPreference-Android:1.5.5' {
+        compile 'com.github.afiqiqmal:SharedChamber:2.0.0' {
             exclude group: 'com.google.code.gson', module: 'gson'
         }
 }
@@ -25,14 +25,10 @@ Maven
 ```maven
 <dependency>
 	<groupId>com.github.afiqiqmal</groupId>
-	<artifactId>ConcealSharedPreference-Android</artifactId>
-	<version>1.5.2</version>
+	<artifactId>SharedChamber</artifactId>
+	<version>2.0.0</version>
 </dependency>
 ```
-
-## Method
-
-[![](http://image.ibb.co/cQpGZb/Screen_Shot_2017_12_01_at_7_31_42_PM.png)]()
 
 ## Usage
 
@@ -40,11 +36,11 @@ Maven
 
 it needed to first init in Application class in `oncreate` method or on Base Activity Class. or everything is not working =D
 ```java
-ConcealPrefRepository.applicationInit(this);
+SharedChamber.initChamber(this);
 ```
 
 
-Permission need to use in your project. Please Allow it first, or it will affect `.putImage` and `.putFile` method
+Permission need to use in your project. Please Allow it first if you need to use file save, or it will affect `.putImage` and `.putFile` method
 ```xml
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
@@ -52,15 +48,15 @@ Permission need to use in your project. Please Allow it first, or it will affect
 
 ##### Initialize
 ```java
-ConcealPrefRepository concealPrefRepository = new ConcealPrefRepository.PreferencesBuilder(this)
+SharedChamber sharedChamber = new SharedChamber.ChamberBuilder(this)
         //.useThisPrefStorage("Android_Prefs")
-        .sharedPrefsBackedKeyChain(CryptoType.KEY_256)  //CryptoType.KEY_256 or CryptoType.KEY_128
+        .setChamberType(ChamberType.KEY_256)  //ChamberType.KEY_256 or ChamberType.KEY_128
         .enableCrypto(true,true) //param 1 - enable value encryption , param 2 - enable key encryption
         .enableKeyPrefix(true, "walaoweh") //1- if false, prefix will be ignore
-        .createPassword("Android") //default value - BuildConfig.APPLICATION_ID
+        .setPassword("Android") //default value - BuildConfig.APPLICATION_ID
         .setFolderName("testing") //create Folder for data stored: default is - "conceal_path"
         .setPrefListener(this) // listen to data changes 
-        .create();
+        .buildChamber();
 
 *setFolderName - folder will be hidden. To see, enable show hidden folder in storage
                - data stored here only images and files
@@ -74,19 +70,19 @@ ConcealPrefRepository concealPrefRepository = new ConcealPrefRepository.Preferen
 ##### Save data
 
 ```java
-concealPrefRepository.put(KEY,"Hello");
-concealPrefRepository.put(KEY,1000000);
-concealPrefRepository.put(KEY,100.00);
-concealPrefRepository.put(KEY,new byte[]);
-concealPrefRepository.put(KEY,new Map<String,String>());
+sharedChamber.put(KEY,"Hello");
+sharedChamber.put(KEY,1000000);
+sharedChamber.put(KEY,100.00);
+sharedChamber.put(KEY,new byte[]);
+sharedChamber.put(KEY,new Map<String,String>());
 ...
 ...
 ```
 
 for complex object might need use `putModel` which use gson
 ```
-concealPrefRepository.putModel(KEY, new Gson().fromJson(loadJSONFromAsset(context, "users.json"), User.class));
-concealPrefRepository.putModel(KEY, new Gson().fromJson(loadJSONFromAsset(context, "users.json"), new TypeToken<ArrayList<Users>>(){}.getType()));
+sharedChamber.putModel(KEY, new Gson().fromJson(loadJSONFromAsset(context, "users.json"), User.class));
+sharedChamber.putModel(KEY, new Gson().fromJson(loadJSONFromAsset(context, "users.json"), new TypeToken<ArrayList<Users>>(){}.getType()));
 ```
 
 
@@ -95,20 +91,20 @@ Files and Images
 // Files and Images will be encrypted
 // prefix of this encrypted images and files start with "conceal_enc_";
 File getFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/testing.pdf");
-concealPrefRepository.putFile(KEY,getFile,boolean deleteOldFiles);
+sharedChamber.putFile(KEY,getFile,boolean deleteOldFiles);
 // deleteOldFiles - true or false.. true - will delete choosen file and move to new path
 
 //put images
-concealPrefRepository.put(KEY, BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
-concealPrefRepository.put(KEY, File file);
-concealPrefRepository.putDrawable(KEY, Drawable ID);
+sharedChamber.put(KEY, BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
+sharedChamber.put(KEY, File file);
+sharedChamber.putDrawable(KEY, Drawable ID);
 ...
 ...
 ```
 
 ##### <b>For Method Chaining</b>
 ```java
-new ConcealPrefRepository.Editor("PREFIX") // optional - get default from global prefix
+new SharedChamber.Editor("PREFIX") // optional - get default from global prefix
                 .put(KEY,"Hello")
                 .put(KEY,1000000)
                 .put(KEY,true)
@@ -126,69 +122,69 @@ new ConcealPrefRepository.Editor("PREFIX") // optional - get default from global
 
 ##### <b>Get total data</b>
 ```java
-System.out.println(concealPrefRepository.getPrefsSize());
+System.out.println(sharedChamber.getPrefsSize());
 ```
 
 ##### <b>Get all sharedpreferences data</b>
 ```java
-Map<String,String> getAll = concealPrefRepository.getAllSharedPrefData();
+Map<String,String> getAll = sharedChamber.getEverythingInChamberInMap();
 ```
 
 ##### <b>Get all sharedpreferences data in List String</b>
 ```java
-List<String> getAll = concealPrefRepository.getAllSharedPrefDataToString();
+List<String> getAll = sharedChamber.getEverythingInChamberInList();
 ```
 
 ##### <b>Get all encrypted Files inside created folder</b>
 ```java
-List<CryptoFile> getFiles = concealPrefRepository.getAllConcealEncryptedFiles();
+List<CryptoFile> getFiles = sharedChamber.getAllChamberFiles();
 ```
 
 ##### <b>Fetching data</b>
 
 ```java
-concealPrefRepository.getString(KEY);
-concealPrefRepository.getString(KEY,DEFAULT_VALUE);
-concealPrefRepository.getInt(KEY);
-concealPrefRepository.getInt(KEY,DEFAULT_VALUE);
-concealPrefRepository.getDouble(KEY);
-concealPrefRepository.getDouble(KEY,DEFAULT_VALUE);
+sharedChamber.getString(KEY);
+sharedChamber.getString(KEY,DEFAULT_VALUE);
+sharedChamber.getInt(KEY);
+sharedChamber.getInt(KEY,DEFAULT_VALUE);
+sharedChamber.getDouble(KEY);
+sharedChamber.getDouble(KEY,DEFAULT_VALUE);
 
 //using gson
-concealPrefRepository.getModel(KEY, User.class).toString();
-concealPrefRepository.getModel(KEY, new TypeToken<ArrayList<Task>>(){}.getType()).toString();
+sharedChamber.getModel(KEY, User.class).toString();
+sharedChamber.getModel(KEY, new TypeToken<ArrayList<Task>>(){}.getType()).toString();
 .....
 
-Bitmap bitmap = concealPrefRepository.getImage(KEY);   //return String path
-File enc_file = concealPrefRepository.getFile(KEY,true);    //return File
+Bitmap bitmap = sharedChamber.getImage(KEY);   //return String path
+File enc_file = sharedChamber.getFile(KEY,true);    //return File
 // this getImage and getFile will totally decrypted selected file/image. You need to encrypt it back.
-// just call concealPrefRepository.putImage(KEY,bitmap); or concealPrefRepository.putFile(KEY,enc_file,true);
+// just call sharedChamber.putImage(KEY,bitmap); or sharedChamber.putFile(KEY,enc_file,true);
 ........
 ```
 
 ##### <b>Clear key and SharedPreferences</b>
 
 ```java
-concealPrefRepository.destroyCrypto(); //clear key
-concealPrefRepository.destroySharedPreferences(); // clear all
+sharedChamber.destroyChamber(); //clear key
+sharedChamber.clearChamber(); // clear all
 
-concealPrefRepository.remove(KEY1,KEY2,KEY3,KEY4) //String... keys
-concealPrefRepository.removeFile(KEY); //delete assosiate file (images and files) return boolean
+sharedChamber.remove(KEY1,KEY2,KEY3,KEY4) //String... keys
+sharedChamber.removeFile(KEY); //delete assosiate file (images and files) return boolean
 ```
 
 ##### <b>Check if key exists</b>
 ```java
-concealPrefRepository.contains(KEY); // return boolean
+sharedChamber.contains(KEY); // return boolean
 ```
 
 ##### <b>Get SharedPreferences</b>
 ```java
-concealPrefRepository.getPreferences();
+sharedChamber.getChamber();
 ```
 
 ##### <b>Listener Data Changes</b>
 ```java
-public class BaseActivity extends AppCompatActivity implements OnDataChangeListener{
+public class BaseActivity extends AppCompatActivity implements OnDataChamberChangeListener{
     ....
     @Override
     public void onDataChange(String key,String value) {
@@ -199,7 +195,7 @@ public class BaseActivity extends AppCompatActivity implements OnDataChangeListe
 
 ##### <b>Easier Save User Detail Preferences</b>
 ```java
-new ConcealPrefRepository.UserPref()
+new SharedChamber.UserChamber()
 .setFirstName("Firstname")
 .setLastName("Lasname")
 .setEmail("hello@gmail.com")
@@ -210,60 +206,51 @@ new ConcealPrefRepository.UserPref()
 or
 
 ```java
-ConcealPrefRepository.UserPref().applyFirstName("Firstname"); //directly apply
-ConcealPrefRepository.UserPref().applyLastName("Firstname"); //directly apply
+SharedChamber.UserChamber().applyFirstName("Firstname"); //directly apply
+SharedChamber.UserChamber().applyLastName("Firstname"); //directly apply
 ```
 
 ##### <b>Get User Detail</b>
 ```java
-new ConcealPrefRepository.UserPref().getFirstName()
-new ConcealPrefRepository.UserPref().getLastName()
-new ConcealPrefRepository.UserPref().getEmail()
+new SharedChamber.UserChamber().getFirstName()
+new SharedChamber.UserChamber().getLastName()
+new SharedChamber.UserChamber().getEmail()
 .....
 ```
 
 ##### <b>Key prefix - Apply key with prefix</b>
 ```java
-new ConcealPrefRepository.UserPref("KEY PREFIX").setFirstName("Firstname").apply();
-new ConcealPrefRepository.UserPref("KEY PREFIX").setLastName("Firstname").apply();
+new SharedChamber.UserChamber("KEY PREFIX").setFirstName("Firstname").apply();
+new SharedChamber.UserChamber("KEY PREFIX").setLastName("Firstname").apply();
 ```
 
 
 ### Extra Usage for Conceal Encryption and Decryption
 
 ```java
-ConcealCrypto concealCrypto = new ConcealCrypto(this,CryptoType.KEY_256); // CryptoType.KEY_256 or CryptoType.KEY_128
-concealCrypto.setEnableValueEncryption(true); //default true
-concealCrypto.setEnableKeyEncryption(true); //default true
-concealCrypto.setmEntityPassword("Android");
-concealCrypto.setmEntityPassword(Entity.create("Android"));
-```
-
-OR
-```java
-ConcealCrypto concealCrypto = new ConcealCrypto.CryptoBuilder(this)
+SecretChamber secretChamber = new SecretBuilder(this)
                 .setEnableValueEncryption(true) //default true
                 .setEnableKeyEncryption(true) // default true
-                .setKeyChain(CryptoType.KEY_256) // CryptoType.KEY_256 or CryptoType.KEY_128
-                .createPassword("Mac OSX")
-                .create();
+                .setChamberType(ChamberType.KEY_256) // ChamberType.KEY_256 or ChamberType.KEY_128
+                .setPassword("Mac OSX")
+                .buildSecret();
 ```
 
 ##### Hash
 
 ```
-concealCrypto.hashKey(plaintext); // SHA-256
+secretChamber.vaultHash(plaintext); // SHA-256
 ```
 
 ##### Encrypt
 
 ```
-concealCrypto.obscure(test); // encrypt using facebook conceal
-concealCrypto.obscureWithIteration(test,4); // encrypt using basic base64 with iteration
-concealCrypto.aesEncrypt("Hello World is World Hello Aes Cryption"); // encrypt using AES
+secretChamber.lockVault(test); // encrypt using facebook conceal
+secretChamber.lockVaultBase(test,4); // encrypt using basic base64 with iteration
+secretChamber.lockVaultAes("Hello World is World Hello Aes Cryption"); // encrypt using AES
 
 //1-parameter is original location of file..it will move to other location set as in initialization
-concealCrypto.obscureFile(File file,boolean deleteOldFile);
+secretChamber.lockVaultFile(File file,boolean deleteOldFile);
 
 ```
 
@@ -271,11 +258,11 @@ concealCrypto.obscureFile(File file,boolean deleteOldFile);
 ##### Decrypt
 
 ```
-concealCrypto.deObscure(cipher); // decrypt using facebook conceal
-concealCrypto.deObscureWithIteration(cipher,4); // decrypt using basic base64 with iteration
-concealCrypto.aesDecrypt(cipher); // decrypt using AES
+secretChamber.openVault(cipher); // decrypt using facebook conceal
+secretChamber.openVaultBase(cipher,4); // decrypt using basic base64 with iteration
+secretChamber.openVaultAes(cipher); // decrypt using AES
 
-concealCrypto.deObscureFile(File file,boolean deleteOldFile);
+secretChamber.openVaultFile(File file,boolean deleteOldFile);
 ```
 
 

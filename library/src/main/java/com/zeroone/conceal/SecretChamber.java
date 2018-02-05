@@ -2,6 +2,7 @@ package com.zeroone.conceal;
 
 import android.Manifest;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresPermission;
 
 import com.facebook.android.crypto.keychain.AndroidConceal;
@@ -11,7 +12,7 @@ import com.facebook.crypto.Entity;
 import com.facebook.crypto.exception.CryptoInitializationException;
 import com.facebook.crypto.exception.KeyChainException;
 import com.facebook.crypto.keychain.KeyChain;
-import com.zeroone.conceal.model.CryptoType;
+import com.zeroone.conceal.model.ChamberType;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -32,7 +33,7 @@ import static com.zeroone.conceal.model.Constant.*;
  * @author : hafiq on 23/03/2017.
  */
 @SuppressWarnings("unused")
-public class ConcealCrypto {
+public class SecretChamber {
 
     private Crypto crypto;
     private KeyChain keyChain;
@@ -42,19 +43,19 @@ public class ConcealCrypto {
     private boolean enableHashKey =true;
     private String MAIN_DIRECTORY;
 
-    private ConcealCrypto(CryptoBuilder builder) {
-        crypto = builder.crypto;
-        mEntityPassword = builder.mEntityPassword;
-        mEntityPasswordRaw = builder.mEntityPasswordRaw;
-        enableCrypto = builder.mEnabledCrypto;
-        enableHashKey = builder.mEnableHashKey;
-        MAIN_DIRECTORY = builder.mFolderName;
+    public SecretChamber(SecretBuilder builder) {
+        crypto = builder.getCrypto();
+        mEntityPassword = builder.getEntityPassword();
+        mEntityPasswordRaw = builder.getEntityPasswordRaw();
+        enableCrypto = builder.isEnableCrypto();
+        enableHashKey = builder.isEnableHashKey();
+        MAIN_DIRECTORY = builder.getFolderName();
 
         if (MAIN_DIRECTORY == null) MAIN_DIRECTORY = DEFAULT_MAIN_FOLDER;
     }
 
-    public ConcealCrypto(Context context,CryptoType config){
-        keyChain = new SharedPrefsBackedKeyChain(context, config==null? CryptoType.KEY_256.getConfig():config.getConfig());
+    public SecretChamber(Context context, ChamberType config){
+        keyChain = new SharedPrefsBackedKeyChain(context, config==null? ChamberType.KEY_256.getConfig():config.getConfig());
         crypto = AndroidConceal.get().createDefaultCrypto(keyChain);
     }
 
@@ -103,7 +104,7 @@ public class ConcealCrypto {
      * @param plain - plaintext of string to be encrypt
      * @return String
      */
-    public String obscure(String plain){
+    public String lockVault(String plain){
         if (plain == null)
             return null;
 
@@ -126,7 +127,7 @@ public class ConcealCrypto {
      * @param bytes - array bytes to be encrypt
      * @return bytes
      */
-    public byte[] obscure(byte[] bytes){
+    public byte[] lockVault(byte[] bytes){
         if (bytes == null)
             return null;
 
@@ -146,7 +147,7 @@ public class ConcealCrypto {
 
     //encrypt files
     @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
-    public File obscureFile(File file,boolean deleteOldFile){
+    public File lockVaultFile(File file, boolean deleteOldFile){
         if (enableCrypto) {
             try {
                 boolean isImage = FileUtils.isFileForImage(file);
@@ -185,7 +186,7 @@ public class ConcealCrypto {
      * @param cipher cipher string
      * @return String plaintext
      */
-    public String deObscure(String cipher){
+    public String openVault(String cipher){
         if (cipher == null)
             return null;
 
@@ -207,7 +208,7 @@ public class ConcealCrypto {
      * @param cipher cipher bytes[]
      * @return String plaintext
      */
-    public byte[] deObscure(byte[] cipher){
+    public byte[] openVault(byte[] cipher){
         if (cipher == null)
             return null;
 
@@ -226,7 +227,7 @@ public class ConcealCrypto {
 
     //decrypt file
     @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
-    public File deObscureFile(File file,boolean deleteOldFile){
+    public File openVaultFile(File file, boolean deleteOldFile){
         if (enableCrypto) {
             try {
                 if (file.getName().contains(DEFAULT_PREFIX_FILENAME)) {
@@ -274,10 +275,7 @@ public class ConcealCrypto {
      * @param key - key
      * @return - hash key
      */
-    public String hashKey(String key) {
-        if (key == null || key.equals(""))
-            throw new NullPointerException("Key cannot be null or empty");
-
+    public String hashVault(@NonNull String key) {
         if (enableHashKey) {
             try {
                 MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -300,95 +298,30 @@ public class ConcealCrypto {
      * encrypt base64 with iteration Conceal
      */
 
-    public String obscureWithIteration(String plainText,int iteration){
+    public String lockVaultBase(String plainText, int iteration){
         String cipher = plainText;
         for (int x=0;x<iteration;x++){
-            cipher = obscure(cipher);
+            cipher = lockVault(cipher);
         }
 
         return cipher;
     }
 
-    public String deObscureWithIteration(String cipher,int iteration){
+    public String openVaultBase(String cipher, int iteration){
         String plainText = cipher;
         for (int x=0;x<iteration;x++){
-            plainText = deObscure(plainText);
+            plainText = openVault(plainText);
         }
 
         return plainText;
     }
 
-    public String aesEncrypt(String plainText) {
+    public String lockVaultAes(String plainText) {
         return CipherUtils.AesCrypt(mEntityPasswordRaw, CipherUtils.getRandomString(16) ,plainText);
     }
 
-    public String aesDecrypt(String plainText) {
+    public String openVaultAes(String plainText) {
         return CipherUtils.AesDecrypt(mEntityPasswordRaw , plainText);
-    }
-
-    public static class CryptoBuilder{
-        private WeakReference<Context> context;
-        private KeyChain makeKeyChain;
-        private Crypto crypto;
-        private CryptoType mKeyChain = CryptoType.KEY_256;
-        private boolean mEnabledCrypto = true;
-        private boolean mEnableHashKey = true;
-        private Entity mEntityPassword = null;
-        private String mEntityPasswordRaw = BuildConfig.APPLICATION_ID;
-        private String mFolderName;
-
-        public CryptoBuilder(Context context) {
-            this.context = new WeakReference<>(context.getApplicationContext());
-        }
-
-        public CryptoBuilder setKeyChain(CryptoType config){
-            this.mKeyChain = config;
-            return this;
-        }
-
-        public CryptoBuilder setEnableValueEncryption(boolean enableCrypto) {
-            this.mEnabledCrypto = enableCrypto;
-            return this;
-        }
-
-        public CryptoBuilder setEnableKeyEncryption(boolean enableKeyCrypt) {
-            this.mEnableHashKey = enableKeyCrypt;
-            return this;
-        }
-
-        public CryptoBuilder createPassword(String password){
-            if(password!=null)mEntityPasswordRaw = password;
-            return this;
-        }
-
-        /***
-         * @param folderName - Main Folder to be stored
-         * @return - CryptoBuilder
-         */
-        public CryptoBuilder setStoredFolder(String folderName){
-            mFolderName = folderName;
-            return this;
-        }
-
-        public ConcealCrypto create(){
-
-            if (this.context == null){
-                throw new RuntimeException("Context cannot be null");
-            }
-
-            mEntityPassword = Entity.create(CipherUtils.obscureEncodeSixFourString(mEntityPasswordRaw.getBytes()));
-            makeKeyChain = new SharedPrefsBackedKeyChain(this.context.get(), (mKeyChain==null)? CryptoType.KEY_256.getConfig() : mKeyChain.getConfig());
-
-            if (mKeyChain == null) {
-                crypto = AndroidConceal.get().createDefaultCrypto(makeKeyChain);
-            } else if (mKeyChain == CryptoType.KEY_128) {
-                crypto = AndroidConceal.get().createCrypto128Bits(makeKeyChain);
-            } else {
-                crypto = AndroidConceal.get().createCrypto256Bits(makeKeyChain);
-            }
-
-            return new ConcealCrypto(this);
-        }
     }
 
 }

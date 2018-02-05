@@ -4,9 +4,10 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.google.gson.reflect.TypeToken;
-import com.zeroone.conceal.ConcealCrypto;
-import com.zeroone.conceal.ConcealPrefRepository;
-import com.zeroone.conceal.model.CryptoType;
+import com.zeroone.conceal.SecretBuilder;
+import com.zeroone.conceal.SharedChamber;
+import com.zeroone.conceal.SecretChamber;
+import com.zeroone.conceal.model.ChamberType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +29,9 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ConcealPrefRepository.applicationInit(getApplication());
+        SharedChamber.initChamber(getApplication());
 
-        concealPrefRepository.clearPrefs();
+        chamber.clearChamber();
 
         List<Float> floats = new ArrayList<>();
         floats.add(10f);
@@ -38,46 +39,46 @@ public class MainActivity extends BaseActivity {
         floats.add(10f);
 
         //FIRST TEST
-        concealPrefRepository.put(NAME_KEY, "HAFIQ IQMAL");
-        concealPrefRepository.put(AGE_KEY, floats);
-        concealPrefRepository.putModel(USER_DETAIL, Data.getUser(this));
-        concealPrefRepository.putModel(TASK_DETAIL, Data.getTaskData(this));
+        chamber.put(NAME_KEY, "HAFIQ IQMAL");
+        chamber.put(AGE_KEY, floats);
+        chamber.putModel(USER_DETAIL, Data.getUser(this));
+        chamber.putModel(TASK_DETAIL, Data.getTaskData(this));
 
-        Log.d("FIRST TEST", concealPrefRepository.getString(NAME_KEY));
-        Log.d("FIRST TEST", concealPrefRepository.getListFloat(AGE_KEY).toString());
-        Log.d("FIRST TEST", concealPrefRepository.getModel(USER_DETAIL, User.class).toString());
-        Log.d("FIRST TEST", concealPrefRepository.getModel(TASK_DETAIL, new TypeToken<ArrayList<Task>>(){}.getType()).toString());
-        Log.d("FIRST TEST SIZE", ""+concealPrefRepository.getPrefsSize());
+        Log.d("FIRST TEST", chamber.getString(NAME_KEY));
+        Log.d("FIRST TEST", chamber.getListFloat(AGE_KEY).toString());
+        Log.d("FIRST TEST", chamber.getModel(USER_DETAIL, User.class).toString());
+        Log.d("FIRST TEST", chamber.getModel(TASK_DETAIL, new TypeToken<ArrayList<Task>>(){}.getType()).toString());
+        Log.d("FIRST TEST SIZE", ""+ chamber.getChamberSize());
 
-        concealPrefRepository.clearPrefs();
+        chamber.clearChamber();
 
         //SECOND TEST
-        new ConcealPrefRepository.Editor()
+        new SharedChamber.Editor()
                 .put(NAME_KEY, "Hafiq Iqmal")
                 .put(AGE_KEY, 24)
                 .put(EMAIL_KEY, "hafiqiqmal93@gmail.com")
                 .apply();
 
-        Log.d("SECOND TEST", concealPrefRepository.getString(NAME_KEY));
-        Log.d("SECOND TEST",concealPrefRepository.getString(AGE_KEY));
-        Log.d("SECOND TEST SIZE", ""+concealPrefRepository.getPrefsSize());
+        Log.d("SECOND TEST", chamber.getString(NAME_KEY));
+        Log.d("SECOND TEST", chamber.getString(AGE_KEY));
+        Log.d("SECOND TEST SIZE", ""+ chamber.getChamberSize());
 
         getList();
 
 
         //add user details preferences
-        new ConcealPrefRepository.UserPref(PREFIX).setFirstName("Firstname").setLastName("Lasname").setEmail("hello@gmail.com").apply();
+        new SharedChamber.UserChamber(PREFIX).setFirstName("Firstname").setLastName("Lasname").setEmail("hello@gmail.com").apply();
 
         //get user details
-        Log.d("THIRD_TEST", new ConcealPrefRepository.UserPref(PREFIX).getFirstName());
-        Log.d("THIRD_TEST", new ConcealPrefRepository.UserPref().setDefault("No Data").getLastName());
-        Log.d("THIRD_TEST", new ConcealPrefRepository.UserPref(PREFIX).setDefault("No Data").getEmail());
-        Log.d("THIRD_TEST TEST SIZE", ""+concealPrefRepository.getPrefsSize());
+        Log.d("THIRD_TEST", new SharedChamber.UserChamber(PREFIX).getFirstName());
+        Log.d("THIRD_TEST", new SharedChamber.UserChamber().setDefault("No Data").getLastName());
+        Log.d("THIRD_TEST", new SharedChamber.UserChamber(PREFIX).setDefault("No Data").getEmail());
+        Log.d("THIRD_TEST TEST SIZE", ""+ chamber.getChamberSize());
 
         getList();
 
 
-        ConcealPrefRepository.UserPref userPref = new ConcealPrefRepository.UserPref(PREFIX, "No Data");
+        SharedChamber.UserChamber userPref = new SharedChamber.UserChamber(PREFIX, "No Data");
         userPref.setUserName("afiqiqmal");
         userPref.setEmail("afiqiqmal@example.com");
         userPref.apply();
@@ -89,7 +90,7 @@ public class MainActivity extends BaseActivity {
         getList();
 
 
-        ConcealPrefRepository.DevicePref devicePref = new ConcealPrefRepository.DevicePref(PREFIX, "No Data");
+        SharedChamber.DeviceChamber devicePref = new SharedChamber.DeviceChamber(PREFIX, "No Data");
         devicePref.setDeviceId("ABC123123123");
         devicePref.setDeviceOS("android");
         devicePref.apply();
@@ -101,37 +102,36 @@ public class MainActivity extends BaseActivity {
 
         getList();
 
-
-        ConcealCrypto concealCrypto = new ConcealCrypto.CryptoBuilder(this)
+        SecretChamber secretChamber = new SecretBuilder(this)
                 .setEnableValueEncryption(true) //default true
                 .setEnableKeyEncryption(true) // default true
-                .setKeyChain(CryptoType.KEY_256) // CryptoType.KEY_256 or CryptoType.KEY_128
-                .createPassword("Mac OSX")
-                .create();
+                .setChamberType(ChamberType.KEY_256) // ChamberType.KEY_256 or ChamberType.KEY_128
+                .setPassword("Mac OSX")
+                .buildSecret();
 
         String test = "Hello World";
-        String cipher =  concealCrypto.obscure(test); //encrypt
+        String cipher =  secretChamber.lockVault(test); //encrypt
         Log.d("CYRPTO TEST E", cipher);
-        String dec = concealCrypto.deObscure(cipher); //decrypt
+        String dec = secretChamber.openVault(cipher); //decrypt
         Log.d("CYRPTO TEST D", dec);
 
         test = "Hello World Iteration";
-        cipher =  concealCrypto.obscureWithIteration(test,4); //encrypt with 4 times
+        cipher =  secretChamber.lockVaultBase(test,4); //encrypt with 4 times
         Log.d("CYRPTO TEST E", cipher);
-        dec = concealCrypto.deObscureWithIteration(cipher,4); //decrypt with 4 times
+        dec = secretChamber.openVaultBase(cipher,4); //decrypt with 4 times
         Log.d("CYRPTO TEST D", dec);
 
 
 
-        cipher =  concealCrypto.aesEncrypt("Hello World is World Hello Aes Cryption");
+        cipher =  secretChamber.lockVaultAes("Hello World is World Hello Aes Cryption");
         Log.d("AES E", cipher);
-        dec = concealCrypto.aesDecrypt(cipher);
+        dec = secretChamber.openVaultAes(cipher);
         Log.d("AES D", dec);
     }
 
 
     private void getList() {
-        List<String> mapList = concealPrefRepository.getAllSharedPrefDataToString();
+        List<String> mapList = chamber.getEverythingInChamberInList();
         for(String s: mapList){
             try {
                 Log.d("VIEW_LIST", s);
@@ -141,6 +141,6 @@ public class MainActivity extends BaseActivity {
             }
         }
 
-        Log.d("VIEW ALL SIZE", ""+concealPrefRepository.getPrefsSize());
+        Log.d("VIEW ALL SIZE", ""+ chamber.getChamberSize());
     }
 }

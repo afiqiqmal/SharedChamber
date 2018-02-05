@@ -16,10 +16,10 @@ import android.support.annotation.RequiresPermission;
 
 import com.facebook.soloader.SoLoader;
 import com.google.gson.Gson;
-import com.zeroone.conceal.listener.OnDataChangeListener;
+import com.zeroone.conceal.listener.OnDataChamberChangeListener;
+import com.zeroone.conceal.model.ChamberType;
 import com.zeroone.conceal.model.Constant;
 import com.zeroone.conceal.model.CryptoFile;
-import com.zeroone.conceal.model.CryptoType;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,17 +40,17 @@ import static com.zeroone.conceal.model.Constant.*;
  * @author : hafiq on 23/03/2017.
  */
 @SuppressWarnings({"unused", "unchecked"})
-public class ConcealPrefRepository<T> extends BaseRepository {
+public class SharedChamber<T> extends BaseRepository {
 
     @SuppressLint("CommitPrefEdits")
-    private ConcealPrefRepository(@NonNull PreferencesBuilder builder){
+    private SharedChamber(@NonNull ChamberBuilder builder){
         mContext = builder.getContext();
-        mFolderName = builder.getFolderName();
+        chamberFolderName = builder.getFolderName();
         sharedPreferences = builder.getSharedPreferences();
         onDataChangeListener = builder.getOnDataChangeListener();
         defaultPrefix = (builder.getDefaultPrefix() == null ? "" : builder.getDefaultPrefix());
 
-        CryptoType mKeyChain = builder.getKeyChain();
+        ChamberType mKeyChain = builder.getKeyChain();
         boolean mEnabledCrypto = builder.isEnabledCrypto();
         boolean mEnableCryptKey = builder.isEnableCryptKey();
         String mEntityPasswordRaw = builder.getEntityPasswordRaw();
@@ -59,13 +59,13 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         editor = sharedPreferences.edit();
 
         //init crypto
-        concealCrypto = new ConcealCrypto.CryptoBuilder(mContext)
-                .createPassword(mEntityPasswordRaw)
-                .setKeyChain(mKeyChain)
+        secretChamber = new SecretBuilder(mContext)
+                .setPassword(mEntityPasswordRaw)
+                .setChamberType(mKeyChain)
                 .setEnableValueEncryption(mEnabledCrypto)
                 .setEnableKeyEncryption(mEnableCryptKey)
-                .setStoredFolder(mFolderName)
-                .create();
+                .setStoredFolder(chamberFolderName)
+                .buildSecret();
 
         //init listener if set
         if (onDataChangeListener!=null) {
@@ -85,18 +85,18 @@ public class ConcealPrefRepository<T> extends BaseRepository {
      * @param application - Application Context ex: this
      */
 
-    public static void applicationInit(Application application){
+    public static void initChamber(Application application){
         SoLoader.init(application, false);
     }
 
     /**********************
      * DESTROY FILES
      **********************/
-    public void destroyCrypto(){
-        concealCrypto.clearCrypto();
+    public void destroyChamber(){
+        secretChamber.clearCrypto();
     }
 
-    public void clearPrefs(){
+    public void clearChamber(){
         try {
             editor.clear().apply();
         } catch (Exception e) {
@@ -107,15 +107,8 @@ public class ConcealPrefRepository<T> extends BaseRepository {
     /*******************************
      * GET SHAREDPREFERENCES TOTAL
      *******************************/
-    public int getPrefsSize(){
-        return getPreferences().getAll().size();
-    }
-
-    /*******************************
-     * GET Current ConcealCrypto
-     *******************************/
-    public ConcealCrypto getCrypto(){
-        return concealCrypto;
+    public int getChamberSize(){
+        return getChamber().getAll().size();
     }
 
 
@@ -125,13 +118,13 @@ public class ConcealPrefRepository<T> extends BaseRepository {
     /* Remove by Key */
     public void remove(@NonNull String... keys){
         for (String key:keys){
-            editor.remove(hashKey(key));
+            getChamberEditor().remove(hashKey(key));
         }
-        editor.apply();
+        getChamberEditor().apply();
     }
 
     public void remove(@NonNull String key) {
-        editor.remove(hashKey(key)).apply();
+        getChamberEditor().remove(hashKey(key)).apply();
     }
 
     /**
@@ -159,16 +152,16 @@ public class ConcealPrefRepository<T> extends BaseRepository {
      * get all encrypted file in created folder
      * @return @CryptoFile
      */
-    public List<CryptoFile> getAllConcealEncryptedFiles(){
-        return getListFiles(getDirectory(mFolderName));
+    public List<CryptoFile> getAllChamberFiles(){
+        return getListFiles(getDirectory(getChamberFolderName()));
     }
 
     /**
      * get list of key and values inside sharedPreferences
      * @return Map
      */
-    public Map<String,String> getAllSharedPrefData(){
-        Map<String,?> keys = getPreferences().getAll();
+    public Map<String,String> getEverythingInChamberInMap(){
+        Map<String,?> keys = getChamber().getAll();
         Map<String,String> data = new HashMap<>();
 
         for(Map.Entry<String,?> entry : keys.entrySet()){
@@ -183,8 +176,8 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         return data;
     }
 
-    public List<String> getAllSharedPrefDataToString(){
-        Map<String,?> keys = getPreferences().getAll();
+    public List<String> getEverythingInChamberInList(){
+        Map<String,?> keys = getChamber().getAll();
         List<String> data = new ArrayList<>();
 
         for(Map.Entry<String,?> entry : keys.entrySet()){
@@ -199,29 +192,19 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         return data;
     }
 
-
-    /**
-     * get SharedPreferences
-     * @return SharedPreferences
-     */
-    public SharedPreferences getPreferences(){
-        return sharedPreferences;
-    }
-
-
     /**
      * check whether value is existed or not
      * @param key - key string
      * @return - value
      */
     public boolean contains(@NonNull String key){
-        return sharedPreferences.contains(hashKey(key));
+        return getChamber().contains(hashKey(key));
     }
 
     /* Save Data */
 
     public void put(@NonNull String key, String value) {
-        editor.putString(hashKey(key), hideValue(value)).apply();
+        getChamberEditor().putString(hashKey(key), hideValue(value)).apply();
     }
 
     public void put(@NonNull String key, int value) {
@@ -258,10 +241,10 @@ public class ConcealPrefRepository<T> extends BaseRepository {
 
     @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     public String put(@NonNull String key, Bitmap bitmap){
-        File imageFile = new File(getImageDirectory(mFolderName),"images_"+System.currentTimeMillis()+".png");
+        File imageFile = new File(getImageDirectory(getChamberFolderName()),"images_"+System.currentTimeMillis()+".png");
         if(FileUtils.saveBitmap(imageFile, bitmap)){
-            concealCrypto.obscureFile(imageFile,true);
-            editor.putString(key,imageFile.getAbsolutePath()).apply();
+            getSecretChamber().lockVaultFile(imageFile,true);
+            put(key,imageFile.getAbsolutePath());
             return imageFile.getAbsolutePath();
         }
         return null;
@@ -270,9 +253,9 @@ public class ConcealPrefRepository<T> extends BaseRepository {
     @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     public String put(@NonNull String key, @Nullable File file){
         if (FileUtils.isFileForImage(file)) {
-            File imageFile = FileUtils.moveFile(file,getImageDirectory(mFolderName));
+            File imageFile = FileUtils.moveFile(file,getImageDirectory(getChamberFolderName()));
             if (imageFile!=null && imageFile.exists()) {
-                concealCrypto.obscureFile(imageFile,true);
+                getSecretChamber().lockVaultFile(imageFile,true);
                 put(key, imageFile.getAbsolutePath());
                 return imageFile.getAbsolutePath();
             }
@@ -288,7 +271,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
 
         try {
             if (file.exists() && !FileUtils.isFileForImage(file)) {
-                File enc = concealCrypto.obscureFile(file,deleteOldFile);
+                File enc = getSecretChamber().lockVaultFile(file,deleteOldFile);
                 put(key, enc.getAbsolutePath());
                 return enc;
             }
@@ -304,9 +287,9 @@ public class ConcealPrefRepository<T> extends BaseRepository {
     public String putDrawable(@NonNull String key, @DrawableRes int resId){
         Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), resId);
         if (bitmap!=null) {
-            File imageFile = new File(getImageDirectory(mFolderName), "images_" + System.currentTimeMillis() + ".png");
+            File imageFile = new File(getImageDirectory(getChamberFolderName()), "images_" + System.currentTimeMillis() + ".png");
             if (FileUtils.saveBitmap(imageFile, bitmap)) {
-                concealCrypto.obscureFile(imageFile, true);
+                getSecretChamber().lockVaultFile(imageFile, true);
                 put(key, imageFile.getAbsolutePath());
                 return imageFile.getAbsolutePath();
             }
@@ -329,12 +312,12 @@ public class ConcealPrefRepository<T> extends BaseRepository {
      ************************************/
     @CheckResult
     public String getString(@NonNull String key){
-        return concealCrypto.deObscure(sharedPreferences.getString(hashKey(key),null));
+        return getSecretChamber().openVault(getChamber().getString(hashKey(key),null));
     }
 
     @CheckResult
     public String getString(@NonNull String key,String defaultValue){
-        return concealCrypto.deObscure(sharedPreferences.getString(hashKey(key),defaultValue));
+        return getSecretChamber().openVault(getChamber().getString(hashKey(key),defaultValue));
     }
 
     @CheckResult
@@ -547,7 +530,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         if (path !=null) {
             try {
                 File file = new File(path);
-                return BitmapFactory.decodeFile(concealCrypto.deObscureFile(file,true).getAbsolutePath());
+                return BitmapFactory.decodeFile(getSecretChamber().openVaultFile(file,true).getAbsolutePath());
             } catch (Exception e) {
                 return null;
             }
@@ -564,7 +547,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
 
             File getFile = new File(path);
             if (getFile.exists()) {
-                File dec = concealCrypto.deObscureFile(getFile,deleteOldFile);
+                File dec = getSecretChamber().openVaultFile(getFile,deleteOldFile);
                 if (dec == null)
                     throw new Exception("File can't decrypt");
 
@@ -577,37 +560,37 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         return null;
     }
 
-    public static class DevicePref extends DeviceAbstract<DevicePref>{
+    public static class DeviceChamber extends DeviceAbstract<DeviceChamber>{
 
-        public DevicePref() {
+        public DeviceChamber() {
             super(sharedPreferences);
-            setConcealCrypto(concealCrypto);
+            setSecretChamber(secretChamber);
         }
 
-        public DevicePref(@Nullable String keyPrefix) {
+        public DeviceChamber(@Nullable String keyPrefix) {
             super(keyPrefix, sharedPreferences);
             if (keyPrefix == null) {
                 setDefaultPrefix(defaultPrefix);
             }
-            setConcealCrypto(concealCrypto);
+            setSecretChamber(secretChamber);
         }
 
-        public DevicePref(@Nullable String keyPrefix, @Nullable String defaultEmptyValue) {
+        public DeviceChamber(@Nullable String keyPrefix, @Nullable String defaultEmptyValue) {
             super(keyPrefix, defaultEmptyValue, sharedPreferences);
             if (keyPrefix == null) {
                 setDefaultPrefix(defaultPrefix);
             }
-            setConcealCrypto(concealCrypto);
+            setSecretChamber(secretChamber);
         }
 
         @Override
-        public DevicePref setDefault(@Nullable String defaultEmptyValue){
+        public DeviceChamber setDefault(@Nullable String defaultEmptyValue){
             setDefaultValue(defaultEmptyValue);
             return this;
         }
 
         @Override
-        public DevicePref setDeviceId(String deviceId){
+        public DeviceChamber setDeviceId(String deviceId){
             getEditor().putString(setHashKey(DEVICE_ID),hideValue(deviceId));
             return this;
         }
@@ -616,7 +599,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
             getEditor().putString(setHashKey(DEVICE_ID),hideValue(deviceId)).apply();
         }
         @Override
-        public DevicePref setDeviceVersion(String version){
+        public DeviceChamber setDeviceVersion(String version){
             getEditor().putString(setHashKey(DEVICE_VERSION), hideValue(version));
             return this;
         }
@@ -625,7 +608,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
             getEditor().putString(setHashKey(DEVICE_VERSION), hideValue(version)).apply();
         }
         @Override
-        public DevicePref setDeviceIsUpdated(boolean updated){
+        public DeviceChamber setDeviceIsUpdated(boolean updated){
             getEditor().putString(setHashKey(DEVICE_IS_UPDATE), hideValue(String.valueOf(updated)));
             return this;
         }
@@ -634,7 +617,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
             getEditor().putString(setHashKey(DEVICE_IS_UPDATE), hideValue(String.valueOf(updated))).apply();
         }
         @Override
-        public DevicePref setDeviceOS(String os){
+        public DeviceChamber setDeviceOS(String os){
             getEditor().putString(setHashKey(DEVICE_OS), hideValue(String.valueOf(os)));
             return this;
         }
@@ -643,7 +626,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
             getEditor().putString(setHashKey(DEVICE_OS), hideValue(String.valueOf(os))).apply();
         }
         @Override
-        public DevicePref setDeviceDetail(Object object) {
+        public DeviceChamber setDeviceDetail(Object object) {
             getEditor().putString(setHashKey(DEVICE_DETAIL), hideValue(new Gson().toJson(object)));
             return this;
         }
@@ -686,37 +669,37 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         }
     }
 
-    public static class UserPref extends UserAbstract<UserPref> {
+    public static class UserChamber extends UserAbstract<UserChamber> {
 
-        public UserPref() {
+        public UserChamber() {
             super(sharedPreferences);
-            setConcealCrypto(concealCrypto);
+            setSecretChamber(secretChamber);
         }
 
-        public UserPref(@Nullable String keyPrefix) {
+        public UserChamber(@Nullable String keyPrefix) {
             super(keyPrefix, sharedPreferences);
             if (keyPrefix == null) {
                 setDefaultPrefix(defaultPrefix);
             }
-            setConcealCrypto(concealCrypto);
+            setSecretChamber(secretChamber);
         }
 
-        public UserPref(@Nullable String keyPrefix, @Nullable String defaultEmptyValue) {
+        public UserChamber(@Nullable String keyPrefix, @Nullable String defaultEmptyValue) {
             super(keyPrefix, defaultEmptyValue, sharedPreferences);
             if (keyPrefix == null) {
                 setDefaultPrefix(defaultPrefix);
             }
-            setConcealCrypto(concealCrypto);
+            setSecretChamber(secretChamber);
         }
 
         @Override
-        public UserPref setDefault(@Nullable String defaultEmptyValue){
+        public UserChamber setDefault(@Nullable String defaultEmptyValue){
             setDefaultValue(defaultEmptyValue);
             return this;
         }
 
         @Override
-        public UserPref setUserDetail(String user_detail){
+        public UserChamber setUserDetail(String user_detail){
             getEditor().putString(setHashKey(USER_JSON),hideValue(user_detail));
             return this;
         }
@@ -727,7 +710,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         }
 
         @Override
-        public UserPref setUserId(String user_id){
+        public UserChamber setUserId(String user_id){
             getEditor().putString(setHashKey(USER_ID),hideValue(user_id));
             return this;
         }
@@ -738,7 +721,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         }
 
         @Override
-        public UserPref setUserName(String name){
+        public UserChamber setUserName(String name){
             getEditor().putString(setHashKey(NAME),hideValue(name));
             return this;
         }
@@ -749,7 +732,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         }
 
         @Override
-        public UserPref setFullName(String fullName){
+        public UserChamber setFullName(String fullName){
             getEditor().putString(setHashKey(FULLNAME),hideValue(fullName));
             return this;
         }
@@ -760,7 +743,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         }
 
         @Override
-        public UserPref setFirstName(String firstName){
+        public UserChamber setFirstName(String firstName){
             getEditor().putString(setHashKey(FIRST_NAME),hideValue(firstName));
             return this;
         }
@@ -771,7 +754,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         }
 
         @Override
-        public UserPref setLastName(String lastName){
+        public UserChamber setLastName(String lastName){
             getEditor().putString(setHashKey(LAST_NAME),hideValue(lastName));
             return this;
         }
@@ -782,7 +765,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         }
 
         @Override
-        public UserPref setAge(int age){
+        public UserChamber setAge(int age){
             getEditor().putString(setHashKey(AGE),hideValue(String.valueOf(age)));
             return this;
         }
@@ -793,7 +776,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         }
 
         @Override
-        public UserPref setGender(String gender){
+        public UserChamber setGender(String gender){
             getEditor().putString(setHashKey(GENDER),hideValue(gender));
             return this;
         }
@@ -804,7 +787,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         }
 
         @Override
-        public UserPref setBirthDate(String birthDate){
+        public UserChamber setBirthDate(String birthDate){
             getEditor().putString(setHashKey(BIRTH_DATE),hideValue(birthDate));
             return this;
         }
@@ -815,7 +798,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         }
 
         @Override
-        public UserPref setAddress(String address){
+        public UserChamber setAddress(String address){
             getEditor().putString(setHashKey(ADDRESS),hideValue(address));
             return this;
         }
@@ -826,7 +809,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         }
 
         @Override
-        public UserPref setEmail(String email){
+        public UserChamber setEmail(String email){
             getEditor().putString(setHashKey(EMAIL),hideValue(email));
             return this;
         }
@@ -837,7 +820,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         }
 
         @Override
-        public UserPref setPushToken(String token){
+        public UserChamber setPushToken(String token){
             getEditor().putString(setHashKey(PUSH_TOKEN),hideValue(token));
             return this;
         }
@@ -848,7 +831,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         }
 
         @Override
-        public UserPref setPhoneNumber(String phoneNumber){
+        public UserChamber setPhoneNumber(String phoneNumber){
             getEditor().putString(setHashKey(PHONE_NO),hideValue(phoneNumber));
             return this;
         }
@@ -859,7 +842,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         }
 
         @Override
-        public UserPref setMobileNumber(String mobileNumber){
+        public UserChamber setMobileNumber(String mobileNumber){
             getEditor().putString(setHashKey(MOBILE_NO),hideValue(mobileNumber));
             return this;
         }
@@ -870,7 +853,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         }
 
         @Override
-        public UserPref setLogin(boolean login){
+        public UserChamber setLogin(boolean login){
             getEditor().putString(setHashKey(HAS_LOGIN),hideValue(String.valueOf(login)));
             return this;
         }
@@ -881,7 +864,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         }
 
         @Override
-        public UserPref setPassword(String password){
+        public UserChamber setPassword(String password){
             getEditor().putString(setHashKey(PASSWORD),hideValue(password));
             return this;
         }
@@ -892,7 +875,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         }
 
         @Override
-        public UserPref setFirstTimeUser(boolean firstTime){
+        public UserChamber setFirstTimeUser(boolean firstTime){
             getEditor().putString(setHashKey(FIRST_TIME_USER),hideValue(String.valueOf(firstTime)));
             return this;
         }
@@ -903,7 +886,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         }
 
         @Override
-        public UserPref setUserDetail(Object object) {
+        public UserChamber setUserDetail(Object object) {
             getEditor().putString(setHashKey(USER_JSON), hideValue(new Gson().toJson(object)));
             return this;
         }
@@ -1057,7 +1040,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         public Editor() {
             super(sharedPreferences);
             setDefaultPrefix(defaultPrefix);
-            setConcealCrypto(concealCrypto);
+            setSecretChamber(secretChamber);
         }
 
         public Editor(@Nullable String keyPrefix) {
@@ -1066,7 +1049,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
                 setDefaultPrefix(defaultPrefix);
             }
 
-            setConcealCrypto(concealCrypto);
+            setSecretChamber(secretChamber);
         }
 
         @Override
@@ -1164,7 +1147,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
             if (bitmap!=null) {
                 File imageFile = new File(getImageDirectory(getFolderPath()), "images_" + System.currentTimeMillis() + ".png");
                 if (FileUtils.saveBitmap(imageFile, bitmap)) {
-                    getEditor().putString(setHashKey(key), hideValue(getConcealCrypto().obscureFile(imageFile, true).getAbsolutePath()));
+                    getEditor().putString(setHashKey(key), hideValue(getSecretChamber().lockVaultFile(imageFile, true).getAbsolutePath()));
                 }
             }
             else{
@@ -1180,7 +1163,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
             if (bitmap!=null) {
                 File imageFile = new File(getImageDirectory(getFolderPath()), "images_" + System.currentTimeMillis() + ".png");
                 if (FileUtils.saveBitmap(imageFile, bitmap)) {
-                    getEditor().putString(setHashKey(key), hideValue(getConcealCrypto().obscureFile(imageFile, true).getAbsolutePath())).apply();
+                    getEditor().putString(setHashKey(key), hideValue(getSecretChamber().lockVaultFile(imageFile, true).getAbsolutePath())).apply();
                 }
             }
             else{
@@ -1193,7 +1176,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         public Editor put(@NonNull String key, Bitmap bitmap){
             File imageFile = new File(getImageDirectory(getFolderPath()),"images_"+System.currentTimeMillis()+".png");
             if(FileUtils.saveBitmap(imageFile, bitmap)){
-                getEditor().putString(setHashKey(key), hideValue(getConcealCrypto().obscureFile(imageFile,true).getAbsolutePath()));
+                getEditor().putString(setHashKey(key), hideValue(getSecretChamber().lockVaultFile(imageFile,true).getAbsolutePath()));
             }
             return this;
         }
@@ -1203,7 +1186,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         public void apply(@NonNull String key, Bitmap bitmap){
             File imageFile = new File(getImageDirectory(getFolderPath()),"images_"+System.currentTimeMillis()+".png");
             if(FileUtils.saveBitmap(imageFile, bitmap)){
-                getEditor().putString(setHashKey(key), hideValue(getConcealCrypto().obscureFile(imageFile,true).getAbsolutePath())).apply();
+                getEditor().putString(setHashKey(key), hideValue(getSecretChamber().lockVaultFile(imageFile,true).getAbsolutePath())).apply();
             }
         }
 
@@ -1213,7 +1196,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
             if (FileUtils.isFileForImage(file)) {
                 File imageFile = FileUtils.moveFile(file,getImageDirectory(getFolderPath()));
                 if (imageFile!=null && imageFile.exists()) {
-                    getConcealCrypto().obscureFile(imageFile,true);
+                    getSecretChamber().lockVaultFile(imageFile,true);
                     getEditor().putString(setHashKey(key), hideValue(imageFile.getAbsolutePath()));
                 }
             }
@@ -1226,7 +1209,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
             if (FileUtils.isFileForImage(file)) {
                 File imageFile = FileUtils.moveFile(file,getImageDirectory(getFolderPath()));
                 if (imageFile!=null && imageFile.exists()) {
-                    getConcealCrypto().obscureFile(imageFile,true);
+                    getSecretChamber().lockVaultFile(imageFile,true);
                     getEditor().putString(setHashKey(key), hideValue(imageFile.getAbsolutePath())).apply();
                 }
             }
@@ -1237,7 +1220,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         public Editor put(@NonNull String key, File file, boolean deleteOldFile){
             try {
                 if (file.exists() && !FileUtils.isFileForImage(file)) {
-                    File enc = getConcealCrypto().obscureFile(file,deleteOldFile);
+                    File enc = getSecretChamber().lockVaultFile(file,deleteOldFile);
                     getEditor().putString(setHashKey(key), hideValue(enc.getAbsolutePath()));
                 }
             }
@@ -1253,7 +1236,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         public void apply(@NonNull String key, File file, boolean deleteOldFile){
             try {
                 if (file.exists() && !FileUtils.isFileForImage(file)) {
-                    File enc = getConcealCrypto().obscureFile(file,deleteOldFile);
+                    File enc = getSecretChamber().lockVaultFile(file,deleteOldFile);
                     getEditor().putString(setHashKey(key), hideValue(enc.getAbsolutePath())).apply();
                 }
             }
@@ -1300,16 +1283,16 @@ public class ConcealPrefRepository<T> extends BaseRepository {
 
 
     /************************v***************************************************************
-     * Preferences builder,  ConcealPrefRepository.PreferencesBuilder
+     * Preferences builder,  SharedChamber.ChamberBuilder
      ****************************************************************************************/
-    public static class PreferencesBuilder extends BasePreferencesBuilder<PreferencesBuilder> {
+    public static class ChamberBuilder extends BasePreferencesBuilder<ChamberBuilder> {
 
-        public PreferencesBuilder(Context context) {
+        public ChamberBuilder(Context context) {
             super(context);
         }
 
         @Override
-        public PreferencesBuilder useThisPrefStorage(String prefName){
+        public ChamberBuilder useThisPrefStorage(@NonNull String prefName){
             setPrefName(prefName);
             return this;
         }
@@ -1318,17 +1301,17 @@ public class ConcealPrefRepository<T> extends BaseRepository {
          * Enable encryption for keys-values
          * @param encryptKey true/false to enable encryption for key
          * @param encryptValue true/false to enable encryption for values
-         * @return PreferencesBuilder
+         * @return ChamberBuilder
          */
         @Override
-        public PreferencesBuilder enableCrypto(boolean encryptKey,boolean encryptValue){
+        public ChamberBuilder enableCrypto(boolean encryptKey, boolean encryptValue){
             setEnabledCrypto(encryptValue);
             setEnableCryptKey(encryptKey);
             return this;
         }
 
         @Override
-        public PreferencesBuilder enableKeyPrefix(boolean enable, @Nullable String defaultPrefix) {
+        public ChamberBuilder enableKeyPrefix(boolean enable, @Nullable String defaultPrefix) {
             if (enable) {
                 if (defaultPrefix == null) {
                     setDefaultPrefix(Constant.PREFIX);
@@ -1344,10 +1327,10 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         /**
          * Use Conceal keychain
          * @param keyChain Cryptography type
-         * @return PreferencesBuilder
+         * @return ChamberBuilder
          */
         @Override
-        public PreferencesBuilder sharedPrefsBackedKeyChain(CryptoType keyChain){
+        public ChamberBuilder setChamberType(@NonNull ChamberType keyChain){
             setKeyChain(keyChain);
             return this;
         }
@@ -1355,10 +1338,10 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         /**
          * Setup password / paraphrase for encryption
          * @param password string password
-         * @return PreferencesBuilder
+         * @return ChamberBuilder
          */
         @Override
-        public PreferencesBuilder createPassword(String password){
+        public ChamberBuilder setPassword(@NonNull String password){
             setEntityPasswordRaw(password);
             return this;
         }
@@ -1366,31 +1349,31 @@ public class ConcealPrefRepository<T> extends BaseRepository {
         /**
          * Set folder name to store files and images
          * @param folderName folder path
-         * @return PreferencesBuilder
+         * @return ChamberBuilder
          */
         @Override
-        public PreferencesBuilder setFolderName(String folderName){
+        public ChamberBuilder setFolderName(String folderName){
             setmFolderName(folderName);
             return this;
         }
 
         /**
          * Listen to data changes
-         * @param listener OnDataChangeListener listener
-         * @return PreferencesBuilder
+         * @param listener OnDataChamberChangeListener listener
+         * @return ChamberBuilder
          */
         @Override
-        public PreferencesBuilder setPrefListener(OnDataChangeListener listener){
+        public ChamberBuilder setPrefListener(OnDataChamberChangeListener listener){
             setOnDataChangeListener(listener);
             return this;
         }
 
         /**
          * Create Preferences
-         * @return ConcealPrefRepository
+         * @return SharedChamber
          */
 
-        public ConcealPrefRepository create(){
+        public SharedChamber buildChamber(){
 
             if (getContext() == null){
                 throw new RuntimeException("Context cannot be null");
@@ -1418,7 +1401,7 @@ public class ConcealPrefRepository<T> extends BaseRepository {
                 setSharedPreferences(PreferenceManager.getDefaultSharedPreferences(getContext()));
             }
 
-            return new ConcealPrefRepository(this);
+            return new SharedChamber(this);
         }
     }
 }

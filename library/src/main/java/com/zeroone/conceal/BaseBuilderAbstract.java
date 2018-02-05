@@ -16,17 +16,17 @@ abstract class BaseBuilderAbstract {
     private String SEPARATOR = "_";
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
-    private ConcealCrypto concealCrypto;
+    private SecretChamber secretChamber;
 
     BaseBuilderAbstract(SharedPreferences sharedPreferences) {
         this.defaultPrefix = null;
 
         if (sharedPreferences == null){
-            throw new IllegalArgumentException("Need to initialize ConcealPrefRepository.PreferencesBuilder first");
+            throw new IllegalArgumentException("Need to initialize SharedChamber.ChamberBuilder first");
         }
 
         this.sharedPreferences = sharedPreferences;
-        this.editor = sharedPreferences.edit();
+        this.editor = this.sharedPreferences.edit();
     }
 
     BaseBuilderAbstract(@Nullable String keyPrefix, SharedPreferences sharedPreferences) {
@@ -34,11 +34,11 @@ abstract class BaseBuilderAbstract {
             this.defaultPrefix = keyPrefix+this.SEPARATOR;
 
         if (sharedPreferences == null){
-            throw new IllegalArgumentException("Need to initialize ConcealPrefRepository.PreferencesBuilder first");
+            throw new IllegalArgumentException("Need to initialize SharedChamber.ChamberBuilder first");
         }
 
         this.sharedPreferences = sharedPreferences;
-        this.editor = sharedPreferences.edit();
+        this.editor = this.sharedPreferences.edit();
 
     }
 
@@ -51,20 +51,20 @@ abstract class BaseBuilderAbstract {
             this.defaultPrefix = keyPrefix+this.SEPARATOR;
 
         if (sharedPreferences == null){
-            throw new IllegalArgumentException("Need to initialize ConcealPrefRepository.PreferencesBuilder first");
+            throw new IllegalArgumentException("Need to initialize SharedChamber.ChamberBuilder first");
         }
 
         this.sharedPreferences = sharedPreferences;
-        this.editor = sharedPreferences.edit();
+        this.editor = this.sharedPreferences.edit();
 
     }
 
-    void setConcealCrypto(ConcealCrypto concealCrypto) {
-        this.concealCrypto = concealCrypto;
+    void setSecretChamber(SecretChamber secretChamber) {
+        this.secretChamber = secretChamber;
     }
 
-    ConcealCrypto getConcealCrypto() {
-        return this.concealCrypto;
+    SecretChamber getSecretChamber() {
+        return this.secretChamber;
     }
 
     void setDefaultPrefix(String defaultPrefix) {
@@ -79,7 +79,7 @@ abstract class BaseBuilderAbstract {
 
     SharedPreferences.Editor getEditor() {
         if (this.editor == null){
-            throw new IllegalArgumentException("Need to initialize ConcealPrefRepository.PreferencesBuilder first");
+            throw new IllegalArgumentException("Need to initialize SharedChamber.ChamberBuilder first");
         }
 
         return this.editor;
@@ -90,7 +90,7 @@ abstract class BaseBuilderAbstract {
     }
 
     String returnValue(String KEY){
-        String value = this.concealCrypto.deObscure(this.sharedPreferences.getString(setHashKey(KEY), null));
+        String value = this.secretChamber.openVault(this.sharedPreferences.getString(setHashKey(KEY), null));
         if (value == null)
             return this.DEFAULT_VALUE;
 
@@ -98,11 +98,11 @@ abstract class BaseBuilderAbstract {
     }
 
     String setHashKey(String key) {
-        return this.concealCrypto.hashKey(defaultPrefix +key);
+        return this.secretChamber.hashVault(defaultPrefix +key);
     }
 
     String hideValue(String value) {
-        return this.concealCrypto.obscure(value);
+        return this.secretChamber.lockVault(value);
     }
 
     public void apply() {

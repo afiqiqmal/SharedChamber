@@ -6,7 +6,7 @@ import com.facebook.crypto.CryptoConfig;
  * Created by hafiq on 28/01/2018.
  */
 
-public enum CryptoType {
+public enum ChamberType {
 
     KEY_128(CryptoConfig.KEY_128),
     KEY_256(CryptoConfig.KEY_256);
@@ -18,7 +18,7 @@ public enum CryptoType {
         return this.type;
     }
 
-    CryptoType(CryptoConfig x) {
+    ChamberType(CryptoConfig x) {
         type = x;
     }
 }

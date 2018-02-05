@@ -4,8 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
 
-import com.zeroone.conceal.listener.OnDataChangeListener;
-import com.zeroone.conceal.model.CryptoType;
+import com.zeroone.conceal.listener.OnDataChamberChangeListener;
+import com.zeroone.conceal.model.ChamberType;
 
 /**
  * Created by hafiq on 28/01/2018.
@@ -14,7 +14,7 @@ import com.zeroone.conceal.model.CryptoType;
 abstract class BasePreferencesBuilder<T extends BasePreferencesBuilder<T> > {
 
     private Context mContext;
-    private CryptoType mKeyChain = CryptoType.KEY_256;
+    private ChamberType mKeyChain = ChamberType.KEY_256;
     private String mPrefname = null;
     private String mFolderName = null;
     private String defaultPrefix = "";
@@ -22,7 +22,7 @@ abstract class BasePreferencesBuilder<T extends BasePreferencesBuilder<T> > {
     private boolean mEnableCryptKey = false;
     private String mEntityPasswordRaw = null;
     private SharedPreferences sharedPreferences;
-    private OnDataChangeListener onDataChangeListener;
+    private OnDataChamberChangeListener onDataChangeListener;
 
     void setContext(Context mContext) {
         this.mContext = mContext;
@@ -32,7 +32,7 @@ abstract class BasePreferencesBuilder<T extends BasePreferencesBuilder<T> > {
         return mContext;
     }
 
-    CryptoType getKeyChain() {
+    ChamberType getKeyChain() {
         return mKeyChain;
     }
 
@@ -68,11 +68,11 @@ abstract class BasePreferencesBuilder<T extends BasePreferencesBuilder<T> > {
         return sharedPreferences;
     }
 
-    OnDataChangeListener getOnDataChangeListener() {
+    OnDataChamberChangeListener getOnDataChangeListener() {
         return onDataChangeListener;
     }
 
-    void setKeyChain(CryptoType mKeyChain) {
+    void setKeyChain(ChamberType mKeyChain) {
         this.mKeyChain = mKeyChain;
     }
 
@@ -100,7 +100,7 @@ abstract class BasePreferencesBuilder<T extends BasePreferencesBuilder<T> > {
         this.sharedPreferences = sharedPreferences;
     }
 
-    void setOnDataChangeListener(OnDataChangeListener onDataChangeListener) {
+    void setOnDataChangeListener(OnDataChamberChangeListener onDataChangeListener) {
         this.onDataChangeListener = onDataChangeListener;
     }
 
@@ -111,9 +111,9 @@ abstract class BasePreferencesBuilder<T extends BasePreferencesBuilder<T> > {
     protected abstract T useThisPrefStorage(String mPrefname);
     protected abstract T enableCrypto(boolean encryptKey,boolean encryptValue);
     protected abstract T enableKeyPrefix(boolean enable, @Nullable String defaultPrefix);
-    protected abstract T setPrefListener(OnDataChangeListener listener);
+    protected abstract T setPrefListener(OnDataChamberChangeListener listener);
     protected abstract T setFolderName(String folderName);
-    protected abstract T createPassword(String password);
-    protected abstract T sharedPrefsBackedKeyChain(CryptoType keyChain);
+    protected abstract T setPassword(String password);
+    protected abstract T setChamberType(ChamberType keyChain);
 
 }
