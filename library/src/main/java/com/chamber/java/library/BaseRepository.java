@@ -1,9 +1,9 @@
-package com.zeroone.conceal;
+package com.chamber.java.library;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.zeroone.conceal.listener.OnDataChamberChangeListener;
+import com.chamber.java.library.listener.OnDataChamberChangeListener;
 
 /**
  * Created by hafiq on 28/01/2018.

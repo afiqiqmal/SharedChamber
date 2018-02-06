@@ -1,4 +1,4 @@
-package com.zeroone.concealexample;
+package com.chamber.java.sample;
 
 import android.content.Context;
 

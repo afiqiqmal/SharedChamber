@@ -1,4 +1,4 @@
-package com.zeroone.conceal;
+package com.chamber.java.library;
 
 import android.util.Base64;
 
@@ -9,7 +9,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import static com.zeroone.conceal.model.Constant.UTF8;
+import static com.chamber.java.library.model.Constant.UTF8;
 
 /**
  * @author : hafiq on 29/03/2017.

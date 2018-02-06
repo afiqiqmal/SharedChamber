@@ -1,4 +1,4 @@
-package com.zeroone.conceal;
+package com.chamber.java.library;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -8,7 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.zeroone.conceal.model.Constant.UTF8;
+import static com.chamber.java.library.model.Constant.UTF8;
 
 /**
  * @author : hafiq on 23/03/2017.

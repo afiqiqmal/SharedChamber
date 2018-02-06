@@ -1,4 +1,4 @@
-package com.zeroone.conceal;
+package com.chamber.java.library;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -16,10 +16,10 @@ import android.support.annotation.RequiresPermission;
 
 import com.facebook.soloader.SoLoader;
 import com.google.gson.Gson;
-import com.zeroone.conceal.listener.OnDataChamberChangeListener;
-import com.zeroone.conceal.model.ChamberType;
-import com.zeroone.conceal.model.Constant;
-import com.zeroone.conceal.model.CryptoFile;
+import com.chamber.java.library.listener.OnDataChamberChangeListener;
+import com.chamber.java.library.model.ChamberType;
+import com.chamber.java.library.model.Constant;
+import com.chamber.java.library.model.CryptoFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,10 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
-import static com.zeroone.conceal.FileUtils.getDirectory;
-import static com.zeroone.conceal.FileUtils.getImageDirectory;
-import static com.zeroone.conceal.FileUtils.getListFiles;
-import static com.zeroone.conceal.model.Constant.*;
+import static com.chamber.java.library.model.Constant.*;
 
 /**
  * @author : hafiq on 23/03/2017.
@@ -153,7 +150,7 @@ public class SharedChamber<T> extends BaseRepository {
      * @return @CryptoFile
      */
     public List<CryptoFile> getAllChamberFiles(){
-        return getListFiles(getDirectory(getChamberFolderName()));
+        return FileUtils.getListFiles(FileUtils.getDirectory(getChamberFolderName()));
     }
 
     /**
@@ -241,7 +238,7 @@ public class SharedChamber<T> extends BaseRepository {
 
     @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     public String put(@NonNull String key, Bitmap bitmap){
-        File imageFile = new File(getImageDirectory(getChamberFolderName()),"images_"+System.currentTimeMillis()+".png");
+        File imageFile = new File(FileUtils.getImageDirectory(getChamberFolderName()),"images_"+System.currentTimeMillis()+".png");
         if(FileUtils.saveBitmap(imageFile, bitmap)){
             getSecretChamber().lockVaultFile(imageFile,true);
             put(key,imageFile.getAbsolutePath());
@@ -253,7 +250,7 @@ public class SharedChamber<T> extends BaseRepository {
     @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     public String put(@NonNull String key, @Nullable File file){
         if (FileUtils.isFileForImage(file)) {
-            File imageFile = FileUtils.moveFile(file,getImageDirectory(getChamberFolderName()));
+            File imageFile = FileUtils.moveFile(file, FileUtils.getImageDirectory(getChamberFolderName()));
             if (imageFile!=null && imageFile.exists()) {
                 getSecretChamber().lockVaultFile(imageFile,true);
                 put(key, imageFile.getAbsolutePath());
@@ -287,7 +284,7 @@ public class SharedChamber<T> extends BaseRepository {
     public String putDrawable(@NonNull String key, @DrawableRes int resId){
         Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), resId);
         if (bitmap!=null) {
-            File imageFile = new File(getImageDirectory(getChamberFolderName()), "images_" + System.currentTimeMillis() + ".png");
+            File imageFile = new File(FileUtils.getImageDirectory(getChamberFolderName()), "images_" + System.currentTimeMillis() + ".png");
             if (FileUtils.saveBitmap(imageFile, bitmap)) {
                 getSecretChamber().lockVaultFile(imageFile, true);
                 put(key, imageFile.getAbsolutePath());
@@ -1145,7 +1142,7 @@ public class SharedChamber<T> extends BaseRepository {
         public Editor putDrawable(@NonNull String key, @DrawableRes int resId, Context context){
             Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resId);
             if (bitmap!=null) {
-                File imageFile = new File(getImageDirectory(getFolderPath()), "images_" + System.currentTimeMillis() + ".png");
+                File imageFile = new File(FileUtils.getImageDirectory(getFolderPath()), "images_" + System.currentTimeMillis() + ".png");
                 if (FileUtils.saveBitmap(imageFile, bitmap)) {
                     getEditor().putString(setHashKey(key), hideValue(getSecretChamber().lockVaultFile(imageFile, true).getAbsolutePath()));
                 }
@@ -1161,7 +1158,7 @@ public class SharedChamber<T> extends BaseRepository {
         public void applyDrawable(@NonNull String key, @DrawableRes int resId, Context context){
             Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resId);
             if (bitmap!=null) {
-                File imageFile = new File(getImageDirectory(getFolderPath()), "images_" + System.currentTimeMillis() + ".png");
+                File imageFile = new File(FileUtils.getImageDirectory(getFolderPath()), "images_" + System.currentTimeMillis() + ".png");
                 if (FileUtils.saveBitmap(imageFile, bitmap)) {
                     getEditor().putString(setHashKey(key), hideValue(getSecretChamber().lockVaultFile(imageFile, true).getAbsolutePath())).apply();
                 }
@@ -1174,7 +1171,7 @@ public class SharedChamber<T> extends BaseRepository {
         @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
         @Override
         public Editor put(@NonNull String key, Bitmap bitmap){
-            File imageFile = new File(getImageDirectory(getFolderPath()),"images_"+System.currentTimeMillis()+".png");
+            File imageFile = new File(FileUtils.getImageDirectory(getFolderPath()),"images_"+System.currentTimeMillis()+".png");
             if(FileUtils.saveBitmap(imageFile, bitmap)){
                 getEditor().putString(setHashKey(key), hideValue(getSecretChamber().lockVaultFile(imageFile,true).getAbsolutePath()));
             }
@@ -1184,7 +1181,7 @@ public class SharedChamber<T> extends BaseRepository {
         @RequiresPermission(allOf = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
         @Override
         public void apply(@NonNull String key, Bitmap bitmap){
-            File imageFile = new File(getImageDirectory(getFolderPath()),"images_"+System.currentTimeMillis()+".png");
+            File imageFile = new File(FileUtils.getImageDirectory(getFolderPath()),"images_"+System.currentTimeMillis()+".png");
             if(FileUtils.saveBitmap(imageFile, bitmap)){
                 getEditor().putString(setHashKey(key), hideValue(getSecretChamber().lockVaultFile(imageFile,true).getAbsolutePath())).apply();
             }
@@ -1194,7 +1191,7 @@ public class SharedChamber<T> extends BaseRepository {
         @Override
         public Editor put(@NonNull String key, File file){
             if (FileUtils.isFileForImage(file)) {
-                File imageFile = FileUtils.moveFile(file,getImageDirectory(getFolderPath()));
+                File imageFile = FileUtils.moveFile(file, FileUtils.getImageDirectory(getFolderPath()));
                 if (imageFile!=null && imageFile.exists()) {
                     getSecretChamber().lockVaultFile(imageFile,true);
                     getEditor().putString(setHashKey(key), hideValue(imageFile.getAbsolutePath()));
@@ -1207,7 +1204,7 @@ public class SharedChamber<T> extends BaseRepository {
         @Override
         public void apply(@NonNull String key, File file){
             if (FileUtils.isFileForImage(file)) {
-                File imageFile = FileUtils.moveFile(file,getImageDirectory(getFolderPath()));
+                File imageFile = FileUtils.moveFile(file, FileUtils.getImageDirectory(getFolderPath()));
                 if (imageFile!=null && imageFile.exists()) {
                     getSecretChamber().lockVaultFile(imageFile,true);
                     getEditor().putString(setHashKey(key), hideValue(imageFile.getAbsolutePath())).apply();

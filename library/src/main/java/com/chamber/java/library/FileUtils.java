@@ -1,9 +1,9 @@
-package com.zeroone.conceal;
+package com.chamber.java.library;
 
 import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
 
-import com.zeroone.conceal.model.CryptoFile;
+import com.chamber.java.library.model.CryptoFile;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,9 +13,9 @@ import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.zeroone.conceal.model.Constant.DEFAULT_DIRECTORY;
-import static com.zeroone.conceal.model.Constant.DEFAULT_IMAGE_FOLDER;
-import static com.zeroone.conceal.model.Constant.DEFAULT_PREFIX_FILENAME;
+import static com.chamber.java.library.model.Constant.DEFAULT_DIRECTORY;
+import static com.chamber.java.library.model.Constant.DEFAULT_IMAGE_FOLDER;
+import static com.chamber.java.library.model.Constant.DEFAULT_PREFIX_FILENAME;
 
 /**
  * @author : hafiq on 24/03/2017.

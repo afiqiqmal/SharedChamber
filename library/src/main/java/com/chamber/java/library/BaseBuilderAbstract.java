@@ -1,4 +1,4 @@
-package com.zeroone.conceal;
+package com.chamber.java.library;
 
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;

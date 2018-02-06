@@ -1,4 +1,4 @@
-package com.zeroone.conceal;
+package com.chamber.java.library;
 
 import android.Manifest;
 import android.content.Context;
@@ -12,7 +12,8 @@ import com.facebook.crypto.Entity;
 import com.facebook.crypto.exception.CryptoInitializationException;
 import com.facebook.crypto.exception.KeyChainException;
 import com.facebook.crypto.keychain.KeyChain;
-import com.zeroone.conceal.model.ChamberType;
+import com.zeroone.conceal.BuildConfig;
+import com.chamber.java.library.model.ChamberType;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -23,11 +24,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.ref.WeakReference;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import static com.zeroone.conceal.model.Constant.*;
+import static com.chamber.java.library.model.Constant.*;
 
 /**
  * @author : hafiq on 23/03/2017.

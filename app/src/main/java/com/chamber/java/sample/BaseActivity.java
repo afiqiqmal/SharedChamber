@@ -1,13 +1,13 @@
-package com.zeroone.concealexample;
+package com.chamber.java.sample;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import com.zeroone.conceal.SharedChamber;
-import com.zeroone.conceal.listener.OnDataChamberChangeListener;
-import com.zeroone.conceal.model.ChamberType;
+import com.chamber.java.library.SharedChamber;
+import com.chamber.java.library.listener.OnDataChamberChangeListener;
+import com.chamber.java.library.model.ChamberType;
 
 /**
  * @author : hafiq on 27/03/2017.

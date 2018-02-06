@@ -1,4 +1,4 @@
-package com.zeroone.concealexample;
+package com.chamber.java.sample;
 
 /**
  * @author : hafiq on 22/09/2017.

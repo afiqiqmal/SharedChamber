@@ -39,4 +39,4 @@
 #-assumenosideeffects class android.util.Log { *; }
 #
 #
-#-keep class com.zeroone.conceal.model.Constant { *; }
+#-keep class com.chamber.java.library.model.Constant { *; }

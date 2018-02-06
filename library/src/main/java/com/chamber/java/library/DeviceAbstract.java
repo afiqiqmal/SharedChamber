@@ -1,4 +1,4 @@
-package com.zeroone.conceal;
+package com.chamber.java.library;
 
 import android.content.SharedPreferences;
 import android.support.annotation.Nullable;

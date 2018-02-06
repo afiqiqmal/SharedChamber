@@ -1,11 +1,11 @@
-package com.zeroone.conceal;
+package com.chamber.java.library;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
 
-import com.zeroone.conceal.listener.OnDataChamberChangeListener;
-import com.zeroone.conceal.model.ChamberType;
+import com.chamber.java.library.listener.OnDataChamberChangeListener;
+import com.chamber.java.library.model.ChamberType;
 
 /**
  * Created by hafiq on 28/01/2018.

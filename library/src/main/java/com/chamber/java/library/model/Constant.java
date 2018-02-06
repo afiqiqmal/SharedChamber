@@ -1,4 +1,4 @@
-package com.zeroone.conceal.model;
+package com.chamber.java.library.model;
 
 import android.os.Environment;
 
