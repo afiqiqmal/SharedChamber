@@ -1,5 +1,8 @@
 # SharedChamber Android
 [![](https://jitpack.io/v/afiqiqmal/SharedChamber.svg)](https://jitpack.io/#afiqiqmal/SharedChamber) [![API](https://img.shields.io/badge/API-16%2B-blue.svg?style=flat)](https://android-arsenal.com/api?level=16)
+[![](https://img.shields.io/badge/Project-Java-brightgreen.svg)](https://github.com/afiqiqmal/SharedChamber)
+[![](https://img.shields.io/badge/Project-Kotlin-yellowgreen.svg)](https://github.com/afiqiqmal/SharedChamber-Kotlin)
+
 
 <b>Project :</b> SharedChamber on top of SharedPreferences using [Facebook Conceal](http://facebook.github.io/conceal/)<br>
 <b>Description </b>
