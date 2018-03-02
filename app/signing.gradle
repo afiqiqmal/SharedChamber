@@ -1,0 +1,23 @@
+def alias = "sharedChamber"
+def key_password = "sharedChamber"
+def store_password = "sharedChamber"
+def store_file = "../keystore.jks"
+
+if (alias && key_password && store_password && file(store_file).exists()) {
+    android {
+        signingConfigs {
+            release {
+                keyAlias alias
+                keyPassword key_password
+                storeFile file(store_file)
+                storePassword store_password
+            }
+        }
+
+        buildTypes {
+            release {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
+}

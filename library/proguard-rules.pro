@@ -40,3 +40,6 @@
 #
 #
 #-keep class com.chamber.java.library.model.Constant { *; }
+
+
+-keep class com.chamber.java.library.model.** {*;}

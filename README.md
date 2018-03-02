@@ -271,29 +271,11 @@ secretChamber.openVaultFile(File file,boolean deleteOldFile);
 
 ## Proguard
 ```proguard
--keep,allowobfuscation @interface com.facebook.crypto.proguard.annotations.DoNotStrip
--keep,allowobfuscation @interface com.facebook.crypto.proguard.annotations.KeepGettersAndSetters
-
-# Do not strip any method/class that is annotated with @DoNotStrip
--keep @com.facebook.crypto.proguard.annotations.DoNotStrip class *
--keepclassmembers class * {
-    @com.facebook.crypto.proguard.annotations.DoNotStrip *;
-}
-
--keepclassmembers @com.facebook.crypto.proguard.annotations.KeepGettersAndSetters class * {
-  void set*(***);
-  *** get*();
-}
-```
-
-Or more simpler proguard
-
-```proguard
--keep class com.facebook.** { *; }
--keep interface com.facebook.** { *; }
+-keep class com.facebook.crypto.** { *; }
+-keep class com.facebook.jni.** { *; }
+-keepclassmembers class com.facebook.cipher.jni.** { *; }
 -dontwarn com.facebook.**
 ```
-
 
 # TODO
 1. Set Preferences for specific user
