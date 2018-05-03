@@ -14,11 +14,11 @@ Conceal provides a set of Java APIs to perform cryptography on Android. It was d
 Gradle
 ```gradle
 dependencies {
-        implementation 'com.github.afiqiqmal:SharedChamber:2.5.0'
+        implementation 'com.github.afiqiqmal:SharedChamber:2.5.1'
 
         //or
 
-        implementation 'com.github.afiqiqmal:SharedChamber:2.5.0' {
+        implementation 'com.github.afiqiqmal:SharedChamber:2.5.1' {
             exclude group: 'com.google.code.gson', module: 'gson'
         }
 }
