@@ -23,6 +23,6 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.facebook.conceal:conceal:2.0.2@aar'
-    implementation 'com.android.support:support-annotations:27.1.0'
+    implementation 'com.android.support:support-annotations:27.1.1'
     implementation 'com.google.code.gson:gson:2.8.2'
 }
