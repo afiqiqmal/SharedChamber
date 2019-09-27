@@ -3,14 +3,14 @@ apply plugin: 'com.android.library'
 group='com.github.afiqiqmal'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
     buildToolsVersion "27.0.3"
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 1
-        versionName "2.5.0"
+        versionName "2.6.0"
     }
     buildTypes {
         release {
@@ -23,6 +23,6 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.facebook.conceal:conceal:2.0.2@aar'
-    implementation 'com.android.support:support-annotations:27.1.1'
-    implementation 'com.google.code.gson:gson:2.8.2'
+    implementation 'com.android.support:support-annotations:28.0.0'
+    implementation 'com.google.code.gson:gson:2.8.5'
 }
