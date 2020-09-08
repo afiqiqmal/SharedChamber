@@ -2,6 +2,7 @@
 [![](https://jitpack.io/v/afiqiqmal/SharedChamber.svg)](https://jitpack.io/#afiqiqmal/SharedChamber) [![API](https://img.shields.io/badge/API-16%2B-blue.svg?style=flat)](https://android-arsenal.com/api?level=16)
 [![](https://img.shields.io/badge/Project-Java-brightgreen.svg)](https://github.com/afiqiqmal/SharedChamber)
 [![](https://img.shields.io/badge/Project-Kotlin-yellowgreen.svg)](https://github.com/afiqiqmal/SharedChamber-Kotlin)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/paypalme/mhi9388?locale.x=en_US)
 
 
 <b>Project :</b> SharedChamber on top of SharedPreferences using [Facebook Conceal](http://facebook.github.io/conceal/)<br>
@@ -289,3 +290,5 @@ Documentation - [Here](http://facebook.github.io/conceal/)
 ## Licence<br>
 open source project that is licensed under the [MIT license](http://opensource.org/licenses/MIT). Please refer to the license file for more information.
 
+
+<a href="https://www.paypal.com/paypalme/mhi9388?locale.x=en_US"><img src="https://i.imgur.com/Y2gqr2j.png" height="40"></a>  
